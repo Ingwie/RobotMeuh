@@ -19,6 +19,9 @@
 #ifndef PIN_H_INCLUDED
 #define PIN_H_INCLUDED
 
+#define Unused1         D,0   // PD0
+
+
 //-----> HD44780 Pin
 /* LCDPort contains 4-bit data D0 to D3*/
 /* LCDPort must be assigned to the chosen port */
@@ -33,5 +36,13 @@
 #define LCDPinD6        D,6   // PD6
 #define LCDPinD7        D,7   // PD7
 
+#define Unused2         B,0   // PB0
+#define Unused3         B,1   // PB1
+
+//-----> SPI Pin
+#define SpiSS           B,2   // PB2
+#define SpiMosi         B,3   // PB3
+#define SpiMiso         B,4   // PB4
+#define SpiSck          B,5   // PB5
 
 #endif // PIN_H_INCLUDED

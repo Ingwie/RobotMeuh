@@ -15,19 +15,28 @@
 /*    https://www.mediafire.com/file/cahqfrm90h7c7fy/  */
 /*    Setup_OAVRCBuilder3.exe/file (Pswd : OpenAVRc)   */
 
-#include "Lcd_RobotMeuh.h"
 
-volatile uint8_t SpiRet = 0;
-volatile char SpiBuf[SPI_BUFFER_LENGHT] = {SPI_EOT};
-volatile uint8_t SpiBufNum = 0;
+#include "spi.h"
 
-int main(void)
+void InitSpiSlaveMode()
 {
-
-    // Insert code
-
-    while(1)
-    ;
-
-    return 0;
+// Enable SPI as Slave, MSB first, 8Mhz.
+ set_output_off(SpiMiso);
+ SPSR = _BV(SPI2X);
+ SPCR = _BV(SPIE) | _BV(SPE);
 }
+
+ISR(SPI_STC_vect)
+{
+ uint8_t data = SPDR;
+ SPDR = SpiRet;
+ if (data != SPI_EOT)
+  {
+   SpiBuf[SpiBufNum++] = data;
+  }
+ else
+  {
+   //PrintScreen();
+  }
+}
+

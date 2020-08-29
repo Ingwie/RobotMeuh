@@ -20,6 +20,7 @@
 #define __LCD_ROBOTMEUH_H_INCLUDED
 
 #include <avr/io.h>
+#include <avr/interrupt.h>
 #include <inttypes.h>
 #include <string.h>
 #include <util/delay.h>
@@ -27,6 +28,11 @@
 #include "pin_helper.h"
 #include "pin.h"
 
-
+// Spi data
+#define SPI_BUFFER_LENGHT        20
+#define SPI_EOT                  '\n'
+extern volatile uint8_t SpiRet;
+extern volatile char SpiBuf[SPI_BUFFER_LENGHT];
+extern volatile uint8_t SpiBufNum;
 
 #endif // __LCD_ROBOTMEUH_H
