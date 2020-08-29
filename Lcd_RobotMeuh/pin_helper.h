@@ -58,19 +58,19 @@
 #define set_dir_out(io)         (Set_Port_Bit(DDR(io),BIT(io)))
 #define dir_toggle(io)          (Tgl_Port_Bit(DDR(io),BIT(io)))
 
-#define set_input_pullup(io)     \
+#define set_input_pullup(io)      \
  Set_Port_Bit(PORT(io),BIT(io));  \
  (Clr_Port_Bit(DDR(io),BIT(io)))  \
 
-#define set_input(io)            \
+#define set_input(io)             \
  Clr_Port_Bit(PORT(io),BIT(io));  \
  (Clr_Port_Bit(DDR(io),BIT(io)))  \
 
-#define set_output_on(io)        \
+#define set_output_on(io)         \
  Set_Port_Bit(PORT(io),BIT(io));  \
  (Set_Port_Bit(DDR(io),BIT(io)))  \
 
-#define set_output_off(io)       \
+#define set_output_off(io)        \
  Clr_Port_Bit(PORT(io),BIT(io));  \
  (Set_Port_Bit(DDR(io),BIT(io)))  \
 

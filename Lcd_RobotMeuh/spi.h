@@ -22,6 +22,5 @@
 #include "Lcd_RobotMeuh.h"
 
 void InitSpiSlaveMode();
-uint8_t master_spi_xfer(uint8_t value);
 
 #endif // _SPI_H_INCLUDED

@@ -15,29 +15,22 @@
 /*    https://www.mediafire.com/file/cahqfrm90h7c7fy/  */
 /*    Setup_OAVRCBuilder3.exe/file (Pswd : OpenAVRc)   */
 
+#include "Keypad.h"
 
-#include "spi.h"
-
-void InitSpiSlaveMode()
+void InitKey()
 {
-// Enable SPI as Slave, MSB first, 8Mhz.
- set_output_off(SpiMisoPin);
- SPSR = _BV(SPI2X);
- SPCR = _BV(SPIE) | _BV(SPE);
+ set_input_pullup(KeyPlayPausePin);
+ set_input_pullup(KeyHomePin);
+ set_input_pullup(KeyEnterPin);
+ set_input_pullup(KeyPlusPin);
+ set_input_pullup(KeyMinusPin);
 }
 
-ISR(SPI_STC_vect)
+void UpdateKeys()
 {
- uint8_t data = SPDR;
- SPDR = SpiRet;
- if (data != SPI_EOT)
-  {
-   SpiBuf[SpiBufNum++] = data;
-  }
- else
-  {
-    sei(); // re activate ISR
-    ComputeSpiBuf();
-  }
+ Report.KeyPlayPause = get_input(KeyPlayPausePin);
+ Report.KeyHome = get_input(KeyHomePin);
+ Report.KeyEnter = get_input(KeyEnterPin);
+ Report.KeyPlus = get_input(KeyPlusPin);
+ Report.KeyMinus = get_input(KeyMinusPin);
 }
-

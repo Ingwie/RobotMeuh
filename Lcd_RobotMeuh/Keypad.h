@@ -15,29 +15,12 @@
 /*    https://www.mediafire.com/file/cahqfrm90h7c7fy/  */
 /*    Setup_OAVRCBuilder3.exe/file (Pswd : OpenAVRc)   */
 
+#ifndef KEYPAD_H_INCLUDED
+#define KEYPAD_H_INCLUDED
 
-#include "spi.h"
+#include "Lcd_RobotMeuh.h"
 
-void InitSpiSlaveMode()
-{
-// Enable SPI as Slave, MSB first, 8Mhz.
- set_output_off(SpiMisoPin);
- SPSR = _BV(SPI2X);
- SPCR = _BV(SPIE) | _BV(SPE);
-}
+void InitKey();
+void UpdateKeys();
 
-ISR(SPI_STC_vect)
-{
- uint8_t data = SPDR;
- SPDR = SpiRet;
- if (data != SPI_EOT)
-  {
-   SpiBuf[SpiBufNum++] = data;
-  }
- else
-  {
-    sei(); // re activate ISR
-    ComputeSpiBuf();
-  }
-}
-
+#endif // KEYPAD_H_INCLUDED

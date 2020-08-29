@@ -41,14 +41,21 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="HD44780.h" />
+		<Unit filename="Keypad.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Keypad.h" />
 		<Unit filename="Lcd_RobotMeuh.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Lcd_RobotMeuh.h" />
-		<Unit filename="pin.h">
-			<Option target="&lt;{~None~}&gt;" />
-		</Unit>
+		<Unit filename="Protocol.h" />
+		<Unit filename="pin.h" />
 		<Unit filename="pin_helper.h" />
+		<Unit filename="spi.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="spi.h" />
 		<Extensions />
 	</Project>
 </CodeBlocks_project_file>

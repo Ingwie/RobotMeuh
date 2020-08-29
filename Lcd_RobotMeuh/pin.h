@@ -35,14 +35,27 @@
 #define LCDPinD5        D,5   // PD5
 #define LCDPinD6        D,6   // PD6
 #define LCDPinD7        D,7   // PD7
+//-----
 
 #define Unused2         B,0   // PB0
 #define Unused3         B,1   // PB1
 
 //-----> SPI Pin
-#define SpiSS           B,2   // PB2
-#define SpiMosi         B,3   // PB3
-#define SpiMiso         B,4   // PB4
-#define SpiSck          B,5   // PB5
+#define SpiSSPin        B,2   // PB2
+#define SpiMosiPin      B,3   // PB3
+#define SpiMisoPin      B,4   // PB4
+#define SpiSckPin       B,5   // PB5
+//-----
+
+//-----> KEYBOARD Pin
+#define KeyPlayPausePin C,0   //PC0
+#define KeyHomePin      C,1   //PC1
+#define KeyEnterPin     C,2   //PC2
+#define KeyPlusPin      C,3   //PC3
+#define KeyMinusPin     C,4   //PC4
+//-----
+
+#define Unused4         C,5   //PC5
+#define Reset           C,6   //PC6
 
 #endif // PIN_H_INCLUDED

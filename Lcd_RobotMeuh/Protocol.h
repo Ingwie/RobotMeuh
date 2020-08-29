@@ -15,29 +15,28 @@
 /*    https://www.mediafire.com/file/cahqfrm90h7c7fy/  */
 /*    Setup_OAVRCBuilder3.exe/file (Pswd : OpenAVRc)   */
 
+#ifndef PROTOCOL_H_INCLUDED
+#define PROTOCOL_H_INCLUDED
 
-#include "spi.h"
+#include "Lcd_RobotMeuh.h"
 
-void InitSpiSlaveMode()
-{
-// Enable SPI as Slave, MSB first, 8Mhz.
- set_output_off(SpiMisoPin);
- SPSR = _BV(SPI2X);
- SPCR = _BV(SPIE) | _BV(SPE);
-}
+PACK(typedef struct {
+  uint8_t KeyPlayPause:1;
+  uint8_t KeyHome:1;
+  uint8_t KeyEnter:1;
+  uint8_t KeyPlus:1;
+  uint8_t KeyMinus:1;
+  uint8_t DetectRain:1;
+  uint8_t DetectUsR:1;
+  uint8_t DetectUsL:1;
+}) DataToSend_t;
 
-ISR(SPI_STC_vect)
-{
- uint8_t data = SPDR;
- SPDR = SpiRet;
- if (data != SPI_EOT)
-  {
-   SpiBuf[SpiBufNum++] = data;
-  }
- else
-  {
-    sei(); // re activate ISR
-    ComputeSpiBuf();
-  }
-}
+PACK(typedef struct {
+  uint8_t IsRunnig:1;
+  uint8_t GoHome:1;
+  uint8_t Direction:1;
+  uint8_t todo:5;
+}) Status_t;
 
+
+#endif // PROTOCOL_H_INCLUDED

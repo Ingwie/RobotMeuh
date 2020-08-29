@@ -17,17 +17,30 @@
 
 #include "Lcd_RobotMeuh.h"
 
+//ROBOTMEUH
+Status_t RobotStatus = {0};
+DataToSend_t Report = {0};
+
+//SPI
 volatile uint8_t SpiRet = 0;
 volatile char SpiBuf[SPI_BUFFER_LENGHT] = {SPI_EOT};
 volatile uint8_t SpiBufNum = 0;
 
-int main(void)
+void ComputeSpiBuf()
 {
+ //todo
+}
 
-    // Insert code
+int main()
+{
+ // Init All
+ InitSpiSlaveMode();
+ LcdInit();
+ InitKey();
+ UpdateKeys();
 
-    while(1)
-    ;
+ while(1)
+  ;
 
-    return 0;
+ return 0;
 }
