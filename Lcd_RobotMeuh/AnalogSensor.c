@@ -15,35 +15,20 @@
 /*    https://www.mediafire.com/file/cahqfrm90h7c7fy/  */
 /*    Setup_OAVRCBuilder3.exe/file (Pswd : OpenAVRc)   */
 
-#include "Lcd_RobotMeuh.h"
 
-//ROBOTMEUH
-Status_t RobotStatus = {0};
-DataToSend_t Report = {0};
+#include "AnalogSensor.h"
 
-//SPI
-volatile uint8_t SpiRet = 0;
-volatile char SpiBuf[SPI_BUFFER_LENGHT] = {SPI_EOT};
-volatile uint8_t SpiBufNum = 0;
-
-void ComputeSpiBuf()
+void adcInit()
 {
- //todo
+ ADMUX = ADC_VREF_TYPE;
+ ADCSRA = _BV(ADEN) | _BV(ADPS2); // ADC enabled, pre-scaler division=16 (no interrupt, no auto-triggering)
+ DIDR0 = 0x3F; // Digital input buffer disabled on unused ana pin.
 }
 
-int main()
+uint16_t getADC(uint8_t input)
 {
- // Init All
- InitSpiSlaveMode();
- adcInit();
- InitKey();
- LcdInit();
-
- //Update Report for keys
- UpdateKeys();
-
- while(1)
-  ;
-
- return 0;
+ ADMUX = input|ADC_VREF_TYPE;
+ ADCSRA |= _BV(ADSC); // Start the AD conversion
+ while bit_is_set(ADCSRA,ADSC); // Wait for the AD conversion to complete
+ return ADC;
 }

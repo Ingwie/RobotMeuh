@@ -35,6 +35,7 @@
 #include "spi.h"
 #include "Protocol.h"
 #include "Keypad.h"
+#include "AnalogSensor.h"
 
 //ROBOTMEUH
 extern Status_t RobotStatus;

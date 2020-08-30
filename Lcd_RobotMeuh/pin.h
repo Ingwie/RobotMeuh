@@ -58,4 +58,10 @@
 #define Unused4         C,5   //PC5
 #define Reset           C,6   //PC6
 
+//-----> ANALOG Pin
+#define RainInput       6
+#define UnusedAna1      7
+#define TemSensor       8
+//-----
+
 #endif // PIN_H_INCLUDED

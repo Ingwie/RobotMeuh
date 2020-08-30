@@ -36,8 +36,8 @@ ISR(SPI_STC_vect)
   }
  else
   {
-    sei(); // re activate ISR
-    ComputeSpiBuf();
+   sei(); // re activate ISR
+   ComputeSpiBuf();
   }
 }
 

@@ -84,27 +84,27 @@ void LcdCmd(unsigned char cmd_data)
 */
 void LcdInit()
 {
- //Init Pin
+//Init Pin
  set_output_off(LCDPinD4);
  set_output_off(LCDPinD5);
  set_output_off(LCDPinD6);
  set_output_off(LCDPinD7);
  set_output_on(LCDPinEnable);
  set_output_off(LCDPinRS);
- //Initialization of HD44780-based LCD (4-bit HW)
+//Initialization of HD44780-based LCD (4-bit HW)
  _delay_us(45);
  LcdCmd(0x33);
  _delay_us(5);
  LcdCmd(0x32);
  _delay_us(170);
- //Function Set 4-bit mode
+//Function Set 4-bit mode
  LcdCmd(0x28);
- //Display On/Off Control
+//Display On/Off Control
  LcdCmd(0x0C);
- //Entry mode set
+//Entry mode set
  LcdCmd(0x06);
  LcdClear();
- //Minimum _delay_us to wait before driving LCD module
+//Minimum _delay_us to wait before driving LCD module
  _delay_us(4);
 }
 
