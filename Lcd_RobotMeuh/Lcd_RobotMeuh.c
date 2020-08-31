@@ -22,28 +22,35 @@ Status_t RobotStatus = {0};
 DataToSend_t Report = {0};
 
 //SPI
-volatile uint8_t SpiRet = 0;
+uint8_t SpiRet = 0;
 volatile char SpiBuf[SPI_BUFFER_LENGHT] = {SPI_EOT};
 volatile uint8_t SpiBufNum = 0;
 
-void ComputeSpiBuf()
+void computeSpiBuf()
 {
- //todo
+//todo
 }
 
 int main()
 {
- // Init All
- InitSpiSlaveMode();
+// Init All
+ initKey();
+ memcpy(&SpiRet, &Report, 1); // Update Spiret
+ initSpiSlaveMode();
  adcInit();
- InitKey();
- LcdInit();
+ lcdInit();
+ initTimer8mS();
 
- //Update Report for keys
- UpdateKeys();
+//Update Report for keys
+ updateKeys();
 
- while(1)
-  ;
+ do
+  {
+   uint8_t toremove = GETRAINSENSORVOLTAGE();
+   lcd_printStringAt(0, 5, "ROBOT MEUH");
+   lcd_printStringAt(1, 8, "START");
+  }
+ while(1);
 
  return 0;
 }

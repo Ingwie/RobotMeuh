@@ -21,7 +21,9 @@
 
 #include "Lcd_RobotMeuh.h"
 
-#define ADC_VREF_TYPE (1 << REFS0) // AVCC with external capacitor at AREF pin
+#define ADC_VREF_TYPE             (1 << REFS0) // AVCC with external capacitor at AREF pin
+
+#define GETRAINSENSORVOLTAGE()    getADC(RainInput)
 
 void adcInit();
 uint16_t getADC(uint8_t input);

@@ -15,22 +15,14 @@
 /*    https://www.mediafire.com/file/cahqfrm90h7c7fy/  */
 /*    Setup_OAVRCBuilder3.exe/file (Pswd : OpenAVRc)   */
 
-#include "Keypad.h"
+#ifndef TIMER8MS_H_INCLUDED
+#define TIMER8MS_H_INCLUDED
 
-void initKey()
-{
- set_input_pullup(KeyPlayPausePin);
- set_input_pullup(KeyHomePin);
- set_input_pullup(KeyEnterPin);
- set_input_pullup(KeyPlusPin);
- set_input_pullup(KeyMinusPin);
-}
+#include "Lcd_RobotMeuh.h"
 
-void updateKeys()
-{
- Report.KeyPlayPause = get_input(KeyPlayPausePin);
- Report.KeyHome = get_input(KeyHomePin);
- Report.KeyEnter = get_input(KeyEnterPin);
- Report.KeyPlus = get_input(KeyPlusPin);
- Report.KeyMinus = get_input(KeyMinusPin);
-}
+#define TIKTIMEOUT 25 // 200mS
+
+void initTimer8mS();
+
+
+#endif // TIMER8MS_H_INCLUDED

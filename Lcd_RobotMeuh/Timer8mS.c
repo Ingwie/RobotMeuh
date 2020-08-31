@@ -15,22 +15,36 @@
 /*    https://www.mediafire.com/file/cahqfrm90h7c7fy/  */
 /*    Setup_OAVRCBuilder3.exe/file (Pswd : OpenAVRc)   */
 
-#include "Keypad.h"
+#include "Timer8mS.h"
 
-void initKey()
+void initTimer8mS()
 {
- set_input_pullup(KeyPlayPausePin);
- set_input_pullup(KeyHomePin);
- set_input_pullup(KeyEnterPin);
- set_input_pullup(KeyPlusPin);
- set_input_pullup(KeyMinusPin);
+// TIMER 0 for interrupt frequency 125 Hz / 8mS:
+ cli(); // stop interrupts
+ TCCR0A = 0; // set entire TCCR0A register to 0
+ TCCR0B = 0; // same for TCCR0B
+ TCNT0  = 0; // initialize counter value to 0
+// set compare match register for 125 Hz increments
+ OCR0A = 124; // = 16000000 / (1024 * 125) - 1 (must be <256)
+// turn on CTC mode
+ TCCR0B |= (1 << WGM01);
+// Set CS02, CS01 and CS00 bits for 1024 prescaler
+ TCCR0B |= (1 << CS02) | (0 << CS01) | (1 << CS00);
+// enable timer compare interrupt
+ TIMSK0 |= (1 << OCIE0A);
+ sei(); // allow interrupts
 }
 
-void updateKeys()
+ISR(TIMER0_COMPA_vect, ISR_NOBLOCK)
 {
- Report.KeyPlayPause = get_input(KeyPlayPausePin);
- Report.KeyHome = get_input(KeyHomePin);
- Report.KeyEnter = get_input(KeyEnterPin);
- Report.KeyPlus = get_input(KeyPlusPin);
- Report.KeyMinus = get_input(KeyMinusPin);
+ static uint8_t tik = 0;
+ if (++tik == TIKTIMEOUT)
+ {
+   tik = 0;
+   //Update Report for keys
+   updateKeys();
+   cli();
+   memcpy(&SpiRet, &Report, 1); // Update Spiret IRQ mode
+   sei();
+ }
 }

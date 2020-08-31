@@ -36,6 +36,7 @@
 #include "Protocol.h"
 #include "Keypad.h"
 #include "AnalogSensor.h"
+#include "Timer8mS.h"
 
 //ROBOTMEUH
 extern Status_t RobotStatus;
@@ -44,11 +45,11 @@ extern DataToSend_t Report;
 // Spi data
 #define SPI_BUFFER_LENGHT        20
 #define SPI_EOT                  '\0'
-extern volatile uint8_t SpiRet;
+extern uint8_t SpiRet;
 extern volatile char SpiBuf[SPI_BUFFER_LENGHT];
 extern volatile uint8_t SpiBufNum;
 
-void ComputeSpiBuf();
+void computeSpiBuf();
 
 
 #endif // __LCD_ROBOTMEUH_H

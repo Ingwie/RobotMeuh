@@ -21,6 +21,6 @@
 
 #include "Lcd_RobotMeuh.h"
 
-void InitSpiSlaveMode();
+void initSpiSlaveMode();
 
 #endif // _SPI_H_INCLUDED

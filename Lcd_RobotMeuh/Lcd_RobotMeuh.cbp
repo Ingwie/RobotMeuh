@@ -54,6 +54,12 @@
 		</Unit>
 		<Unit filename="Lcd_RobotMeuh.h" />
 		<Unit filename="Protocol.h" />
+		<Unit filename="Timer8mS.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Timer8mS.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
 		<Unit filename="pin.h" />
 		<Unit filename="pin_helper.h" />
 		<Unit filename="spi.c">

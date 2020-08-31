@@ -20,7 +20,7 @@
 
 #include "Lcd_RobotMeuh.h"
 
-void InitKey();
-void UpdateKeys();
+void initKey();
+void updateKeys();
 
 #endif // KEYPAD_H_INCLUDED

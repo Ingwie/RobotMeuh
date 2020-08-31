@@ -18,7 +18,7 @@
 
 #include "spi.h"
 
-void InitSpiSlaveMode()
+void initSpiSlaveMode()
 {
 // Enable SPI as Slave, MSB first, 8Mhz.
  set_output_off(SpiMisoPin);
@@ -37,7 +37,7 @@ ISR(SPI_STC_vect)
  else
   {
    sei(); // re activate ISR
-   ComputeSpiBuf();
+   computeSpiBuf();
   }
 }
 

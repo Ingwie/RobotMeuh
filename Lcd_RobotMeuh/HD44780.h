@@ -26,21 +26,22 @@
 #define CGRAM_address_start 0x40
 
 
-void LcdLoadCgram(char tab[], uint8_t charnum);
-void LcdPwrOn();
-void LcdPwrOff();
-void LcdInit();
-void LcdPrintchar(unsigned char ascode);
-void LcdPrintstring(unsigned char *text);
-void LcdCmd(unsigned char data);
-void LcdClear();
-void Lcd2ndRow();
-void LcdHome();
-void LcdLShift();
-void LcdRShift();
-void LcdDispOn();
-void LcdDispOff();
-void LcdLocate(uint8_t row, uint8_t column);
+void lcdLoadCgram(char tab[], uint8_t charnum);
+void lcdPwrOn();
+void lcdPwrOff();
+void lcdInit();
+void lcdPrintchar(char ascode);
+void lcdPrintstring(char *text);
+void lcdCmd(char data);
+void lcdClear();
+void lcd2ndRow();
+void lcdHome();
+void lcdLShift();
+void lcdRShift();
+void lcdDispOn();
+void lcdDispOff();
+void lcdLocate(uint8_t row, uint8_t column);
+void lcd_printStringAt(uint8_t row, uint8_t column, char *text);
 
 #endif /* __HD44780_H */
 
