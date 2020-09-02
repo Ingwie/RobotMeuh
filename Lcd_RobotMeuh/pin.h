@@ -27,7 +27,6 @@
 /* LCDPort must be assigned to the chosen port */
 /* PD4 to PD7 */
 #define LCDPort         PORTD
-#define LCDPin          PIND
 #define LCDPinEnable    D,1   // PD1
 #define LCDPinRS        D,2   // PD2
 #define LCDPinPower     D,3   // PD3

@@ -70,9 +70,10 @@ void lcdEnable()
 void lcdCmd(char cmd_data)
 {
  pin_low(LCDPinRS);
- LCDPin = ((LCDPin & 0x0F) | (cmd_data & 0xF0));
+ uint8_t temp = (LCDPort & 0x0F);
+ LCDPort = (temp | (cmd_data & 0xF0));
  lcdEnable();
- LCDPin = ((LCDPin & 0x0F) | ((cmd_data << 4) & 0xF0));
+ LCDPort = (temp | ((cmd_data << 4) & 0xF0));
  lcdEnable();
  _delay_us(35);
 }
@@ -88,8 +89,8 @@ void lcdInit()
  set_output_off(LCDPinD5);
  set_output_off(LCDPinD6);
  set_output_off(LCDPinD7);
- set_output_on(LCDPinEnable);
  set_output_off(LCDPinRS);
+ set_output_on(LCDPinEnable);
 //Initialization of HD44780-based LCD (4-bit HW)
  _delay_us(45);
  lcdCmd(0x33);
@@ -113,9 +114,10 @@ void lcdInit()
 void lcdPrintchar(char ascode)
 {
  pin_high(LCDPinRS);
- LCDPin = ((LCDPin & 0x0F) | (ascode & 0xF0));
+ uint8_t temp = (LCDPort & 0x0F);
+ LCDPort = (temp | (ascode & 0xF0));
  lcdEnable();
- LCDPin = ((LCDPin & 0x0F) | ((ascode << 4) & 0xF0));
+ LCDPort = (temp | ((ascode << 4) & 0xF0));
  lcdEnable();
  _delay_us(35);
 }
