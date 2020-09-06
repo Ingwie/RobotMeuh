@@ -27,8 +27,8 @@
 
 
 void lcdLoadCgram(char tab[], uint8_t charnum);
-void lcdPwrOn();
-void lcdPwrOff();
+void lcdLedOn();
+void lcdLedOff();
 void lcdInit();
 void lcdPrintchar(char ascode);
 void lcdPrintstring(char *text);

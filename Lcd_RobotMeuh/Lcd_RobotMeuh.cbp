@@ -14,6 +14,8 @@
 				<Option compiler="avr-gcc" />
 				<Compiler>
 					<Add option="-Os" />
+					<Add option="-mrelax" />
+					<Add option="-mstrict-X" />
 				</Compiler>
 			</Target>
 			<Environment>

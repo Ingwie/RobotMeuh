@@ -33,7 +33,7 @@ void lcdLoadCgram(char tab[], uint8_t charnum)
   {
    /* Store values in LCD*/
    lcdPrintchar(tab[index]);
-   _delay_us(35);
+   _delay_us(37);
   }
 }
 
@@ -41,17 +41,17 @@ void lcdLoadCgram(char tab[], uint8_t charnum)
 /**
   Activate Power Pin that supplies LCD module
 */
-void lcdPwrOn()
+void lcdLedOn()
 {
- pin_high(LCDPinPower);
+ pin_high(LCDPinLed);
 }
 
 /**
   Disable Power Pin that supplies LCD module
 */
-void lcdPwrOff()
+void lcdLedOff()
 {
- pin_low(LCDPinPower);
+ pin_low(LCDPinLed);
 }
 
 /**
@@ -60,7 +60,7 @@ void lcdPwrOff()
 void lcdEnable()
 {
  pin_high(LCDPinEnable);
- _delay_us(35);
+ _delay_us(37);
  pin_low(LCDPinEnable);
 }
 
@@ -73,9 +73,9 @@ void lcdCmd(char cmd_data)
  uint8_t temp = (LCDPort & 0x0F);
  LCDPort = (temp | (cmd_data & 0xF0));
  lcdEnable();
- LCDPort = (temp | ((cmd_data << 4) & 0xF0));
+ LCDPort = (temp | (cmd_data << 4));
  lcdEnable();
- _delay_us(35);
+ _delay_us(37);
 }
 
 
@@ -84,17 +84,18 @@ void lcdCmd(char cmd_data)
 */
 void lcdInit()
 {
+//Initialization of HD44780-based LCD (4-bit HW)
+ _delay_ms(45);
 //Init Pin
  set_output_off(LCDPinD4);
  set_output_off(LCDPinD5);
  set_output_off(LCDPinD6);
  set_output_off(LCDPinD7);
  set_output_off(LCDPinRS);
- set_output_on(LCDPinEnable);
-//Initialization of HD44780-based LCD (4-bit HW)
- _delay_us(45);
+ set_output_off(LCDPinEnable);
+ set_output_off(LCDPinLed);
  lcdCmd(0x33);
- _delay_us(5);
+ _delay_ms(6);
  lcdCmd(0x32);
  _delay_us(170);
 //Function Set 4-bit mode
@@ -104,8 +105,8 @@ void lcdInit()
 //Entry mode set
  lcdCmd(0x06);
  lcdClear();
-//Minimum _delay_us to wait before driving LCD module
- _delay_us(4);
+//Minimum delay to wait before driving LCD module
+ _delay_ms(4);
 }
 
 /**
@@ -117,9 +118,9 @@ void lcdPrintchar(char ascode)
  uint8_t temp = (LCDPort & 0x0F);
  LCDPort = (temp | (ascode & 0xF0));
  lcdEnable();
- LCDPort = (temp | ((ascode << 4) & 0xF0));
+ LCDPort = (temp | (ascode << 4));
  lcdEnable();
- _delay_us(35);
+ _delay_us(37);
 }
 
 /**
@@ -131,7 +132,7 @@ void lcdPrintstring(char *text)
   {
    lcdPrintchar(*text++);
   }
- while (*text != '\n');
+ while (*text != 0);
 }
 
 /**
@@ -140,7 +141,7 @@ void lcdPrintstring(char *text)
 void lcdClear()
 {
  lcdCmd(0x01);
- _delay_us(3);
+ _delay_ms(3);
 }
 
 /**

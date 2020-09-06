@@ -34,21 +34,26 @@ void computeSpiBuf()
 int main()
 {
 // Init All
+ lcdInit();
  initKey();
  memcpy(&SpiRet, &Report, 1); // Update Spiret
  initSpiSlaveMode();
  adcInit();
- lcdInit();
  initTimer8mS();
 
 //Update Report for keys
  updateKeys();
 
+ pin_high(LCDPinLed);
+ lcd_printStringAt(1, 4, "ROBOT MEUH");
+ lcd_printStringAt(2, 2, "Connection...");
+
  do
   {
+    //TODO
    uint8_t toremove = GETRAINSENSORVOLTAGE();
-   lcd_printStringAt(0, 5, "ROBOT MEUH");
-   lcd_printStringAt(1, 8, "START");
+   _delay_ms(1000);
+   pin_toggle(LCDPinLed);
   }
  while(1);
 

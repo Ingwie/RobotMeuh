@@ -19,7 +19,8 @@
 #ifndef PIN_H_INCLUDED
 #define PIN_H_INCLUDED
 
-#define Unused1         D,0   // PD0
+#define UnusedT        D,0   // PD0
+#define UnusedX        D,1   // PD1
 
 
 //-----> HD44780 Pin
@@ -27,16 +28,15 @@
 /* LCDPort must be assigned to the chosen port */
 /* PD4 to PD7 */
 #define LCDPort         PORTD
-#define LCDPinEnable    D,1   // PD1
 #define LCDPinRS        D,2   // PD2
-#define LCDPinPower     D,3   // PD3
+#define LCDPinEnable    D,3   // PD3
 #define LCDPinD4        D,4   // PD4
 #define LCDPinD5        D,5   // PD5
 #define LCDPinD6        D,6   // PD6
 #define LCDPinD7        D,7   // PD7
+#define LCDPinLed       B,0   // PB0
 //-----
 
-#define Unused2         B,0   // PB0
 #define Unused3         B,1   // PB1
 
 //-----> SPI Pin
