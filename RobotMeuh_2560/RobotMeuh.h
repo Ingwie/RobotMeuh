@@ -15,47 +15,36 @@
 /*    https://www.mediafire.com/file/cahqfrm90h7c7fy/  */
 /*    Setup_OAVRCBuilder3.exe/file (Pswd : OpenAVRc)   */
 
-#include "Lcd_RobotMeuh.h"
+
+#ifndef __ROBOTMEUH_H_INCLUDED
+#define __ROBOTMEUH_H_INCLUDED
+
+#ifndef PACK
+ #define PACK( __Declaration__ ) __Declaration__ __attribute__((__packed__))
+#endif
+
+#include <avr/io.h>
+#include <avr/interrupt.h>
+#include <inttypes.h>
+#include <string.h>
+#include <util/delay.h>
+
+#include "pin_helper.h"
+#include "pin.h"
+#include "spi.h"
+#include "Protocol.h"
+#include "AnalogSensor.h"
+#include "lib/simplePID.h"
 
 //ROBOTMEUH
-Status_t RobotStatus = {0};
-DataToSend_t Report = {0};
+extern Status_t RobotStatus;
+extern DataLcdToMain_t Report;
 
-//SPI
-uint8_t SpiRet = 0;
-volatile char SpiBuf[SPI_BUFFER_LENGHT] = {SPI_EOT};
-volatile uint8_t SpiBufNum = 0;
+// Spi data
+#define SPI_BUFFER_LENGHT        20
+#define SPI_EOT                  '\n'
+extern uint8_t SpiRet;
+extern volatile char SpiBuf[SPI_BUFFER_LENGHT];
+extern volatile uint8_t SpiBufNum;
 
-void computeSpiBuf()
-{
-//todo
-}
-
-int main()
-{
-// Init All
- lcdInit();
- initKey();
- memcpy(&SpiRet, &Report, 1); // Update Spiret
- initSpiSlaveMode();
- adcInit();
- initTimer8mS();
-
-//Update Report for keys
- updateKeys();
-
- pin_high(LCDPinLed);
- lcd_printStringAt(1, 4, "ROBOT MEUH");
- lcd_printStringAt(2, 2, "Connection...");
-
- do
-  {
-    //TODO
-   uint8_t toremove = GETRAINSENSORVOLTAGE();
-   _delay_ms(1000);
-   pin_toggle(LCDPinLed);
-  }
- while(1);
-
- return 0;
-}
+#endif // __ROBOTMEUH_H

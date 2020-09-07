@@ -2,31 +2,34 @@
 <CodeBlocks_project_file>
 	<FileVersion major="1" minor="6" />
 	<Project>
-		<Option title="Robotmeuh" />
+		<Option title="Lcd_RobotMeuh" />
 		<Option pch_mode="2" />
 		<Option compiler="avr-gcc" />
 		<Build>
 			<Target title="Release">
-				<Option output="bin/Robotmeuh.elf" prefix_auto="1" extension_auto="0" />
+				<Option output="bin/Lcd_RobotMeuh.elf" prefix_auto="1" extension_auto="0" />
 				<Option working_dir="" />
 				<Option object_output="obj/" />
 				<Option type="5" />
 				<Option compiler="avr-gcc" />
 				<Compiler>
 					<Add option="-Os" />
+					<Add option="-mrelax" />
+					<Add option="-mstrict-X" />
 				</Compiler>
 			</Target>
 			<Environment>
-				<Variable name="MCU" value="atmega2560" />
+				<Variable name="MCU" value="atmega328p" />
 			</Environment>
 		</Build>
 		<Compiler>
 			<Add option="-Wall" />
-			<Add option="-mmcu=atmega2560" />
+			<Add option="-mmcu=atmega328p" />
 			<Add option="-DF_CPU=16000000UL" />
+			<Add option="-DLCD_ROBOMEUH=YES" />
 		</Compiler>
 		<Linker>
-			<Add option="-mmcu=atmega2560" />
+			<Add option="-mmcu=atmega328p" />
 			<Add option="-Wl,-Map=$(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).map,--cref" />
 		</Linker>
 		<ExtraCommands>
@@ -37,12 +40,35 @@
 			<Add after="avr-objcopy --no-change-warnings -j .signature --change-section-lma .signature=0 -O ihex $(TARGET_OUTPUT_FILE) $(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).sig" />
 			<Add after="avr-objdump -Pmem-usage $(TARGET_OUTPUT_FILE) $(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).elf" />
 		</ExtraCommands>
-		<Unit filename="RobotMeuh.c">
+		<Unit filename="../RobotMeuh_2560/Protocol.h" />
+		<Unit filename="AnalogSensor.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="AnalogSensor.h" />
+		<Unit filename="HD44780.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="HD44780.h" />
+		<Unit filename="Keypad.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Keypad.h" />
+		<Unit filename="Lcd_RobotMeuh.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Lcd_RobotMeuh.h" />
+		<Unit filename="Timer8mS.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Timer8mS.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="pin.h" />
 		<Unit filename="pin_helper.h" />
-		<Extensions>
-			<lib_finder disable_auto="1" />
-		</Extensions>
+		<Unit filename="spi.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="spi.h" />
+		<Extensions />
 	</Project>
 </CodeBlocks_project_file>

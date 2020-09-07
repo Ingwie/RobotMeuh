@@ -84,16 +84,17 @@ void lcdCmd(char cmd_data)
 */
 void lcdInit()
 {
-//Initialization of HD44780-based LCD (4-bit HW)
- _delay_ms(45);
 //Init Pin
  set_output_off(LCDPinD4);
  set_output_off(LCDPinD5);
  set_output_off(LCDPinD6);
  set_output_off(LCDPinD7);
  set_output_off(LCDPinRS);
- set_output_off(LCDPinEnable);
+ set_output_on(LCDPinEnable);
  set_output_off(LCDPinLed);
+
+//Initialization of HD44780-based LCD (4-bit HW)
+ _delay_ms(45);
  lcdCmd(0x33);
  _delay_ms(6);
  lcdCmd(0x32);
@@ -132,7 +133,7 @@ void lcdPrintstring(char *text)
   {
    lcdPrintchar(*text++);
   }
- while (*text != 0);
+ while (*text != '\0');
 }
 
 /**

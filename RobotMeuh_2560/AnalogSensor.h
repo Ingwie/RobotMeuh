@@ -15,43 +15,15 @@
 /*    https://www.mediafire.com/file/cahqfrm90h7c7fy/  */
 /*    Setup_OAVRCBuilder3.exe/file (Pswd : OpenAVRc)   */
 
-#ifndef PROTOCOL_H_INCLUDED
-#define PROTOCOL_H_INCLUDED
 
-#include "Lcd_RobotMeuh.h"
+#ifndef ANALOGSENSOR_H_INCLUDED
+#define ANALOGSENSOR_H_INCLUDED
 
-PACK(typedef struct
-{
- uint8_t KeyPlayPause:1;
- uint8_t KeyHome:1;
- uint8_t KeyEnter:1;
- uint8_t KeyPlus:1;
- uint8_t KeyMinus:1;
- uint8_t DetectRain:1;
- uint8_t DetectUsR:1;
- uint8_t DetectUsL:1;
-}) DataToSend_t;
+#include "RobotMeuh.h"
 
-PACK(typedef struct
-{
- uint8_t IsRunnig:1;
- uint8_t GoHome:1;
- uint8_t Direction:1;
- uint8_t Unused:1;
- uint8_t RequestAction:4;
-}) Status_t;
+#define ADC_VREF_TYPE             (1 << REFS0) // AVCC with external capacitor at AREF pin
 
-#define ISRUNNIG(x)        (x & 0x80)
-#define GOHOME(x)          (x & 0x40)
-#define RUNFORWARD(x)      (x & 0x20)
-#define ISUNUSED(x)        (x & 0x10)
+void adcInit();
+uint16_t getADC(uint8_t input);
 
-enum actions   // 16 actions
-{
- none = 0, // just return Report
- printString,
- rainTriggerValue,
-
-};
-
-#endif // PROTOCOL_H_INCLUDED
+#endif // ANALOGSENSOR_H_INCLUDED

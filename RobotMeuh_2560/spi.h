@@ -16,15 +16,12 @@
 /*    Setup_OAVRCBuilder3.exe/file (Pswd : OpenAVRc)   */
 
 
-#include <avr/io.h>
+#ifndef _SPI_H_INCLUDED
+#define _SPI_H_INCLUDED
 
-int main(void)
-{
+#include "RobotMeuh.h"
 
-    // Insert code
+void initSpiMasterMode();
+uint8_t master_spi_xfer(uint8_t value);
 
-    while(1)
-    ;
-
-    return 0;
-}
+#endif // _SPI_H_INCLUDED

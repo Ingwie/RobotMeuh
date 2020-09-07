@@ -16,40 +16,26 @@
 /*    Setup_OAVRCBuilder3.exe/file (Pswd : OpenAVRc)   */
 
 
-#ifndef __LCD_ROBOTMEUH_H_INCLUDED
-#define __LCD_ROBOTMEUH_H_INCLUDED
-
-#ifndef PACK
- #define PACK( __Declaration__ ) __Declaration__ __attribute__((__packed__))
-#endif
-
-#include <avr/io.h>
-#include <avr/interrupt.h>
-#include <inttypes.h>
-#include <string.h>
-#include <util/delay.h>
-
-#include "pin_helper.h"
-#include "pin.h"
-#include "HD44780.h"
 #include "spi.h"
-#include "Protocol.h"
-#include "Keypad.h"
-#include "AnalogSensor.h"
-#include "Timer8mS.h"
 
-//ROBOTMEUH
-extern Status_t RobotStatus;
-extern DataToSend_t Report;
+void initSpiMasterMode()
+{
+// Enable SPI as Mester, MSB first, 8Mhz.
+ //set_input(SpiMisoPin);
+ set_output_on(SpiSSPin);
+ set_output_off(SpiMosiPin);
+ set_output_off(SpiSckPin);
+ SPSR = _BV(SPI2X);
+ SPCR = _BV(MSTR) | _BV(SPE);
+}
 
-// Spi data
-#define SPI_BUFFER_LENGHT        20
-#define SPI_EOT                  '\0'
-extern uint8_t SpiRet;
-extern volatile char SpiBuf[SPI_BUFFER_LENGHT];
-extern volatile uint8_t SpiBufNum;
-
-void computeSpiBuf();
-
-
-#endif // __LCD_ROBOTMEUH_H
+uint8_t master_spi_xfer(uint8_t value)
+{
+  // Full Duplex (4 wire) spi
+  pin_low(SpiSSPin);
+  SPDR = value;
+  /* Wait for transfer to complete */
+  while (!(SPSR & (1<<SPIF)));
+  pin_high(SpiSSPin);
+  return SPDR;
+}
