@@ -26,19 +26,21 @@
 typedef int8_t  iq8_t;	 //convenient type for IQ8 fractional representation
 #define FLOAT_TO_Q8(x)  (iq8_t)(x * (float)(1 << 7))
 
-typedef struct {
-	iq8_t xn[4];
-	iq8_t bn[3];
-	iq8_t yn[4];
-	uint8_t next_xn;
-	uint8_t next_yn;
-}PidController;
+typedef struct
+{
+ iq8_t xn[4];
+ iq8_t bn[3];
+ iq8_t yn[4];
+ uint8_t next_xn;
+ uint8_t next_yn;
+} PidController;
 
-typedef struct {
-	iq8_t new_kp;
-	iq8_t new_ki;
-	iq8_t new_kd;
-}PidNewCoefficients;
+typedef struct
+{
+ iq8_t new_kp;
+ iq8_t new_ki;
+ iq8_t new_kd;
+} PidNewCoefficients;
 
 /**
  *	@brief initializes a pid controller block

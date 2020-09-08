@@ -19,9 +19,9 @@
 #define PROTOCOL_H_INCLUDED
 
 #if defined(LCD_ROBOMEUH)
-#include "../Lcd_RobotMeuh_328p/Lcd_RobotMeuh.h"
+ #include "../Lcd_RobotMeuh_328p/Lcd_RobotMeuh.h"
 #else
-#include "RobotMeuh.h"
+ #include "RobotMeuh.h"
 #endif
 
 PACK(typedef struct

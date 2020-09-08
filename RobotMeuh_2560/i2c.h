@@ -16,19 +16,30 @@
 /*    Setup_OAVRCBuilder3.exe/file (Pswd : OpenAVRc)   */
 
 
-#include "AnalogSensor.h"
 
-void adcInit()
-{
- ADMUX = ADC_VREF_TYPE;
- ADCSRA = _BV(ADEN) | _BV(ADPS2); // ADC enabled, pre-scaler division=16 (no interrupt, no auto-triggering)
-//DIDR0 = 0x3F; // Digital input buffer disabled on unused ana pin.
-}
+#ifndef I2C_H_INCLUDED
+#define I2C_H_INCLUDED
 
-uint16_t getADC(uint8_t input)
-{
- ADMUX = input|ADC_VREF_TYPE;
- ADCSRA |= _BV(ADSC); // Start the AD conversion
- while bit_is_set(ADCSRA,ADSC); // Wait for the AD conversion to complete
- return ADC;
-}
+#include "RobotMeuh.h"
+
+#define I2C_READ          0x01
+#define I2C_WRITE         0x00
+
+#define I2C_SPEED_100K()  { TWBR = (uint8_t) 72;}
+#define I2C_SPEED_400K()  { TWBR = (uint8_t) 12;}
+#define I2C_SPEED_888K()  { TWBR = (uint8_t) 1; }
+#define I2C_SPEED_1M()    { TWBR = (uint8_t) 0; }
+
+void i2c_init(void);
+uint8_t i2c_start(uint8_t address);
+uint8_t i2c_write(uint8_t data);
+void i2c_writeAndActiveISR(uint8_t data);
+uint8_t i2c_read_ack(void);
+uint8_t i2c_read_nack(void);
+uint8_t i2c_transmit(uint8_t address, uint8_t* data, uint16_t length);
+uint8_t i2c_receive(uint8_t address, uint8_t* data, uint16_t length);
+uint8_t i2c_writeReg(uint8_t devaddr, uint8_t regaddr, uint8_t* data, uint16_t length);
+uint8_t i2c_readReg(uint8_t devaddr, uint8_t regaddr, uint8_t* data, uint16_t length);
+void i2c_stop(void);
+
+#endif // I2C_H_INCLUDED

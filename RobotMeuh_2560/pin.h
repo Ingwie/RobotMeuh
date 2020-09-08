@@ -20,10 +20,15 @@
 #define PIN_H_INCLUDED
 
 //-----> SPI Pin
-#define SpiSSPin        B,2   // PB2
-#define SpiMosiPin      B,3   // PB3
-#define SpiMisoPin      B,4   // PB4
-#define SpiSckPin       B,5   // PB5
+#define SpiLcdSSPin     B,0
+#define SpiSckPin       B,1
+#define SpiMosiPin      B,2
+#define SpiMisoPin      B,3
+//-----
+
+//-----> I2C Pin
+#define I2cSclPin       D,0
+#define I2cSdaPin       D,1
 //-----
 
 

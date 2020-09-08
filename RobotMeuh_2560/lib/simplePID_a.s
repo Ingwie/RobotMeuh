@@ -15,7 +15,7 @@
 /*    https://www.mediafire.com/file/cahqfrm90h7c7fy/  */
 /*    Setup_OAVRCBuilder3.exe/file (Pswd : OpenAVRc)   */
 
-; LIB FROM https://github.com/uLipe/AvrSimplePID
+/* LIB. FROM https://github.com/uLipe/AvrSimplePID */
 
 
 				.global  PidControllerUpdate

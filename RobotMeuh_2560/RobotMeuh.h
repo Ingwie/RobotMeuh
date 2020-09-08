@@ -28,10 +28,14 @@
 #include <inttypes.h>
 #include <string.h>
 #include <util/delay.h>
+#include <time.h>
 
 #include "pin_helper.h"
 #include "pin.h"
+#include "utils.h"
+#include "rtc.h"
 #include "spi.h"
+#include "i2c.h"
 #include "Protocol.h"
 #include "AnalogSensor.h"
 #include "lib/simplePID.h"
@@ -46,5 +50,9 @@ extern DataLcdToMain_t Report;
 extern uint8_t SpiRet;
 extern volatile char SpiBuf[SPI_BUFFER_LENGHT];
 extern volatile uint8_t SpiBufNum;
+
+//TIME
+extern time_t rtcTime;
+
 
 #endif // __ROBOTMEUH_H

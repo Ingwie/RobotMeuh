@@ -16,19 +16,13 @@
 /*    Setup_OAVRCBuilder3.exe/file (Pswd : OpenAVRc)   */
 
 
-#include "AnalogSensor.h"
+#ifndef UTILS_H_INCLUDED
+#define UTILS_H_INCLUDED
 
-void adcInit()
-{
- ADMUX = ADC_VREF_TYPE;
- ADCSRA = _BV(ADEN) | _BV(ADPS2); // ADC enabled, pre-scaler division=16 (no interrupt, no auto-triggering)
-//DIDR0 = 0x3F; // Digital input buffer disabled on unused ana pin.
-}
+#include "RobotMeuh.h"
 
-uint16_t getADC(uint8_t input)
-{
- ADMUX = input|ADC_VREF_TYPE;
- ADCSRA |= _BV(ADSC); // Start the AD conversion
- while bit_is_set(ADCSRA,ADSC); // Wait for the AD conversion to complete
- return ADC;
-}
+// BCD convertions
+uint8_t bin2bcd(int8_t bin);
+int8_t bcd2bin(uint8_t bcd);
+
+#endif // UTILS_H_INCLUDED

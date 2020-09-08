@@ -27,13 +27,17 @@ uint8_t SpiRet = 0;
 volatile char SpiBuf[SPI_BUFFER_LENGHT] = {SPI_EOT};
 volatile uint8_t SpiBufNum = 0;
 
+//TIME
+time_t rtcTime;
+
+
 int main(void)
 {
 
-    // Insert code
+ // Insert code
 
-    while(1)
-    ;
+ while(1)
+  ;
 
-    return 0;
+ return 0;
 }
