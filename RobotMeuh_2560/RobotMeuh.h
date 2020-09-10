@@ -33,10 +33,11 @@
 #include "pin_helper.h"
 #include "pin.h"
 #include "utils.h"
+#include "Protocol.h"
 #include "rtc.h"
 #include "spi.h"
 #include "i2c.h"
-#include "Protocol.h"
+#include "gy85.h"
 #include "AnalogSensor.h"
 #include "lib/simplePID.h"
 

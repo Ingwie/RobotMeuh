@@ -31,7 +31,7 @@ void lcdLedOn();
 void lcdLedOff();
 void lcdInit();
 void lcdPrintchar(char ascode);
-void lcdPrintstring(char *text);
+void lcdPrintstring(const char *text);
 void lcdCmd(char data);
 void lcdClear();
 void lcd2ndRow();
@@ -41,7 +41,7 @@ void lcdRShift();
 void lcdDispOn();
 void lcdDispOff();
 void lcdLocate(uint8_t row, uint8_t column);
-void lcd_printStringAt(uint8_t row, uint8_t column, char *text);
+void lcd_printStringAt(uint8_t row, uint8_t column, const char *text);
 
 #endif /* __HD44780_H */
 

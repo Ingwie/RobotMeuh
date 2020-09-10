@@ -127,7 +127,7 @@ void lcdPrintchar(char ascode)
 /**
   Display of a characters string
 */
-void lcdPrintstring(char *text)
+void lcdPrintstring(const char *text)
 {
  do
   {
@@ -218,7 +218,7 @@ void lcdLocate(uint8_t row, uint8_t column)
   }
 }
 
-void lcd_printStringAt(uint8_t row, uint8_t column, char *text)
+void lcd_printStringAt(uint8_t row, uint8_t column, const char *text)
 {
 	lcdLocate(row,column);
 	lcdPrintstring(text);

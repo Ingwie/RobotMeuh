@@ -1,0 +1,102 @@
+# depslib dependency file v1.0
+1599600494 source:a:\robotmeuh\robotmeuh_2560\analogsensor.c
+	"AnalogSensor.h"
+
+1599425782 a:\robotmeuh\robotmeuh_2560\analogsensor.h
+	"RobotMeuh.h"
+
+1599600328 a:\robotmeuh\robotmeuh_2560\robotmeuh.h
+	<avr/io.h>
+	<avr/interrupt.h>
+	<inttypes.h>
+	<string.h>
+	<util/delay.h>
+	<time.h>
+	"pin_helper.h"
+	"pin.h"
+	"utils.h"
+	"rtc.h"
+	"spi.h"
+	"i2c.h"
+	"Protocol.h"
+	"AnalogSensor.h"
+	"lib/simplePID.h"
+
+1598738048 a:\robotmeuh\robotmeuh_2560\pin_helper.h
+
+1599601588 a:\robotmeuh\robotmeuh_2560\pin.h
+
+1599599572 a:\robotmeuh\robotmeuh_2560\utils.h
+	"RobotMeuh.h"
+
+1599600116 a:\robotmeuh\robotmeuh_2560\rtc.h
+	"RobotMeuh.h"
+
+1599593974 a:\robotmeuh\robotmeuh_2560\spi.h
+	"RobotMeuh.h"
+
+1599688486 a:\robotmeuh\robotmeuh_2560\i2c.h
+	"RobotMeuh.h"
+
+1599600494 a:\robotmeuh\robotmeuh_2560\protocol.h
+	"../Lcd_RobotMeuh_328p/Lcd_RobotMeuh.h"
+	"RobotMeuh.h"
+
+1599513758 a:\robotmeuh\lcd_robotmeuh_328p\lcd_robotmeuh.h
+	<avr/io.h>
+	<avr/interrupt.h>
+	<inttypes.h>
+	<string.h>
+	<util/delay.h>
+	"pin_helper.h"
+	"pin.h"
+	"HD44780.h"
+	"spi.h"
+	"../RobotMeuh_2560/Protocol.h"
+	"Keypad.h"
+	"AnalogSensor.h"
+	"Timer8mS.h"
+
+1598738048 a:\robotmeuh\lcd_robotmeuh_328p\pin_helper.h
+
+1599422866 a:\robotmeuh\lcd_robotmeuh_328p\pin.h
+
+1599422866 a:\robotmeuh\lcd_robotmeuh_328p\hd44780.h
+	"Lcd_RobotMeuh.h"
+
+1598904260 a:\robotmeuh\lcd_robotmeuh_328p\spi.h
+	"Lcd_RobotMeuh.h"
+
+1598904260 a:\robotmeuh\lcd_robotmeuh_328p\keypad.h
+	"Lcd_RobotMeuh.h"
+
+1598898312 a:\robotmeuh\lcd_robotmeuh_328p\analogsensor.h
+	"Lcd_RobotMeuh.h"
+
+1598908056 a:\robotmeuh\lcd_robotmeuh_328p\timer8ms.h
+	"Lcd_RobotMeuh.h"
+
+1599600494 a:\robotmeuh\robotmeuh_2560\lib\simplepid.h
+	<stdint.h>
+
+1599688486 source:a:\robotmeuh\robotmeuh_2560\i2c.c
+	"i2c.h"
+	<util/twi.h>
+
+1599600494 source:a:\robotmeuh\robotmeuh_2560\lib\simplepid.c
+	"simplePID.h"
+
+1599600548 source:a:\robotmeuh\robotmeuh_2560\lib\simplepid_a.s
+
+1599600494 source:a:\robotmeuh\robotmeuh_2560\robotmeuh.c
+	"RobotMeuh.h"
+
+1599600494 source:a:\robotmeuh\robotmeuh_2560\rtc.c
+	"rtc.h"
+
+1599600494 source:a:\robotmeuh\robotmeuh_2560\spi.c
+	"spi.h"
+
+1599600494 source:a:\robotmeuh\robotmeuh_2560\utils.c
+	"utils.h"
+

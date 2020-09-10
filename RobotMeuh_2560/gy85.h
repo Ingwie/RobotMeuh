@@ -16,31 +16,51 @@
 /*    Setup_OAVRCBuilder3.exe/file (Pswd : OpenAVRc)   */
 
 
-
-#ifndef I2C_H_INCLUDED
-#define I2C_H_INCLUDED
+#ifndef GY85_H_INCLUDED
+#define GY85_H_INCLUDED
 
 #include "RobotMeuh.h"
 
-#define I2C_READ          0x01
-#define I2C_WRITE         0x00
+/*
+ITG3205  - 0x69 — Three axis gyroscope
+ADXL345 -  0x53 — Three axis acceleration
+HMC5883L - 0x1E — Three axis magnetic field
+*/
 
-#define I2C_SPEED_100K()  { TWBR = (uint8_t) 72;}
-#define I2C_SPEED_400K()  { TWBR = (uint8_t) 12;}
-#define I2C_SPEED_888K()  { TWBR = (uint8_t) 1; }
-#define I2C_SPEED_1M()    { TWBR = (uint8_t) 0; }
+PACK(union gyro_t
+{
+ struct {
+  int8_t xh;
+  int8_t xl;
+  int8_t yh;
+  int8_t yl;
+  int8_t zh;
+  int8_t zl;
+ } gbyte_t;
+ struct {
+  int16_t x;
+  int16_t y;
+  int16_t z;
+ } gword_t;
+});
 
-void i2c_init(void);
-uint8_t i2c_start(uint8_t address);
-uint8_t i2c_write(uint8_t data);
-void i2c_writeAndActiveISR(uint8_t data);
-uint8_t i2c_read_ack(void);
-uint8_t i2c_read_nack(void);
-uint8_t i2c_transmit(uint8_t address, uint8_t* data, uint16_t length);
-uint8_t i2c_receive(uint8_t address, uint8_t* data, uint16_t length);
-uint8_t i2c_writeReg(uint8_t devaddr, uint8_t regaddr, uint8_t* data, uint16_t length);
-uint8_t i2c_writeRegByte(uint8_t devaddr, uint8_t regaddr, uint8_t data);
-uint8_t i2c_readReg(uint8_t devaddr, uint8_t regaddr, uint8_t* data, uint16_t length);
-void i2c_stop(void);
+extern gyro_t gyro;
 
-#endif // I2C_H_INCLUDED
+PACK(union gyroTemp_t
+{
+ struct {
+  int8_t h;
+  int8_t l;
+ } gbyte_t;
+ struct {
+  int16_t value;
+ } gword_t;
+});
+
+extern gyroTemp_t gyroTemp;
+
+void initGyro();
+uint8_t readGyro(); // return 0 on success
+uint8_t readGyroTemp(); // return 0 on success
+
+#endif // GY85_H_INCLUDED

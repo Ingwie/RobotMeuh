@@ -37,18 +37,14 @@
 			<Add after="avr-objcopy --no-change-warnings -j .signature --change-section-lma .signature=0 -O ihex $(TARGET_OUTPUT_FILE) $(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).sig" />
 			<Add after="avr-objdump -Pmem-usage $(TARGET_OUTPUT_FILE) $(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).elf" />
 		</ExtraCommands>
-		<Unit filename="AnalogSensor.c">
-			<Option compilerVar="CC" />
-		</Unit>
+		<Unit filename="AnalogSensor.cpp" />
 		<Unit filename="AnalogSensor.h" />
 		<Unit filename="Protocol.h" />
-		<Unit filename="RobotMeuh.c">
-			<Option compilerVar="CC" />
-		</Unit>
+		<Unit filename="RobotMeuh.cpp" />
 		<Unit filename="RobotMeuh.h" />
-		<Unit filename="i2c.c">
-			<Option compilerVar="CC" />
-		</Unit>
+		<Unit filename="gy85.cpp" />
+		<Unit filename="gy85.h" />
+		<Unit filename="i2c.cpp" />
 		<Unit filename="i2c.h" />
 		<Unit filename="lib/simplePID.c">
 			<Option compilerVar="CC" />
@@ -57,19 +53,11 @@
 		<Unit filename="lib/simplePID_a.s" />
 		<Unit filename="pin.h" />
 		<Unit filename="pin_helper.h" />
-		<Unit filename="rtc.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="rtc.h">
-			<Option target="&lt;{~None~}&gt;" />
-		</Unit>
-		<Unit filename="spi.c">
-			<Option compilerVar="CC" />
-		</Unit>
+		<Unit filename="rtc.cpp" />
+		<Unit filename="rtc.h" />
+		<Unit filename="spi.cpp" />
 		<Unit filename="spi.h" />
-		<Unit filename="utils.c">
-			<Option compilerVar="CC" />
-		</Unit>
+		<Unit filename="utils.cpp" />
 		<Unit filename="utils.h" />
 		<Extensions>
 			<lib_finder disable_auto="1" />
