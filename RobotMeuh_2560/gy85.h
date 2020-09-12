@@ -26,41 +26,33 @@ ITG3205  - 0x69 — Three axis gyroscope
 ADXL345 -  0x53 — Three axis acceleration
 HMC5883L - 0x1E — Three axis magnetic field
 */
+#define I2C_SPEED_GIRO()   I2C_SPEED_400K() // TODO : Test faster
+#define I2C_SPEED_ACC()    I2C_SPEED_400K() // TODO : Test faster
+#define I2C_SPEED_MAG()    I2C_SPEED_400K() // TODO : Test faster
 
-PACK(union gyro_t
+
+struct imu_t
 {
- struct {
-  int8_t xh;
-  int8_t xl;
-  int8_t yh;
-  int8_t yl;
-  int8_t zh;
-  int8_t zl;
- } gbyte_t;
- struct {
-  int16_t x;
-  int16_t y;
-  int16_t z;
- } gword_t;
-});
+ int16_t x;
+ int16_t y;
+ int16_t z;
+};
 
-extern gyro_t gyro;
+extern imu_t gyro;
+extern imu_t acc;
+extern imu_t mag;
 
-PACK(union gyroTemp_t
-{
- struct {
-  int8_t h;
-  int8_t l;
- } gbyte_t;
- struct {
-  int16_t value;
- } gword_t;
-});
 
-extern gyroTemp_t gyroTemp;
+extern int16_t gyroTemp;
 
 void initGyro();
 uint8_t readGyro(); // return 0 on success
 uint8_t readGyroTemp(); // return 0 on success
+
+void initAcc();
+uint8_t readAcc(); // return 0 on success
+
+void initMag();
+uint8_t readMag(); // return 0 on success
 
 #endif // GY85_H_INCLUDED

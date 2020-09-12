@@ -44,23 +44,121 @@
 // Register 0x3E – Power Management
 #define CLK_SEL          0x03 // PLL with Z Gyro reference
 
-gyro_t gyro;
-gyroTemp_t gyroTemp;
+#define GYROPREC         10 // precision
+imu_t gyro;
+int16_t gyroTemp;
 
 void initGyro()
 {
- I2C_SPEED_400K(); // TODO : Test faster
+ I2C_SPEED_GIRO();
  i2c_writeRegByte(GYRO_ADRESS, 0x15, SMPLRT_DIV); // Sample Rate Divider
  i2c_writeRegByte(GYRO_ADRESS, 0x16, DLPF); // low pass filter
  i2c_writeRegByte(GYRO_ADRESS, 0x3E, CLK_SEL); // frequency source
 }
 
+uint16_t convertGyro(int16_t value)
+{
+return ((int32_t) (((value<<3) * GYROPREC) / 115)); // == * GYROPREC)/14.375
+}
+
 uint8_t readGyro() // return 0 on success
 {
-  return i2c_readReg(GYRO_ADRESS, GYRO_XOUT_H, (uint8_t*)&gyro, 6); // todo div 14.375 (115/8)
+ I2C_SPEED_GIRO();
+ uint8_t ret = i2c_readReg(GYRO_ADRESS, GYRO_XOUT_H, (uint8_t*)&gyro, 6);
+ gyro.x = convertGyro(gyro.x);
+ gyro.y = convertGyro(gyro.y);
+ gyro.z = convertGyro(gyro.z);
+ return ret;
 }
 
 uint8_t readGyroTemp() // return 0 on success
 {
-  return i2c_readReg(GYRO_ADRESS, TEMP_OUT_H, (uint8_t*)&gyroTemp, 2); // 35 + (gyroTemp.value + 13200)) / 280;
+ I2C_SPEED_GIRO();
+ uint8_t ret = i2c_readReg(GYRO_ADRESS, TEMP_OUT_H, (uint8_t*)&gyroTemp, 2);
+ gyroTemp = ((int32_t) 35 + (gyroTemp + 13200) / 280);
+ return ret;
+}
+
+
+// ADXL345 code --------------------------------------------------
+
+#define ACC_ADRESS      0x53
+
+//Register 0x2C—BW_RATE
+#define BW_RATE         0x2C
+/*
+Output Data
+Rate (Hz) Bandwidth (Hz) Rate Code
+400         200            1100
+200         100            1011
+100         50             1010
+50          25             1001
+25          12.5           1000
+12.5        6.25           0111
+*/
+#define RATE            0x09
+
+//Register 0x2D—POWER_CTL
+#define POWER_CTL       0x2D
+#define ACCMeasure      _BV(3)
+
+//Register 0x31—DATA_FORMAT
+#define DATA_FORMAT     0x31
+#define FULL_RES        _BV(3)
+#define SET16G          0x03
+
+// Data
+#define DATAX0          0x32
+
+imu_t acc;
+
+void initAcc()
+{
+  I2C_SPEED_ACC();
+  i2c_writeRegByte(ACC_ADRESS, BW_RATE, RATE);
+  i2c_writeRegByte(ACC_ADRESS, POWER_CTL, ACCMeasure);
+  i2c_writeRegByte(ACC_ADRESS, DATA_FORMAT, FULL_RES | SET16G);
+}
+
+uint8_t readAcc() // return 0 on success
+{
+ I2C_SPEED_ACC();
+ uint8_t ret = i2c_readReg(ACC_ADRESS, DATAX0, (uint8_t*)&acc, 6);
+ return ret;
+}
+
+
+// HMC5883L code --------------------------------------------------
+
+#define MAG_ADRESS      0x1E
+
+//Configuration Register A
+#define REGCONA         0x00
+#define MA              (0x2 << 5) // Num sample (8)
+#define DO              (0x4 << 2) // Output rate (15hz)
+
+//Configuration Register B
+#define REGCONB         0x01
+#define GN              (0x0 << 5) // Gain (0.88 Ga)
+//Mode Register
+#define REGMODE         0x02
+#define HS              _BV(7) // Hight speed I2C ?? To test
+
+#define XMSBRegister    0x03
+
+imu_t mag;
+
+void initMag()
+{
+  I2C_SPEED_MAG();
+  i2c_writeRegByte(MAG_ADRESS, REGCONA, MA | DO);
+  i2c_writeRegByte(MAG_ADRESS, REGCONA, GN);
+  i2c_writeRegByte(MAG_ADRESS, REGMODE, 0x00 /* | HS*/);
+}
+
+uint8_t readMag() // return 0 on success
+{
+ I2C_SPEED_MAG();
+ uint8_t ret = i2c_readReg(MAG_ADRESS, XMSBRegister, (uint8_t*)&mag, 6);
+ return ret;
 }
