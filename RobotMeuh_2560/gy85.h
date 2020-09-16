@@ -30,6 +30,9 @@ HMC5883L - 0x1E — Three axis magnetic field
 #define I2C_SPEED_ACC()    I2C_SPEED_400K() // TODO : Test faster
 #define I2C_SPEED_MAG()    I2C_SPEED_400K() // TODO : Test faster
 
+#define GYRO_RATE_XYZ      0.06956521739130434782608695652174f
+#define ACC_RATE_XYZ       0.0039f
+#define MAG_RATE_XYZ       0,073f // uT/Lsb || mG/(10*Lsb)
 
 struct imu_t
 {

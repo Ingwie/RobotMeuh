@@ -16,26 +16,21 @@
 /*    Setup_OAVRCBuilder3.exe/file (Pswd : OpenAVRc)   */
 
 
-#include "spi.h"
+#ifndef STEPPERWHEEL_H_INCLUDED
+#define STEPPERWHEEL_H_INCLUDED
 
-void initSpiMasterMode()
-{
-// Enable SPI as Mester, MSB first, 8Mhz.
-//set_input(SpiMisoPin);
- set_output_on(SpiLcdSSPin);
- set_output_off(SpiMosiPin);
- set_output_off(SpiSckPin);
- SPSR = _BV(SPI2X);
- SPCR = _BV(MSTR) | _BV(SPE);
-}
+#include "RobotMeuh.h"
 
-uint8_t lcdSpiXfer(uint8_t value)
-{
-// Full Duplex (4 wire) spi
- pin_low(SpiLcdSSPin);
- SPDR = value;
- /* Wait for transfer to complete */
- while (!(SPSR & (1<<SPIF)));
- pin_high(SpiLcdSSPin);
- return SPDR;
-}
+#define MICROSTEP           32   // DRV8825 uStepping used
+#define STEPPERREV          200
+#define REDUCTION           5    // To test
+#define MAXWEELSPEED        1    // Rev/Sec
+
+#define MAXPULSE            (MAXWEELSPEED * REDUCTION * STEPPERREV * MICROSTEP)
+
+void initStepperWeel();
+void enableStepperWheel();
+void disableStepperWheel();
+
+
+#endif // STEPPERWHEEL_H_INCLUDED

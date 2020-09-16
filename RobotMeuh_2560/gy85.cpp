@@ -44,7 +44,6 @@
 // Register 0x3E – Power Management
 #define CLK_SEL          0x03 // PLL with Z Gyro reference
 
-#define GYROPREC         10 // precision
 imu_t gyro;
 int16_t gyroTemp;
 
@@ -56,19 +55,10 @@ void initGyro()
  i2c_writeRegByte(GYRO_ADRESS, 0x3E, CLK_SEL); // frequency source
 }
 
-uint16_t convertGyro(int16_t value)
-{
-return ((int32_t) (((value<<3) * GYROPREC) / 115)); // == * GYROPREC)/14.375
-}
-
 uint8_t readGyro() // return 0 on success
 {
  I2C_SPEED_GIRO();
- uint8_t ret = i2c_readReg(GYRO_ADRESS, GYRO_XOUT_H, (uint8_t*)&gyro, 6);
- gyro.x = convertGyro(gyro.x);
- gyro.y = convertGyro(gyro.y);
- gyro.z = convertGyro(gyro.z);
- return ret;
+ return i2c_readReg(GYRO_ADRESS, GYRO_XOUT_H, (uint8_t*)&gyro, 6);
 }
 
 uint8_t readGyroTemp() // return 0 on success
@@ -114,17 +104,16 @@ imu_t acc;
 
 void initAcc()
 {
-  I2C_SPEED_ACC();
-  i2c_writeRegByte(ACC_ADRESS, BW_RATE, RATE);
-  i2c_writeRegByte(ACC_ADRESS, POWER_CTL, ACCMeasure);
-  i2c_writeRegByte(ACC_ADRESS, DATA_FORMAT, FULL_RES | SET16G);
+ I2C_SPEED_ACC();
+ i2c_writeRegByte(ACC_ADRESS, BW_RATE, RATE);
+ i2c_writeRegByte(ACC_ADRESS, POWER_CTL, ACCMeasure);
+ i2c_writeRegByte(ACC_ADRESS, DATA_FORMAT, FULL_RES | SET16G);
 }
 
 uint8_t readAcc() // return 0 on success
 {
  I2C_SPEED_ACC();
- uint8_t ret = i2c_readReg(ACC_ADRESS, DATAX0, (uint8_t*)&acc, 6);
- return ret;
+ return i2c_readReg(ACC_ADRESS, DATAX0, (uint8_t*)&acc, 6);
 }
 
 
@@ -139,7 +128,7 @@ uint8_t readAcc() // return 0 on success
 
 //Configuration Register B
 #define REGCONB         0x01
-#define GN              (0x0 << 5) // Gain (0.88 Ga)
+#define GN              (0x0 << 5) // Gain 0.73 mG/Lsb 0,073 uT/Lsb
 //Mode Register
 #define REGMODE         0x02
 #define HS              _BV(7) // Hight speed I2C ?? To test
@@ -150,15 +139,14 @@ imu_t mag;
 
 void initMag()
 {
-  I2C_SPEED_MAG();
-  i2c_writeRegByte(MAG_ADRESS, REGCONA, MA | DO);
-  i2c_writeRegByte(MAG_ADRESS, REGCONA, GN);
-  i2c_writeRegByte(MAG_ADRESS, REGMODE, 0x00 /* | HS*/);
+ I2C_SPEED_MAG();
+ i2c_writeRegByte(MAG_ADRESS, REGCONA, MA | DO);
+ i2c_writeRegByte(MAG_ADRESS, REGCONA, GN);
+ i2c_writeRegByte(MAG_ADRESS, REGMODE, 0x00 /* | HS*/);
 }
 
 uint8_t readMag() // return 0 on success
 {
  I2C_SPEED_MAG();
- uint8_t ret = i2c_readReg(MAG_ADRESS, XMSBRegister, (uint8_t*)&mag, 6);
- return ret;
+ return i2c_readReg(MAG_ADRESS, XMSBRegister, (uint8_t*)&mag, 6);
 }

@@ -34,12 +34,14 @@
 #include "pin.h"
 #include "utils.h"
 #include "Protocol.h"
+#include "StepperWheel.h"
 #include "rtc.h"
 #include "spi.h"
 #include "i2c.h"
 #include "gy85.h"
 #include "AnalogSensor.h"
 #include "lib/simplePID.h"
+#include "lib/Fusion.h"
 
 //ROBOTMEUH
 extern Status_t RobotStatus;

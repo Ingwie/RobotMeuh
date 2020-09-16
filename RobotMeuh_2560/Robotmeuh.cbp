@@ -7,9 +7,9 @@
 		<Option compiler="avr-gcc" />
 		<Build>
 			<Target title="Release">
-				<Option output="bin/Robotmeuh.elf" prefix_auto="1" extension_auto="0" />
+				<Option output="../bin/Robotmeuh.elf" prefix_auto="1" extension_auto="0" />
 				<Option working_dir="" />
-				<Option object_output="obj/" />
+				<Option object_output="../obj/" />
 				<Option type="5" />
 				<Option compiler="avr-gcc" />
 				<Compiler>
@@ -42,10 +42,29 @@
 		<Unit filename="Protocol.h" />
 		<Unit filename="RobotMeuh.cpp" />
 		<Unit filename="RobotMeuh.h" />
+		<Unit filename="StepperWheel.cpp" />
+		<Unit filename="StepperWheel.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
 		<Unit filename="gy85.cpp" />
 		<Unit filename="gy85.h" />
 		<Unit filename="i2c.cpp" />
 		<Unit filename="i2c.h" />
+		<Unit filename="lib/Fusion.h" />
+		<Unit filename="lib/FusionAhrs.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/FusionAhrs.h" />
+		<Unit filename="lib/FusionBias.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/FusionBias.h" />
+		<Unit filename="lib/FusionCalibration.h" />
+		<Unit filename="lib/FusionCompass.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="lib/FusionCompass.h" />
+		<Unit filename="lib/FusionTypes.h" />
 		<Unit filename="lib/simplePID.c">
 			<Option compilerVar="CC" />
 		</Unit>

@@ -27,7 +27,7 @@ int PidControllerInit(PidController *pid, PidNewCoefficients *coeff)
  if(!coeff)
   return -1;
 
- //Make a IIR Z-trans filter from PID parameters:
+//Make a IIR Z-trans filter from PID parameters:
  pid->bn[0] = (coeff->new_kp + coeff->new_ki + coeff->new_kd);
  pid->bn[1] = (coeff->new_kp + coeff->new_ki) - (coeff->new_kd + coeff->new_kd);
  pid->bn[2] = coeff->new_kd;
