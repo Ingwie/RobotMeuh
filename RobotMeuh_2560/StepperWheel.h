@@ -31,6 +31,7 @@
 void initStepperWeel();
 void enableStepperWheel();
 void disableStepperWheel();
+void stopStepperWheel();
 
 
 #endif // STEPPERWHEEL_H_INCLUDED

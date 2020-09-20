@@ -43,13 +43,13 @@ extern Status_t RobotStatus;
 extern DataLcdToMain_t Report;
 
 // Spi data
-#define SPI_BUFFER_LENGHT        20
-#define SPI_EOT                  '\n'
 extern uint8_t SpiRet;
-extern char SpiBuf[SPI_BUFFER_LENGHT];
-extern uint8_t SpiBufNum;
+extern char SpiBuf[SPI_BUFFER_NUM][SPI_BUFFER_LENGHT];
+extern uint8_t SpiBufCount;
+extern volatile uint8_t SpiBufNum;
 
 void computeSpiBuf();
+void checkSpiBuf();
 
 
 #endif // __LCD_ROBOTMEUH_H

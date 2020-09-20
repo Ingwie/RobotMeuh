@@ -16,48 +16,43 @@
 /*    Setup_OAVRCBuilder3.exe/file (Pswd : OpenAVRc)   */
 
 
-#ifndef __ROBOTMEUH_H_INCLUDED
-#define __ROBOTMEUH_H_INCLUDED
-
-#ifndef PACK
- #define PACK( __Declaration__ ) __Declaration__ __attribute__((__packed__))
-#endif
-
-#include <avr/io.h>
-#include <avr/interrupt.h>
-#include <inttypes.h>
-#include <string.h>
-#include <util/delay.h>
-#include <time.h>
-
-#include "pin_helper.h"
-#include "pin.h"
-#include "utils.h"
-#include "Protocol.h"
-#include "rtc.h"
-#include "spi.h"
-#include "i2c.h"
-#include "gy85.h"
-#include "AnalogSensor.h"
-#include "lib/simplePID.h"
-#include "lib/Fusion.h"
-#include "StepperWheel.h"
 #include "LcdFunc.h"
 
-//Debug
-#define ERR(x)
+uint8_t lcdSpiXferBuff()
+{
+// Full Duplex (4 wire) spi
+ pin_low(SpiLcdSSPin);
+ for (uint8_t i = 0; i <= SpiBufNum; i++)
+  {
+   SPDR = SpiBuf[i];
+   /* Wait for transfer to complete */
+   while (!(SPSR & (1<<SPIF)));
+  }
+ pin_high(SpiLcdSSPin);
+ return SPDR;
+}
 
-//ROBOTMEUH
-extern Status_t RobotStatus;
-extern DataLcdToMain_t Report;
+uint8_t lcdAction(uint8_t action)
+{
+ RobotStatus.RequestAction = A_lcdFunction;
+ memcpy(&SpiBuf[0], &RobotStatus, 1);
+ SpiBuf[1] = action;
+ SpiBuf[2] = SPI_EOT;
+ SpiBufNum = 2;
+ return lcdSpiXferBuff();
+}
 
-// Spi data
-extern uint8_t SpiRet;
-extern char SpiBuf[SPI_BUFFER_LENGHT];
-extern volatile uint8_t SpiBufNum;
+uint8_t lcdPrintString(uint8_t row, uint8_t column, const char *text)
+{
+ RobotStatus.RequestAction = A_printString;
+ memcpy(&SpiBuf[0], &RobotStatus, 1);
+ SpiBuf[1] = row;
+ SpiBuf[2] = column;
+ uint8_t len = strlen(text);
+ memcpy(&SpiBuf[3], text, len);
+ SpiBuf[len += 4] = SPI_EOT;
+ SpiBufNum = len;
+ return lcdSpiXferBuff();
+}
 
-//TIME
-extern time_t rtcTime;
-
-
-#endif // __ROBOTMEUH_H
+//lcdSpiXfer(uint8_t value)

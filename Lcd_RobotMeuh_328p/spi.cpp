@@ -20,24 +20,27 @@
 
 void initSpiSlaveMode()
 {
-// Enable SPI as Slave, MSB first, 8Mhz.
+// Enable SPI as Slave, MSB first.
+ set_input(SpiSSPin);
+ set_input(SpiMosiPin);
+ set_input(SpiSckPin);
  set_output_off(SpiMisoPin);
- SPSR = _BV(SPI2X);
  SPCR = _BV(SPIE) | _BV(SPE);
 }
 
 ISR(SPI_STC_vect)
 {
  uint8_t data = SPDR;
- SPDR = SpiRet;
  if (data != SPI_EOT)
   {
-   SpiBuf[SpiBufNum++] = data;
+   SpiBuf[SpiBufNum][SpiBufCount++] = data;
   }
  else
   {
-   sei(); // re activate ISR
-   computeSpiBuf();
-  }
+   //sei(); // re activate ISR
+   if(++SpiBufNum >= SPI_BUFFER_NUM) SpiBufNum = 0; // Change buffer
+   SpiBufCount = 0; // reset counter
+     }
+   SPDR = SpiRet;
 }
 

@@ -24,7 +24,7 @@ DataLcdToMain_t Report = {0};
 
 //SPI (LCD com.)
 uint8_t SpiRet = 0;
-volatile char SpiBuf[SPI_BUFFER_LENGHT] = {SPI_EOT};
+char SpiBuf[SPI_BUFFER_LENGHT] = {SPI_EOT};
 volatile uint8_t SpiBufNum = 0;
 
 //TIME
@@ -37,7 +37,6 @@ float samplePeriod = 0.01f; // sample period in seconds
 FusionVector3 gyroscopeSensitivity = {GYRO_RATE_XYZ, GYRO_RATE_XYZ, GYRO_RATE_XYZ};// sensitivity in degrees per second per lsb
 FusionVector3 accelerometerSensitivity = {ACC_RATE_XYZ, ACC_RATE_XYZ, ACC_RATE_XYZ}; // Sensitivity in g per lsb
 FusionVector3 hardIronBias = {0.0f, 0.0f, 0.0f}; //  bias in uT
-
 
 void initFusionImu()
 {
@@ -53,35 +52,21 @@ void initFusionImu()
 
 void computeFusionImu()
 {
-
 // Measure
-
+ if (readGyro()) ERR("GYRO HS");
+ if (readAcc()) ERR("ACC HS");
+ if (readMag()) ERR("MAG HS");
 
 // Calibrate gyroscope
- FusionVector3 uncalibratedGyroscope =
- {
-  0.0f, //x /* replace this value with actual gyroscope x axis measurement in lsb */
-  0.0f, //y /* replace this value with actual gyroscope y axis measurement in lsb */
-  0.0f, //z /* replace this value with actual gyroscope z axis measurement in lsb */
- };
+ FusionVector3 uncalibratedGyroscope = {(float)gyro.x, (float)gyro.y, (float)gyro.z};
  FusionVector3 calibratedGyroscope = FusionCalibrationInertial(uncalibratedGyroscope, FUSION_ROTATION_MATRIX_IDENTITY, gyroscopeSensitivity, FUSION_VECTOR3_ZERO);
 
 // Calibrate accelerometer
- FusionVector3 uncalibratedAccelerometer =
- {
-  0.0f, //x /* replace this value with actual accelerometer x axis measurement in lsb */
-  0.0f, //y /* replace this value with actual accelerometer y axis measurement in lsb */
-  1.0f, //z /* replace this value with actual accelerometer z axis measurement in lsb */
- };
+ FusionVector3 uncalibratedAccelerometer = {(float)acc.x, (float)acc.y, (float)acc.z};
  FusionVector3 calibratedAccelerometer = FusionCalibrationInertial(uncalibratedAccelerometer, FUSION_ROTATION_MATRIX_IDENTITY, accelerometerSensitivity, FUSION_VECTOR3_ZERO);
 
 // Calibrate magnetometer
- FusionVector3 uncalibratedMagnetometer =
- {
-  0.5f, //x /* replace this value with actual magnetometer x axis measurement in uT */
-  0.0f, //y /* replace this value with actual magnetometer y axis measurement in uT */
-  0.0f, //z /* replace this value with actual magnetometer z axis measurement in uT */
- }; // measurement in uT
+ FusionVector3 uncalibratedMagnetometer =  {(float)mag.x/13.7, (float)mag.y/13.7, (float)mag.z/13.7}; // measurement in uT (/13.7)
  FusionVector3 calibratedMagnetometer = FusionCalibrationMagnetic(uncalibratedMagnetometer, FUSION_ROTATION_MATRIX_IDENTITY, hardIronBias);
 
 // Update gyroscope bias correction algorithm
@@ -90,19 +75,44 @@ void computeFusionImu()
 // Update AHRS algorithm
  FusionAhrsUpdate(&fusionAhrs, calibratedGyroscope, calibratedAccelerometer, calibratedMagnetometer, samplePeriod);
 
+
+
 // Print Euler angles
- FusionEulerAngles eulerAngles = FusionQuaternionToEulerAngles(FusionAhrsGetQuaternion(&fusionAhrs));
+//FusionEulerAngles eulerAngles = FusionQuaternionToEulerAngles(FusionAhrsGetQuaternion(&fusionAhrs));
 //printf("Roll = %0.1f, Pitch = %0.1f, Yaw = %0.1f\r\n", eulerAngles.angle.roll, eulerAngles.angle.pitch, eulerAngles.angle.yaw);
 // Calculate heading
- float heading = FusionCompassCalculateHeading(calibratedAccelerometer, calibratedMagnetometer);
+//float heading = FusionCompassCalculateHeading(calibratedAccelerometer, calibratedMagnetometer);
+}
 
+void initRobotMeuh()
+{
+ i2c_init();
+ initSpiMasterMode();
+ initStepperWeel();
+ rtcInit();
 }
 
 int main(void)
 {
 
-// Insert code
+ initRobotMeuh();
 
+ do
+  {
+   _delay_ms(800);
+   lcdClear();
+   _delay_ms(800);
+   lcdPrintString(1, 1, "test ... OK");
+   _delay_ms(800);
+   lcdLedOff();
+   _delay_ms(800);
+   lcdPrintString(1, 5, "OUI ... OK ");
+   _delay_ms(800);
+   lcdLedOn();
+   _delay_ms(800);
+   lcdPrintString(2, 2, "NON ... OK ");
+
+  }
  while(1)
   ;
 

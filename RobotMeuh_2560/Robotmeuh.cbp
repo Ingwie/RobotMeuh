@@ -39,6 +39,10 @@
 		</ExtraCommands>
 		<Unit filename="AnalogSensor.cpp" />
 		<Unit filename="AnalogSensor.h" />
+		<Unit filename="LcdFunc.cpp" />
+		<Unit filename="LcdFunc.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
 		<Unit filename="Protocol.h" />
 		<Unit filename="RobotMeuh.cpp" />
 		<Unit filename="RobotMeuh.h" />

@@ -22,6 +22,6 @@
 #include "RobotMeuh.h"
 
 void initSpiMasterMode();
-uint8_t lcdSpiXfer(uint8_t value);
+uint8_t SpiXfer(uint8_t value);
 
 #endif // _SPI_H_INCLUDED

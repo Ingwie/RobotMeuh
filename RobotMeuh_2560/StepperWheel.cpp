@@ -55,6 +55,12 @@ void disableStepperWheel()
  TIMSK1 &= ~(_BV(OCIE1A) | _BV(OCIE1B)); // Disable Output Compare A & B interrupt.
 }
 
+void stopStepperWheel()
+{
+ TCCR1B = (_BV(CS11) | _BV(CS10)); // Disabled
+ TIMSK1 &= ~(_BV(OCIE1A) | _BV(OCIE1B)); // Disable Output Compare A & B interrupt.
+}
+
 ISR(TIMER1_COMPA_vect) // left motor
 {
  pin_toggle(L_WheelPulsePin);

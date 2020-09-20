@@ -16,48 +16,24 @@
 /*    Setup_OAVRCBuilder3.exe/file (Pswd : OpenAVRc)   */
 
 
-#ifndef __ROBOTMEUH_H_INCLUDED
-#define __ROBOTMEUH_H_INCLUDED
+#include "RobotMeuh.h"
 
-#ifndef PACK
- #define PACK( __Declaration__ ) __Declaration__ __attribute__((__packed__))
-#endif
+#ifndef LCDFUNC_H_INCLUDED
+#define LCDFUNC_H_INCLUDED
 
-#include <avr/io.h>
-#include <avr/interrupt.h>
-#include <inttypes.h>
-#include <string.h>
-#include <util/delay.h>
-#include <time.h>
+uint8_t lcdAction(uint8_t action);
 
-#include "pin_helper.h"
-#include "pin.h"
-#include "utils.h"
-#include "Protocol.h"
-#include "rtc.h"
-#include "spi.h"
-#include "i2c.h"
-#include "gy85.h"
-#include "AnalogSensor.h"
-#include "lib/simplePID.h"
-#include "lib/Fusion.h"
-#include "StepperWheel.h"
-#include "LcdFunc.h"
+#define lcdClear()        lcdAction(B_Clear)
+#define lcdDispOn()       lcdAction(B_DispOn)
+#define lcdDispOff()      lcdAction(B_DispOff)
+#define lcdLedOn()        lcdAction(B_LedOn)
+#define lcdLedOff()       lcdAction(B_LedOff)
+#define lcdLShift()       lcdAction(B_LShift)
+#define lcdRShift()       lcdAction(B_RShift)
+#define lcd2ndRow()       lcdAction(B_2ndRow)
+#define lcdHome()         lcdAction(B_Home)
 
-//Debug
-#define ERR(x)
-
-//ROBOTMEUH
-extern Status_t RobotStatus;
-extern DataLcdToMain_t Report;
-
-// Spi data
-extern uint8_t SpiRet;
-extern char SpiBuf[SPI_BUFFER_LENGHT];
-extern volatile uint8_t SpiBufNum;
-
-//TIME
-extern time_t rtcTime;
+uint8_t lcdPrintString(uint8_t row, uint8_t column, const char *text);
 
 
-#endif // __ROBOTMEUH_H
+#endif // LCDFUNC_H_INCLUDED

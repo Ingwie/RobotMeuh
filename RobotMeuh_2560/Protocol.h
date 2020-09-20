@@ -24,6 +24,10 @@
  #include "RobotMeuh.h"
 #endif
 
+#define SPI_BUFFER_LENGHT        20
+#define SPI_BUFFER_NUM           4
+#define SPI_EOT                  0x7F // DEL char
+
 PACK(typedef struct
 {
  uint8_t KeyPlayPause:1;
@@ -50,11 +54,26 @@ PACK(typedef struct
 #define RUNFORWARD(x)      (x & 0x20)
 #define ISUNUSED(x)        (x & 0x10)
 
-enum actions   // 16 actions
+enum lcdActions   // 16 actions
 {
  A_none = 0, // just return Report
+ A_lcdFunction,
  A_printString,
  A_rainTriggerValue,
+
+};
+
+enum lcdFunction   // 255 funcions
+{
+ B_Clear,
+ B_DispOn,
+ B_DispOff,
+ B_LedOn,
+ B_LedOff,
+ B_LShift,
+ B_RShift,
+ B_2ndRow,
+ B_Home,
 
 };
 

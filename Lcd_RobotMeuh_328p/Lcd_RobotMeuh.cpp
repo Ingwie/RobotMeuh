@@ -23,18 +23,52 @@ DataLcdToMain_t Report = {0};
 
 //SPI
 uint8_t SpiRet = 0;
-char SpiBuf[SPI_BUFFER_LENGHT] = {SPI_EOT};
-uint8_t SpiBufNum = 0;
+char SpiBuf[SPI_BUFFER_NUM][SPI_BUFFER_LENGHT] = {SPI_EOT};
+uint8_t SpiBufCount = 0;
+volatile uint8_t SpiBufNum = 0;
 
-void computeSpiBuf()
+void computeSpiBuf(uint8_t bufferNum)
 {
- memcpy(&RobotStatus, &SpiBuf[0], 1);
+ memcpy(&RobotStatus, &SpiBuf[bufferNum][0], 1);
 
  switch (RobotStatus.RequestAction)
   {
+  case A_lcdFunction :
+   switch (SpiBuf[bufferNum][1])
+    {
+    case B_Clear :
+     lcdClear();
+     break;
+    case  B_DispOn :
+     lcdDispOn();
+     break;
+    case  B_DispOff :
+     lcdDispOff();
+     break;
+    case  B_LedOn :
+     lcdLedOn();
+     break;
+    case  B_LedOff :
+     lcdLedOff();
+     break;
+    case  B_LShift :
+     lcdLShift();
+     break;
+    case  B_RShift :
+     lcdRShift();
+     break;
+    case  B_2ndRow :
+     lcd2ndRow();
+     break;
+    case  B_Home :
+     lcdHome();
+     break;
+
+    }
+   break;
 
   case A_printString :
-   // print todo
+   lcd_printStringAt(SpiBuf[bufferNum][1], SpiBuf[bufferNum][2], &SpiBuf[bufferNum][3]);
    break;
 
   case A_rainTriggerValue :
@@ -44,9 +78,18 @@ void computeSpiBuf()
   default : // case A_none ...
    break;
   }
- cli();
- SpiBufNum = 0; // reset buffer
- sei();
+}
+
+void checkSpiBuf()
+{
+ for (uint8_t i=0; i<SPI_BUFFER_NUM; ++i)
+  {
+   if ((SpiBuf[i][0] != SPI_EOT) && (i != SpiBufNum)) // Check if buffer data are present and buffer is not in receive mode
+    {
+     computeSpiBuf(i); // Yes -> Compute it !
+     memset(&SpiBuf[i][0], SPI_EOT, SPI_BUFFER_LENGHT); // Reset buffer
+    }
+  }
 }
 
 int main()
@@ -62,16 +105,17 @@ int main()
 //Update Report for keys
  updateKeys();
 
- pin_high(LCDPinLed);
+ lcdLedOn();
  lcd_printStringAt(1, 4, "ROBOT MEUH");
  lcd_printStringAt(2, 2, "Connection...");
 
  do
   {
+   checkSpiBuf();
    //TODO
-   uint8_t toremove = GETRAINSENSORVOLTAGE();
-   _delay_ms(400);
-   lcdRShift();
+   //uint8_t toremove = GETRAINSENSORVOLTAGE();
+   _delay_ms(100);
+   //lcdRShift();
   }
  while(1);
 
