@@ -20,10 +20,9 @@
 
 //ROBOTMEUH
 Status_t RobotStatus = {0};
-DataLcdToMain_t Report = {0};
+DataLcdToMain_t lcdReport = {0};
 
 //SPI (LCD com.)
-uint8_t SpiRet = 0;
 char SpiBuf[SPI_BUFFER_LENGHT] = {SPI_EOT};
 volatile uint8_t SpiBufNum = 0;
 
@@ -38,83 +37,299 @@ FusionVector3 gyroscopeSensitivity = {GYRO_RATE_XYZ, GYRO_RATE_XYZ, GYRO_RATE_XY
 FusionVector3 accelerometerSensitivity = {ACC_RATE_XYZ, ACC_RATE_XYZ, ACC_RATE_XYZ}; // Sensitivity in g per lsb
 FusionVector3 hardIronBias = {0.0f, 0.0f, 0.0f}; //  bias in uT
 
-void initFusionImu()
-{
-// Initialise gyroscope bias correction algorithm
- FusionBiasInitialise(&fusionBias, 0.5f, samplePeriod); // stationary threshold = 0.5 degrees per second
-
-// Initialise AHRS algorithm
- FusionAhrsInitialise(&fusionAhrs, 0.5f); // gain = 0.5
-
-// Set optional magnetic field limits
- FusionAhrsSetMagneticField(&fusionAhrs, 20.0f, 70.0f); // valid magnetic field range = 20 uT to 70 uT
-}
-
-void computeFusionImu()
-{
-// Measure
- if (readGyro()) ERR("GYRO HS");
- if (readAcc()) ERR("ACC HS");
- if (readMag()) ERR("MAG HS");
-
-// Calibrate gyroscope
- FusionVector3 uncalibratedGyroscope = {(float)gyro.x, (float)gyro.y, (float)gyro.z};
- FusionVector3 calibratedGyroscope = FusionCalibrationInertial(uncalibratedGyroscope, FUSION_ROTATION_MATRIX_IDENTITY, gyroscopeSensitivity, FUSION_VECTOR3_ZERO);
-
-// Calibrate accelerometer
- FusionVector3 uncalibratedAccelerometer = {(float)acc.x, (float)acc.y, (float)acc.z};
- FusionVector3 calibratedAccelerometer = FusionCalibrationInertial(uncalibratedAccelerometer, FUSION_ROTATION_MATRIX_IDENTITY, accelerometerSensitivity, FUSION_VECTOR3_ZERO);
-
-// Calibrate magnetometer
- FusionVector3 uncalibratedMagnetometer =  {(float)mag.x/13.7, (float)mag.y/13.7, (float)mag.z/13.7}; // measurement in uT (/13.7)
- FusionVector3 calibratedMagnetometer = FusionCalibrationMagnetic(uncalibratedMagnetometer, FUSION_ROTATION_MATRIX_IDENTITY, hardIronBias);
-
-// Update gyroscope bias correction algorithm
- calibratedGyroscope = FusionBiasUpdate(&fusionBias, calibratedGyroscope);
-
-// Update AHRS algorithm
- FusionAhrsUpdate(&fusionAhrs, calibratedGyroscope, calibratedAccelerometer, calibratedMagnetometer, samplePeriod);
-
-
-
-// Print Euler angles
-//FusionEulerAngles eulerAngles = FusionQuaternionToEulerAngles(FusionAhrsGetQuaternion(&fusionAhrs));
-//printf("Roll = %0.1f, Pitch = %0.1f, Yaw = %0.1f\r\n", eulerAngles.angle.roll, eulerAngles.angle.pitch, eulerAngles.angle.yaw);
-// Calculate heading
-//float heading = FusionCompassCalculateHeading(calibratedAccelerometer, calibratedMagnetometer);
-}
 
 void initRobotMeuh()
 {
  i2c_init();
  initSpiMasterMode();
- initStepperWeel();
  rtcInit();
+ initFusionImu();
+ initStepperWeel();
 }
 
 int main(void)
 {
-
+ _delay_ms(500); // Wake up !
  initRobotMeuh();
+ sei(); // Enable interrupt
+ lcdDispOff();
+ for (uint8_t i = 0; i < 10; ++i)
+  {
+   lcdLedOff();
+   _delay_ms(100);
+   lcdLedOn();
+   _delay_ms(100);
+  }
+ lcdClear();
+ _delay_ms(100);
+ lcdPrintString(0, 2, PSTR("ROBOT MEUH !"));
+ lcdDispOn();
+ _delay_ms(1000);
+
+
+
+
+
+
+
+ _delay_ms(100);
+ lcdClear();
+ enableStepperWheel();
+
+ wheelAcceleration = 10;
+ L_RequestSpeed = 10;
+ do
+  {
+   _delay_ms(150);computeStepperWheelSpeed();
+   lcdPrintf(0, 0, PSTR("R%6i A%6u"), L_RequestSpeed, L_ActualSpeed);
+   lcdPrintf(1, 0, PSTR("P%3u St %6u"), (L_Prescaler & 3), L_StepCourse);computeStepperWheelSpeed();
+  }
+ while(L_RequestSpeed != L_ActualSpeed);
+ for (uint16_t i = 0; i < 200; ++i)
+  {
+   _delay_ms(100);
+   lcdPrintf(0, 0, PSTR("R%6i A%6i"), L_RequestSpeed, L_ActualSpeed);
+   lcdPrintf(1, 0, PSTR("P%3u St %6u"), (L_Prescaler & 3), L_StepCourse);
+  }
+   lcdLedOff();
+   _delay_ms(100);
+   lcdLedOn();
+   _delay_ms(100);
+
+
+ wheelAcceleration = 10;
+ L_RequestSpeed = 20;
+ do
+  {
+   _delay_ms(150);computeStepperWheelSpeed();
+   lcdPrintf(0, 0, PSTR("R%6i A%6u"), L_RequestSpeed, L_ActualSpeed);
+   lcdPrintf(1, 0, PSTR("P%3u St %6u"), (L_Prescaler & 3), L_StepCourse);computeStepperWheelSpeed();
+  }
+ while(L_RequestSpeed != L_ActualSpeed);
+ for (uint16_t i = 0; i < 200; ++i)
+  {
+   _delay_ms(100);
+   lcdPrintf(0, 0, PSTR("R%6i A%6i"), L_RequestSpeed, L_ActualSpeed);
+   lcdPrintf(1, 0, PSTR("P%3u St %6u"), (L_Prescaler & 3), L_StepCourse);
+  }
+   lcdLedOff();
+   _delay_ms(100);
+   lcdLedOn();
+   _delay_ms(100);
+
+
+
+   wheelAcceleration = 10;
+ L_RequestSpeed = 50;
+ do
+  {
+   _delay_ms(150);computeStepperWheelSpeed();
+   lcdPrintf(0, 0, PSTR("R%6i A%6u"), L_RequestSpeed, L_ActualSpeed);
+   lcdPrintf(1, 0, PSTR("P%3u St %6u"), (L_Prescaler & 3), L_StepCourse);computeStepperWheelSpeed();
+  }
+ while(L_RequestSpeed != L_ActualSpeed);
+ for (uint16_t i = 0; i < 200; ++i)
+  {
+   _delay_ms(100);
+   lcdPrintf(0, 0, PSTR("R%6i A%6i"), L_RequestSpeed, L_ActualSpeed);
+   lcdPrintf(1, 0, PSTR("P%3u St %6u"), (L_Prescaler & 3), L_StepCourse);
+  }
+   lcdLedOff();
+   _delay_ms(100);
+   lcdLedOn();
+   _delay_ms(100);
+
+  wheelAcceleration = 10;
+ L_RequestSpeed = 100;
+ do
+  {
+   _delay_ms(150);computeStepperWheelSpeed();
+   lcdPrintf(0, 0, PSTR("R%6i A%6u"), L_RequestSpeed, L_ActualSpeed);
+   lcdPrintf(1, 0, PSTR("P%3u St %6u"), (L_Prescaler & 3), L_StepCourse);computeStepperWheelSpeed();
+  }
+ while(L_RequestSpeed != L_ActualSpeed);
+ for (uint16_t i = 0; i < 200; ++i)
+  {
+   _delay_ms(100);
+   lcdPrintf(0, 0, PSTR("R%6i A%6i"), L_RequestSpeed, L_ActualSpeed);
+   lcdPrintf(1, 0, PSTR("P%3u St %6u"), (L_Prescaler & 3), L_StepCourse);
+  }
+   lcdLedOff();
+   _delay_ms(100);
+   lcdLedOn();
+   _delay_ms(100);
+
+
+  wheelAcceleration = 10;
+ L_RequestSpeed = 900;
+ do
+  {
+   _delay_ms(150);computeStepperWheelSpeed();
+   lcdPrintf(0, 0, PSTR("R%6i A%6u"), L_RequestSpeed, L_ActualSpeed);
+   lcdPrintf(1, 0, PSTR("P%3u St %6u"), (L_Prescaler & 3), L_StepCourse);computeStepperWheelSpeed();
+  }
+ while(L_RequestSpeed != L_ActualSpeed);
+ for (uint16_t i = 0; i < 200; ++i)
+  {
+   _delay_ms(100);
+   lcdPrintf(0, 0, PSTR("R%6i A%6i"), L_RequestSpeed, L_ActualSpeed);
+   lcdPrintf(1, 0, PSTR("P%3u St %6u"), (L_Prescaler & 3), L_StepCourse);
+  }
+   lcdLedOff();
+   _delay_ms(100);
+   lcdLedOn();
+   _delay_ms(100);
+
+
+  wheelAcceleration = 100;
+ L_RequestSpeed = 1500;
+ do
+  {
+   _delay_ms(150);computeStepperWheelSpeed();
+   lcdPrintf(0, 0, PSTR("R%6i A%6u"), L_RequestSpeed, L_ActualSpeed);
+   lcdPrintf(1, 0, PSTR("P%3u St %6u"), (L_Prescaler & 3), L_StepCourse);computeStepperWheelSpeed();
+  }
+ while(L_RequestSpeed != L_ActualSpeed);
+ for (uint16_t i = 0; i < 200; ++i)
+  {
+   _delay_ms(100);
+   lcdPrintf(0, 0, PSTR("R%6i A%6i"), L_RequestSpeed, L_ActualSpeed);
+   lcdPrintf(1, 0, PSTR("P%3u St %6u"), (L_Prescaler & 3), L_StepCourse);
+  }
+   lcdLedOff();
+   _delay_ms(100);
+   lcdLedOn();
+   _delay_ms(100);
+
+
+  wheelAcceleration = 100;
+ L_RequestSpeed = 3000;
+ do
+  {
+   _delay_ms(150);computeStepperWheelSpeed();
+   lcdPrintf(0, 0, PSTR("R%6i A%6u"), L_RequestSpeed, L_ActualSpeed);
+   lcdPrintf(1, 0, PSTR("P%3u St %6u"), (L_Prescaler & 3), L_StepCourse);computeStepperWheelSpeed();
+  }
+ while(L_RequestSpeed != L_ActualSpeed);
+ for (uint16_t i = 0; i < 200; ++i)
+  {
+   _delay_ms(100);
+   lcdPrintf(0, 0, PSTR("R%6i A%6i"), L_RequestSpeed, L_ActualSpeed);
+   lcdPrintf(1, 0, PSTR("P%3u St %6u"), (L_Prescaler & 3), L_StepCourse);
+  }
+   lcdLedOff();
+   _delay_ms(100);
+   lcdLedOn();
+   _delay_ms(100);
+
+
+  wheelAcceleration = 100;
+ L_RequestSpeed = 8000;
+ do
+  {
+   _delay_ms(150);computeStepperWheelSpeed();
+   lcdPrintf(0, 0, PSTR("R%6i A%6u"), L_RequestSpeed, L_ActualSpeed);
+   lcdPrintf(1, 0, PSTR("P%3u St %6u"), (L_Prescaler & 3), L_StepCourse);computeStepperWheelSpeed();
+  }
+ while(L_RequestSpeed != L_ActualSpeed);
+ for (uint16_t i = 0; i < 200; ++i)
+  {
+   _delay_ms(100);
+   lcdPrintf(0, 0, PSTR("R%6i A%6i"), L_RequestSpeed, L_ActualSpeed);
+   lcdPrintf(1, 0, PSTR("P%3u St %6u"), (L_Prescaler & 3), L_StepCourse);
+  }
+   lcdLedOff();
+   _delay_ms(100);
+   lcdLedOn();
+   _delay_ms(100);
+
+  wheelAcceleration = 150;
+ L_RequestSpeed = 8000;
+ do
+  {
+   _delay_ms(150);computeStepperWheelSpeed();
+   lcdPrintf(0, 0, PSTR("R%6i A%6u"), L_RequestSpeed, L_ActualSpeed);
+   lcdPrintf(1, 0, PSTR("P%3u St %6u"), (L_Prescaler & 3), L_StepCourse);computeStepperWheelSpeed();
+  }
+ while(L_RequestSpeed != L_ActualSpeed);
+ for (uint16_t i = 0; i < 200; ++i)
+  {
+   _delay_ms(100);
+   lcdPrintf(0, 0, PSTR("R%6i A%6i"), L_RequestSpeed, L_ActualSpeed);
+   lcdPrintf(1, 0, PSTR("P%3u St %6u"), (L_Prescaler & 3), L_StepCourse);
+  }
+   lcdLedOff();
+   _delay_ms(100);
+   lcdLedOn();
+   _delay_ms(100);
+
+  wheelAcceleration = 200;
+ L_RequestSpeed = 15000;
+ do
+  {
+   _delay_ms(150);computeStepperWheelSpeed();
+   lcdPrintf(0, 0, PSTR("R%6i A%6u"), L_RequestSpeed, L_ActualSpeed);
+   lcdPrintf(1, 0, PSTR("P%3u St %6u"), (L_Prescaler & 3), L_StepCourse);computeStepperWheelSpeed();
+  }
+ while(L_RequestSpeed != L_ActualSpeed);
+ for (uint16_t i = 0; i < 200; ++i)
+  {
+   _delay_ms(100);
+   lcdPrintf(0, 0, PSTR("R%6i A%6i"), L_RequestSpeed, L_ActualSpeed);
+   lcdPrintf(1, 0, PSTR("P%3u St %6u"), (L_Prescaler & 3), L_StepCourse);
+  }
+   lcdLedOff();
+   _delay_ms(100);
+   lcdLedOn();
+   _delay_ms(100);
+
+
+  wheelAcceleration = 250;
+ L_RequestSpeed = 32000;
+ do
+  {
+   _delay_ms(150);computeStepperWheelSpeed();
+   lcdPrintf(0, 0, PSTR("R%6i A%6u"), L_RequestSpeed, L_ActualSpeed);
+   lcdPrintf(1, 0, PSTR("P%3u St %6u"), (L_Prescaler & 3), L_StepCourse);computeStepperWheelSpeed();
+  }
+ while(L_RequestSpeed != L_ActualSpeed);
+ for (uint16_t i = 0; i < 200; ++i)
+  {
+   _delay_ms(100);
+   lcdPrintf(0, 0, PSTR("R%6i A%6i"), L_RequestSpeed, L_ActualSpeed);
+   lcdPrintf(1, 0, PSTR("P%3u St %6u"), (L_Prescaler & 3), L_StepCourse);
+  }
+   lcdLedOff();
+   _delay_ms(100);
+   lcdLedOn();
+   _delay_ms(100);
+
+  wheelAcceleration = 250;
+ L_RequestSpeed = -32000;
+ do
+  {
+   _delay_ms(150);computeStepperWheelSpeed();
+   lcdPrintf(0, 0, PSTR("R%6i A%6u"), L_RequestSpeed, L_ActualSpeed);
+   lcdPrintf(1, 0, PSTR("P%3u St %6u"), (L_Prescaler & 3), L_StepCourse);computeStepperWheelSpeed();
+  }
+ while(L_RequestSpeed != L_ActualSpeed);
+ for (uint16_t i = 0; i < 200; ++i)
+  {
+   _delay_ms(100);
+   lcdPrintf(0, 0, PSTR("R%6i A%6i"), L_RequestSpeed, L_ActualSpeed);
+   lcdPrintf(1, 0, PSTR("P%3u St %6u"), (L_Prescaler & 3), L_StepCourse);
+  }
+   lcdLedOff();
+   _delay_ms(100);
+   lcdLedOn();
+   _delay_ms(100);
 
  do
   {
-   _delay_ms(800);
-   lcdClear();
-   _delay_ms(800);
-   lcdPrintString(1, 1, "test ... OK");
-   _delay_ms(800);
-   lcdLedOff();
-   _delay_ms(800);
-   lcdPrintString(1, 5, "OUI ... OK ");
-   _delay_ms(800);
-   lcdLedOn();
-   _delay_ms(800);
-   lcdPrintString(2, 2, "NON ... OK ");
-
+   _delay_ms(100);
   }
- while(1)
-  ;
+ while(1);
+
 
  return 0;
 }

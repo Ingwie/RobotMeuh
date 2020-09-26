@@ -68,7 +68,7 @@ void computeSpiBuf(uint8_t bufferNum)
    break;
 
   case A_printString :
-   lcd_printStringAt(SpiBuf[bufferNum][1], SpiBuf[bufferNum][2], &SpiBuf[bufferNum][3]);
+   lcd_printStringAt((SpiBuf[bufferNum][1] >> 4), (SpiBuf[bufferNum][1] & 0xF), &SpiBuf[bufferNum][2]);
    break;
 
   case A_rainTriggerValue :
@@ -106,8 +106,8 @@ int main()
  updateKeys();
 
  lcdLedOn();
- lcd_printStringAt(1, 4, "ROBOT MEUH");
- lcd_printStringAt(2, 2, "Connection...");
+ lcd_printStringAt(0, 4, "ROBOT MEUH");
+ lcd_printStringAt(1, 2, "Connection...");
 
  do
   {

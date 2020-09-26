@@ -25,10 +25,13 @@
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include <avr/pgmspace.h>
 #include <inttypes.h>
 #include <string.h>
 #include <util/delay.h>
 #include <time.h>
+#include <stdarg.h>
+#include <stdio.h>
 
 #include "pin_helper.h"
 #include "pin.h"
@@ -39,8 +42,9 @@
 #include "i2c.h"
 #include "gy85.h"
 #include "AnalogSensor.h"
-#include "lib/simplePID.h"
 #include "lib/Fusion.h"
+#include "FusionImu.h"
+#include "lib/simplePID.h"
 #include "StepperWheel.h"
 #include "LcdFunc.h"
 
@@ -49,15 +53,21 @@
 
 //ROBOTMEUH
 extern Status_t RobotStatus;
-extern DataLcdToMain_t Report;
+extern DataLcdToMain_t lcdReport;
 
 // Spi data
-extern uint8_t SpiRet;
 extern char SpiBuf[SPI_BUFFER_LENGHT];
 extern volatile uint8_t SpiBufNum;
 
 //TIME
 extern time_t rtcTime;
 
+//IMU
+extern FusionBias fusionBias;
+extern FusionAhrs fusionAhrs;
+extern float samplePeriod; // sample period in seconds
+extern FusionVector3 gyroscopeSensitivity;// sensitivity in degrees per second per lsb
+extern FusionVector3 accelerometerSensitivity; // Sensitivity in g per lsb
+extern FusionVector3 hardIronBias; //  bias in uT
 
 #endif // __ROBOTMEUH_H

@@ -13,8 +13,13 @@
 				<Option type="5" />
 				<Option compiler="avr-gcc" />
 				<Compiler>
+					<Add option="-flto" />
 					<Add option="-Os" />
 				</Compiler>
+				<Linker>
+					<Add option="-flto" />
+					<Add option="-s" />
+				</Linker>
 			</Target>
 			<Environment>
 				<Variable name="MCU" value="atmega2560" />
@@ -39,6 +44,10 @@
 		</ExtraCommands>
 		<Unit filename="AnalogSensor.cpp" />
 		<Unit filename="AnalogSensor.h" />
+		<Unit filename="FusionImu.cpp" />
+		<Unit filename="FusionImu.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
 		<Unit filename="LcdFunc.cpp" />
 		<Unit filename="LcdFunc.h">
 			<Option target="&lt;{~None~}&gt;" />

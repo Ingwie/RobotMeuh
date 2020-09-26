@@ -32,27 +32,56 @@ uint8_t lcdSpiXferBuff()
  return SPDR;
 }
 
-uint8_t lcdAction(uint8_t action)
+void lcdAction(lcdFunction action)
 {
  RobotStatus.RequestAction = A_lcdFunction;
  memcpy(&SpiBuf[0], &RobotStatus, 1);
  SpiBuf[1] = action;
  SpiBuf[2] = SPI_EOT;
  SpiBufNum = 2;
- return lcdSpiXferBuff();
+ uint8_t temp = lcdSpiXferBuff();
+ memcpy(&lcdReport, &temp, 1); // update lcdReport
 }
 
-uint8_t lcdPrintString(uint8_t row, uint8_t column, const char *text)
+void lcdPrintString(uint8_t row, uint8_t column, const char *text)
 {
  RobotStatus.RequestAction = A_printString;
  memcpy(&SpiBuf[0], &RobotStatus, 1);
- SpiBuf[1] = row;
- SpiBuf[2] = column;
- uint8_t len = strlen(text);
- memcpy(&SpiBuf[3], text, len);
- SpiBuf[len += 4] = SPI_EOT;
+ SpiBuf[1] = ((row << 4) | (column & 0XF));
+ uint8_t len = strlcpy_P(&SpiBuf[2], text, SPI_BUFFER_LENGHT);
+ SpiBuf[len += 3] = SPI_EOT;
  SpiBufNum = len;
- return lcdSpiXferBuff();
+ uint8_t temp = lcdSpiXferBuff();
+ memcpy(&lcdReport, &temp, 1); // update lcdReport
 }
 
-//lcdSpiXfer(uint8_t value)
+/* Full options ...
+%c	character
+%d	signed integers
+%i	signed integers
+%e	scientific notation, with a lowercase "e"
+%E	scientific notation, with a uppercase "E"
+%f	floating point
+%g	use %e or %f, whichever is shorter
+%G	use %E or %f, whichever is shorter
+%o	octal
+%s	a string of characters
+%u	unsigned integer
+%x	unsigned hexadecimal, with lowercase letters
+%X	unsigned hexadecimal, with uppercase letters
+*/
+
+void lcdPrintf(uint8_t row, uint8_t column, PGM_P fmt, ...)
+{
+ va_list args;
+ RobotStatus.RequestAction = A_printString;
+ memcpy(&SpiBuf[0], &RobotStatus, 1);
+ SpiBuf[1] = ((row << 4) | (column & 0XF));
+ va_start(args, fmt);
+ uint8_t len = vsprintf_P(&SpiBuf[2], fmt, args);
+ va_end(args);
+ SpiBuf[len += 3] = SPI_EOT;
+ SpiBufNum = len;
+ uint8_t temp = lcdSpiXferBuff();
+ memcpy(&lcdReport, &temp, 1); // update lcdReport
+}

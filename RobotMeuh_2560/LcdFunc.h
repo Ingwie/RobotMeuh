@@ -16,12 +16,12 @@
 /*    Setup_OAVRCBuilder3.exe/file (Pswd : OpenAVRc)   */
 
 
-#include "RobotMeuh.h"
-
 #ifndef LCDFUNC_H_INCLUDED
 #define LCDFUNC_H_INCLUDED
 
-uint8_t lcdAction(uint8_t action);
+#include "RobotMeuh.h"
+
+void lcdAction(lcdFunction action);
 
 #define lcdClear()        lcdAction(B_Clear)
 #define lcdDispOn()       lcdAction(B_DispOn)
@@ -33,7 +33,8 @@ uint8_t lcdAction(uint8_t action);
 #define lcd2ndRow()       lcdAction(B_2ndRow)
 #define lcdHome()         lcdAction(B_Home)
 
-uint8_t lcdPrintString(uint8_t row, uint8_t column, const char *text);
+void lcdPrintString(uint8_t row, uint8_t column, const char *text);
+void lcdPrintf(uint8_t row, uint8_t column, PGM_P fmt, ...);
 
 
 #endif // LCDFUNC_H_INCLUDED

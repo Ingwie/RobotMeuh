@@ -197,19 +197,18 @@ void lcdDispOff()
 
 /**
   Set Cursor to a specified location given by row and column information
-* @param  Row Number (1 to 2)
-* @param  Column Number (1 to 16) Assuming a 2 X 16 characters display
+* @param  Row Number (0 to 1)
+* @param  Column Number (0 to 15) Assuming a 2 X 16 characters display
 */
 void lcdLocate(uint8_t row, uint8_t column)
 {
- column--;
  switch (row)
   {
-  case 1:
+  case 0:
    /* Set cursor to 1st row address and add index*/
    lcdCmd(column |= 0x80);
    break;
-  case 2:
+  case 1:
    /* Set cursor to 2nd row address and add index*/
    lcdCmd(column |= 0x40 | 0x80);
    break;

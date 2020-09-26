@@ -13,10 +13,15 @@
 				<Option type="5" />
 				<Option compiler="avr-gcc" />
 				<Compiler>
+					<Add option="-flto" />
 					<Add option="-Os" />
 					<Add option="-mrelax" />
 					<Add option="-mstrict-X" />
 				</Compiler>
+				<Linker>
+					<Add option="-flto" />
+					<Add option="-s" />
+				</Linker>
 			</Target>
 			<Environment>
 				<Variable name="MCU" value="atmega328p" />

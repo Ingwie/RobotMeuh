@@ -56,7 +56,7 @@ PACK(typedef struct
 
 enum lcdActions   // 16 actions
 {
- A_none = 0, // just return Report
+ A_none = 0, // just return lcdReport
  A_lcdFunction,
  A_printString,
  A_rainTriggerValue,

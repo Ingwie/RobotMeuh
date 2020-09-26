@@ -16,29 +16,13 @@
 /*    Setup_OAVRCBuilder3.exe/file (Pswd : OpenAVRc)   */
 
 
-#ifndef PIN_H_INCLUDED
-#define PIN_H_INCLUDED
+#ifndef FUSIONIMU_H_INCLUDED
+#define FUSIONIMU_H_INCLUDED
 
-//-----> SPI Pin
-#define SpiLcdSSPin        B,0
-#define SpiSckPin          B,1
-#define SpiMosiPin         B,2
-#define SpiMisoPin         B,3
-//-----
+#include "RobotMeuh.h"
 
-//-----> I2C Pin
-#define I2cSclPin          D,0
-#define I2cSdaPin          D,1
-//-----
-
-//-----> Wheel (stepper) Pin
-#define R_WheelEnablePin   A,0
-#define L_WheelEnablePin   A,1
-#define R_WheelDirPin      A,2
-#define L_WheelDirPin      A,3
-#define R_WheelPulsePin    E,4
-#define L_WheelPulsePin    H,4
-//-----
+void initFusionImu();
+void computeFusionImu();
 
 
-#endif // PIN_H_INCLUDED
+#endif // FUSIONIMU_H_INCLUDED
