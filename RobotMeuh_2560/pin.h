@@ -40,5 +40,12 @@
 #define L_WheelPulsePin    H,4
 //-----
 
+//-----> Blade (brushless) Pin
+#define BladePulsesinPin   L,1
+#define BladeClockwisePin  L,3
+#define BladePwmOutPin     L,5
+#define BladeEnablePin     L,7
+//-----
+
 
 #endif // PIN_H_INCLUDED

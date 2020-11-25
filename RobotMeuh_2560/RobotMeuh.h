@@ -46,21 +46,33 @@
 #include "FusionImu.h"
 #include "lib/simplePID.h"
 #include "StepperWheel.h"
+#include "BrushlessBlade.h"
 #include "LcdFunc.h"
+#include "TaskScheduler.h"
+#include "MenuManagement.h"
+#include "MenuGeneral.h"
 
 //Debug
-#define ERR(x)
+#define ERR(x) {lcdPrintString(0, 0, PSTR(x));_delay_ms(1000);}
+
+PACK(typedef struct
+{
+ uint8_t whellSpeedOk:1; // no acceleration needed
+ uint8_t unused:7;
+}) SystemBools_t;
+
 
 //ROBOTMEUH
 extern Status_t RobotStatus;
 extern DataLcdToMain_t lcdReport;
-
+extern SystemBools_t SystemBools;
 // Spi data
 extern char SpiBuf[SPI_BUFFER_LENGHT];
 extern volatile uint8_t SpiBufNum;
 
 //TIME
 extern time_t rtcTime;
+extern uint8_t counter8mS; // Updated in TaskScheduler (ISR(TIMER0_COMPA_vect))
 
 //IMU
 extern FusionBias fusionBias;
@@ -69,5 +81,9 @@ extern float samplePeriod; // sample period in seconds
 extern FusionVector3 gyroscopeSensitivity;// sensitivity in degrees per second per lsb
 extern FusionVector3 accelerometerSensitivity; // Sensitivity in g per lsb
 extern FusionVector3 hardIronBias; //  bias in uT
+
+void Task32mS();
+void Task8mS();
+void setWheelsSpeed(int16_t L_Speed, int16_t R_Speed);
 
 #endif // __ROBOTMEUH_H

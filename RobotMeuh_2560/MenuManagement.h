@@ -15,48 +15,52 @@
 /*    https://www.mediafire.com/file/cahqfrm90h7c7fy/  */
 /*    Setup_OAVRCBuilder3.exe/file (Pswd : OpenAVRc)   */
 
-
-#ifndef GY85_H_INCLUDED
-#define GY85_H_INCLUDED
+#ifndef MENUMANAGEMENT_H_INCLUDED
+#define MENUMANAGEMENT_H_INCLUDED
 
 #include "RobotMeuh.h"
 
-/*
-ITG3205  - 0x69 — Three axis gyroscope
-ADXL345 -  0x53 — Three axis acceleration
-HMC5883L - 0x1E — Three axis magnetic field
-*/
-#define I2C_SPEED_GIRO()   I2C_SPEED_400K() // TODO : Test faster
-#define I2C_SPEED_ACC()    I2C_SPEED_400K() // TODO : Test faster
-#define I2C_SPEED_MAG()    I2C_SPEED_400K() // TODO : Test faster
+// All menus
+extern void menuFirst(); // First at boot
+extern void menuStatus(); // show status
+extern void menuDateTime(); // show date time
 
-#define GYRO_RATE_XYZ      0.06956521739130434782608695652174f
-#define ACC_RATE_XYZ       0.0039f
-#define MAG_RATE_XYZ       0,073f // uT/Lsb || mG/(10*Lsb)
+/////////////////////////////////////////
 
-struct imu_t
+typedef void (*p_Function)(void);
+
+const p_Function MenuFunctions[] PROGMEM = // Menu function array
 {
- int16_t x;
- int16_t y;
- int16_t z;
+ menuFirst,
+ menuStatus,
+ menuDateTime,
+
 };
 
-extern imu_t gyro;
-extern imu_t acc;
-extern imu_t mag;
+enum menuArray // Image of menu function array
+{
+ M_FIRST,
+ M_STATUS,
+ M_DATETIME,
 
-extern int16_t gyroTemp;
+};
 
-void initImus();
+PACK(struct MenuTarget_t
+{
+ menuArray PlayPause;
+ menuArray Enter;
+ menuArray Plus;
+ menuArray Minus;
+});
 
-void initGyro();
-uint8_t readGyro(); // return 0 on success
-uint8_t readGyroTemp(); // return 0 on success
+#define PMT(a,b,c,d)      (__extension__({const MenuTarget_t __mt PROGMEM = {a,b,c,d}; &__mt;}))
+#define PMT_t             const MenuTarget_t *
 
-void initAcc();
-uint8_t readAcc(); // return 0 on success
+extern menuArray menuToken;
+extern p_Function MenuPointer; // MenuPointer() call menu[menuToken] function
 
-void initMag();
-uint8_t readMag(); // return 0 on success
+void menuNavigation(PMT_t menuTarget);
+void menuCompute();
+void forceMenu(menuArray num);
 
-#endif // GY85_H_INCLUDED
+#endif // MENUMANAGEMENT_H_INCLUDED

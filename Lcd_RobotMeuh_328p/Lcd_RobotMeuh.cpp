@@ -24,8 +24,8 @@ DataLcdToMain_t Report = {0};
 //SPI
 uint8_t SpiRet = 0;
 char SpiBuf[SPI_BUFFER_NUM][SPI_BUFFER_LENGHT] = {SPI_EOT};
-uint8_t SpiBufCount = 0;
-volatile uint8_t SpiBufNum = 0;
+volatile uint8_t SpiBufWrite = 0;
+uint8_t SpiBufRead = 0;
 
 void computeSpiBuf(uint8_t bufferNum)
 {
@@ -36,11 +36,15 @@ void computeSpiBuf(uint8_t bufferNum)
   case A_lcdFunction :
    switch (SpiBuf[bufferNum][1])
     {
-    case B_Clear :
+    case B_DispOff_Clear :
      lcdClear();
+     lcdDispOff();
      break;
     case  B_DispOn :
      lcdDispOn();
+     break;
+    case B_Clear :
+     lcdClear();
      break;
     case  B_DispOff :
      lcdDispOff();
@@ -82,14 +86,20 @@ void computeSpiBuf(uint8_t bufferNum)
 
 void checkSpiBuf()
 {
- for (uint8_t i=0; i<SPI_BUFFER_NUM; ++i)
+ uint8_t cont = 1;
+ do
   {
-   if ((SpiBuf[i][0] != SPI_EOT) && (i != SpiBufNum)) // Check if buffer data are present and buffer is not in receive mode
+   if (SpiBufRead != SpiBufWrite) // there is some datas arrived
     {
-     computeSpiBuf(i); // Yes -> Compute it !
-     memset(&SpiBuf[i][0], SPI_EOT, SPI_BUFFER_LENGHT); // Reset buffer
+     computeSpiBuf(SpiBufRead); // Compute them !
+     if(++SpiBufRead >= SPI_BUFFER_NUM) SpiBufRead = 0; // Change buffer
+    }
+   else
+    {
+     cont = 0;
     }
   }
+ while (cont);
 }
 
 int main()
@@ -106,7 +116,7 @@ int main()
  updateKeys();
 
  lcdLedOn();
- lcd_printStringAt(0, 4, "ROBOT MEUH");
+ lcd_printStringAt(0, 3, "ROBOT MEUH");
  lcd_printStringAt(1, 2, "Connection...");
 
  do
@@ -114,8 +124,7 @@ int main()
    checkSpiBuf();
    //TODO
    //uint8_t toremove = GETRAINSENSORVOLTAGE();
-   _delay_ms(100);
-   //lcdRShift();
+   _delay_ms(10);
   }
  while(1);
 

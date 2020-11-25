@@ -21,8 +21,12 @@
 
 #include "RobotMeuh.h"
 
+///// PCF8563T Code /////
+
+void initRTC();
 void rtcSetTime(struct tm * t);
-void rtcInit();
-uint8_t rtcReadTemp(int16_t * temp);
+void rtcReadTime(struct tm * t);
+void rtcSetAlarm(uint8_t minutes, uint8_t hour, uint8_t wday);
+void rtcResetAlarm();
 
 #endif // RTC_H_INCLUDED

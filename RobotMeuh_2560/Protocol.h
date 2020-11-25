@@ -25,7 +25,7 @@
 #endif
 
 #define SPI_BUFFER_LENGHT        20
-#define SPI_BUFFER_NUM           4
+#define SPI_BUFFER_NUM           10
 #define SPI_EOT                  0x7F // DEL char
 
 PACK(typedef struct
@@ -65,8 +65,9 @@ enum lcdActions   // 16 actions
 
 enum lcdFunction   // 255 funcions
 {
- B_Clear,
+ B_DispOff_Clear,
  B_DispOn,
+ B_Clear,
  B_DispOff,
  B_LedOn,
  B_LedOff,

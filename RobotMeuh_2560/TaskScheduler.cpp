@@ -15,48 +15,38 @@
 /*    https://www.mediafire.com/file/cahqfrm90h7c7fy/  */
 /*    Setup_OAVRCBuilder3.exe/file (Pswd : OpenAVRc)   */
 
+#include "TaskScheduler.h"
 
-#ifndef GY85_H_INCLUDED
-#define GY85_H_INCLUDED
-
-#include "RobotMeuh.h"
-
-/*
-ITG3205  - 0x69 — Three axis gyroscope
-ADXL345 -  0x53 — Three axis acceleration
-HMC5883L - 0x1E — Three axis magnetic field
-*/
-#define I2C_SPEED_GIRO()   I2C_SPEED_400K() // TODO : Test faster
-#define I2C_SPEED_ACC()    I2C_SPEED_400K() // TODO : Test faster
-#define I2C_SPEED_MAG()    I2C_SPEED_400K() // TODO : Test faster
-
-#define GYRO_RATE_XYZ      0.06956521739130434782608695652174f
-#define ACC_RATE_XYZ       0.0039f
-#define MAG_RATE_XYZ       0,073f // uT/Lsb || mG/(10*Lsb)
-
-struct imu_t
+void initTaskScheduler()
 {
- int16_t x;
- int16_t y;
- int16_t z;
-};
+// Clear counter
+ TCNT0 = 0;
+// 8 mS 125 Hz (16000000/((124+1)*1024))
+ OCR0A = 124;
+// CTC
+ TCCR0A = _BV(WGM01);
+// Prescaler 1024
+ TCCR0B = _BV(CS02) | _BV(CS00);
+// Output Compare Match A Interrupt Enable
+ TIMSK0 |= _BV(OCIE0A);
+}
 
-extern imu_t gyro;
-extern imu_t acc;
-extern imu_t mag;
+ISR(TIMER0_COMPA_vect) // Timer 8mS
+{
+ if (++counter8mS >= 124) // 1 seconde
+  {
+   counter8mS = 0; // reset
+   ++rtcTime; // increase time
+  }
 
-extern int16_t gyroTemp;
+// enable interupts
+ sei();
 
-void initImus();
-
-void initGyro();
-uint8_t readGyro(); // return 0 on success
-uint8_t readGyroTemp(); // return 0 on success
-
-void initAcc();
-uint8_t readAcc(); // return 0 on success
-
-void initMag();
-uint8_t readMag(); // return 0 on success
-
-#endif // GY85_H_INCLUDED
+// fast task 8mS
+ Task8mS();
+// slow task 32mS
+ if ((counter8mS & 0x03) == 0x03)
+  {
+   Task32mS();
+  }
+}

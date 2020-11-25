@@ -16,47 +16,27 @@
 /*    Setup_OAVRCBuilder3.exe/file (Pswd : OpenAVRc)   */
 
 
-#ifndef GY85_H_INCLUDED
-#define GY85_H_INCLUDED
+#ifndef BRUSHLESSBLADE_H_INCLUDED
+#define BRUSHLESSBLADE_H_INCLUDED
 
 #include "RobotMeuh.h"
 
-/*
-ITG3205  - 0x69 — Three axis gyroscope
-ADXL345 -  0x53 — Three axis acceleration
-HMC5883L - 0x1E — Three axis magnetic field
-*/
-#define I2C_SPEED_GIRO()   I2C_SPEED_400K() // TODO : Test faster
-#define I2C_SPEED_ACC()    I2C_SPEED_400K() // TODO : Test faster
-#define I2C_SPEED_MAG()    I2C_SPEED_400K() // TODO : Test faster
-
-#define GYRO_RATE_XYZ      0.06956521739130434782608695652174f
-#define ACC_RATE_XYZ       0.0039f
-#define MAG_RATE_XYZ       0,073f // uT/Lsb || mG/(10*Lsb)
-
-struct imu_t
+PACK(typedef struct
 {
- int16_t x;
- int16_t y;
- int16_t z;
-};
+ int32_t IsRunnig:1;
+ int32_t Clockwise:1;
+ int32_t PWMValue:10;
+ int32_t Current:10;
+ uint32_t RPM:10;
+}) BrushlessBlade_t;
 
-extern imu_t gyro;
-extern imu_t acc;
-extern imu_t mag;
+extern BrushlessBlade_t BrushlessBlade;
+extern volatile uint32_t bladeTick;
+extern volatile uint8_t slowBladeTick;
 
-extern int16_t gyroTemp;
+void initBrushlessBlade();
+void BrushlessBladeStop();
+void BrushlessBladeCutAt(int16_t speed);
+void BrushlessBladeUpdateRPM();
 
-void initImus();
-
-void initGyro();
-uint8_t readGyro(); // return 0 on success
-uint8_t readGyroTemp(); // return 0 on success
-
-void initAcc();
-uint8_t readAcc(); // return 0 on success
-
-void initMag();
-uint8_t readMag(); // return 0 on success
-
-#endif // GY85_H_INCLUDED
+#endif // BRUSHLESSBLADE_H_INCLUDED

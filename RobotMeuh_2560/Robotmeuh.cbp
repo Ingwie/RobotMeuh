@@ -44,6 +44,10 @@
 		</ExtraCommands>
 		<Unit filename="AnalogSensor.cpp" />
 		<Unit filename="AnalogSensor.h" />
+		<Unit filename="BrushlessBlade.cpp" />
+		<Unit filename="BrushlessBlade.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
 		<Unit filename="FusionImu.cpp" />
 		<Unit filename="FusionImu.h">
 			<Option target="&lt;{~None~}&gt;" />
@@ -52,6 +56,10 @@
 		<Unit filename="LcdFunc.h">
 			<Option target="&lt;{~None~}&gt;" />
 		</Unit>
+		<Unit filename="MenuGeneral.cpp" />
+		<Unit filename="MenuGeneral.h" />
+		<Unit filename="MenuManagement.cpp" />
+		<Unit filename="MenuManagement.h" />
 		<Unit filename="Protocol.h" />
 		<Unit filename="RobotMeuh.cpp" />
 		<Unit filename="RobotMeuh.h" />
@@ -59,6 +67,8 @@
 		<Unit filename="StepperWheel.h">
 			<Option target="&lt;{~None~}&gt;" />
 		</Unit>
+		<Unit filename="TaskScheduler.cpp" />
+		<Unit filename="TaskScheduler.h" />
 		<Unit filename="gy85.cpp" />
 		<Unit filename="gy85.h" />
 		<Unit filename="i2c.cpp" />

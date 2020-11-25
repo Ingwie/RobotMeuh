@@ -15,48 +15,52 @@
 /*    https://www.mediafire.com/file/cahqfrm90h7c7fy/  */
 /*    Setup_OAVRCBuilder3.exe/file (Pswd : OpenAVRc)   */
 
+#include "MenuManagement.h"
 
-#ifndef GY85_H_INCLUDED
-#define GY85_H_INCLUDED
+menuArray menuToken;
 
-#include "RobotMeuh.h"
+p_Function MenuPointer;
 
-/*
-ITG3205  - 0x69 — Three axis gyroscope
-ADXL345 -  0x53 — Three axis acceleration
-HMC5883L - 0x1E — Three axis magnetic field
-*/
-#define I2C_SPEED_GIRO()   I2C_SPEED_400K() // TODO : Test faster
-#define I2C_SPEED_ACC()    I2C_SPEED_400K() // TODO : Test faster
-#define I2C_SPEED_MAG()    I2C_SPEED_400K() // TODO : Test faster
-
-#define GYRO_RATE_XYZ      0.06956521739130434782608695652174f
-#define ACC_RATE_XYZ       0.0039f
-#define MAG_RATE_XYZ       0,073f // uT/Lsb || mG/(10*Lsb)
-
-struct imu_t
+void menuNavigation(PMT_t menuTarget)
 {
- int16_t x;
- int16_t y;
- int16_t z;
-};
+ uint8_t tokenMem = menuToken;
+ MenuTarget_t mt;
 
-extern imu_t gyro;
-extern imu_t acc;
-extern imu_t mag;
+ memcpy_P(&mt, menuTarget, sizeof(MenuTarget_t)); // load targets values from flash
 
-extern int16_t gyroTemp;
+ if (lcdReport.KeyPlayPause)
+  {
+   menuToken = mt.PlayPause;
+  }
+ else if (lcdReport.KeyEnter)
+  {
+   menuToken = mt.Enter;
+  }
+ else if (lcdReport.KeyPlus)
+  {
+   menuToken = mt.Plus;
+  }
+ else if (lcdReport.KeyMinus)
+  {
+   menuToken = mt.Minus;
+  }
 
-void initImus();
+ if (tokenMem != menuToken)
+  {
+   menuCompute();
+  }
+}
 
-void initGyro();
-uint8_t readGyro(); // return 0 on success
-uint8_t readGyroTemp(); // return 0 on success
+void menuCompute()
+{
+ lcdDispOffClear();
+ MenuPointer = (p_Function)pgm_read_ptr_near(&MenuFunctions[menuToken]); // find menufunction[menuToken] in flash
+ MenuPointer(); // call it
+ lcdDispOn();
+}
 
-void initAcc();
-uint8_t readAcc(); // return 0 on success
-
-void initMag();
-uint8_t readMag(); // return 0 on success
-
-#endif // GY85_H_INCLUDED
+void forceMenu(menuArray num)
+{
+ menuToken = num;
+ menuCompute();
+}

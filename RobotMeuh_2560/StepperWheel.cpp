@@ -92,7 +92,7 @@ static int16_t computeWheelAcceleration(int16_t ActualSpeed, int16_t RequestSpee
  return ret;
 }
 
-uint8_t computeStepperWheelSpeed() // Must be called at little interval, return 0 if final speed
+uint8_t computeStepperWheelSpeed() // Must be called at little interval, return 0 if final speed is set
 {
  uint8_t skip = 0;
 
@@ -115,7 +115,6 @@ uint8_t computeStepperWheelSpeed() // Must be called at little interval, return 
 
  if (skip)
   {
-
 // Choose prescaler & Compute Timer pulses
    uint8_t  L_presc;
    uint16_t L_pulses;
@@ -131,7 +130,7 @@ uint8_t computeStepperWheelSpeed() // Must be called at little interval, return 
    (!L_ActualSpeed)? stopL_StepperWheel() : restartL_StepperWheel();
    (!R_ActualSpeed)? stopR_StepperWheel() : restartR_StepperWheel();
 // Set direction
-   (L_ActualSpeed >= 0)? pin_high(L_WheelDirPin) : pin_low(L_WheelDirPin);
+   (L_ActualSpeed >= 0)? pin_low(L_WheelDirPin) : pin_high(L_WheelDirPin);
    (R_ActualSpeed >= 0)? pin_high(R_WheelDirPin) : pin_low(R_WheelDirPin);
 // Update prescaler & pulses
    L_Prescaler = L_presc;
@@ -145,7 +144,7 @@ uint8_t computeStepperWheelSpeed() // Must be called at little interval, return 
 
 void initStepperWeel()
 {
- set_output_off(L_WheelEnablePin);
+ set_output_on(L_WheelEnablePin);
  set_output_off(R_WheelEnablePin);
  set_output_on(L_WheelDirPin);
  set_output_on(R_WheelDirPin);
@@ -155,7 +154,7 @@ void initStepperWeel()
 // Setup Timer 3 & 4 Mode 15 fast PWM, OCnA set TOP value, OCnB output.
 
 // PH4 OC4B drive left motor.
- TCCR4A = _BV(COM4B1) | _BV(COM4B0) | _BV(WGM41)| _BV(WGM40);
+ TCCR4A = _BV(COM4B1) | _BV(COM4B0) | _BV(WGM41) | _BV(WGM40);
  TCCR4B = _BV(WGM43) | _BV(WGM42);
  TCCR4C = 0;
  TIMSK4 = _BV(TOIE4);
@@ -163,7 +162,7 @@ void initStepperWeel()
  OCR4B = 4;
 
 // PE4 OC3B drive right motor.
- TCCR3A = _BV(COM3B1) | _BV(COM3B0) | _BV(WGM31)| _BV(WGM30);
+ TCCR3A = _BV(COM3B1) | _BV(COM3B0) | _BV(WGM31) | _BV(WGM30);
  TCCR3B = _BV(WGM33) | _BV(WGM32);
  TCCR3C = 0;
  TIMSK3 = _BV(TOIE3);
@@ -173,8 +172,8 @@ void initStepperWeel()
 
 void enableStepperWheel()
 {
- pin_high(L_WheelEnablePin);
- pin_high(R_WheelEnablePin);
+ pin_low(L_WheelEnablePin);
+ pin_low(R_WheelEnablePin);
  uint8_t sreg = SREG;
  cli();
  TCNT4 = 0; // Reset timer value
@@ -186,8 +185,8 @@ void disableStepperWheel()
 {
  TCCR4B &= ~PRESCALERRESETMASK; // Prescaler disabled
  TCCR3B &= ~PRESCALERRESETMASK; // Prescaler disabled
- pin_low(L_WheelEnablePin);
- pin_low(R_WheelEnablePin);
+ pin_high(L_WheelEnablePin);
+ pin_high(R_WheelEnablePin);
  pin_low(L_WheelPulsePin);
  pin_low(R_WheelPulsePin);
 }

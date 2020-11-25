@@ -121,7 +121,6 @@ void lcdPrintchar(char ascode)
  lcdEnable();
  LCDPort = (temp | (ascode << 4));
  lcdEnable();
- _delay_us(37);
 }
 
 /**
@@ -142,7 +141,7 @@ void lcdPrintstring(const char *text)
 void lcdClear()
 {
  lcdCmd(0x01);
- _delay_ms(3);
+ _delay_us(1530);
 }
 
 /**
@@ -160,7 +159,7 @@ void lcd2ndRow()
 void lcdHome()
 {
  lcdCmd(0x02);
- _delay_us(37);
+ _delay_us(1530);
 }
 
 /**

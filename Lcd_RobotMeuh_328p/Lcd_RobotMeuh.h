@@ -45,8 +45,8 @@ extern DataLcdToMain_t Report;
 // Spi data
 extern uint8_t SpiRet;
 extern char SpiBuf[SPI_BUFFER_NUM][SPI_BUFFER_LENGHT];
-extern uint8_t SpiBufCount;
-extern volatile uint8_t SpiBufNum;
+extern volatile uint8_t SpiBufWrite;
+extern uint8_t SpiBufRead;
 
 void computeSpiBuf();
 void checkSpiBuf();

@@ -23,6 +23,7 @@
 
 void lcdAction(lcdFunction action);
 
+#define lcdDispOffClear() lcdAction(B_DispOff_Clear)
 #define lcdClear()        lcdAction(B_Clear)
 #define lcdDispOn()       lcdAction(B_DispOn)
 #define lcdDispOff()      lcdAction(B_DispOff)

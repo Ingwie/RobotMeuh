@@ -15,48 +15,24 @@
 /*    https://www.mediafire.com/file/cahqfrm90h7c7fy/  */
 /*    Setup_OAVRCBuilder3.exe/file (Pswd : OpenAVRc)   */
 
+#include "MenuGeneral.h"
 
-#ifndef GY85_H_INCLUDED
-#define GY85_H_INCLUDED
-
-#include "RobotMeuh.h"
-
-/*
-ITG3205  - 0x69 — Three axis gyroscope
-ADXL345 -  0x53 — Three axis acceleration
-HMC5883L - 0x1E — Three axis magnetic field
-*/
-#define I2C_SPEED_GIRO()   I2C_SPEED_400K() // TODO : Test faster
-#define I2C_SPEED_ACC()    I2C_SPEED_400K() // TODO : Test faster
-#define I2C_SPEED_MAG()    I2C_SPEED_400K() // TODO : Test faster
-
-#define GYRO_RATE_XYZ      0.06956521739130434782608695652174f
-#define ACC_RATE_XYZ       0.0039f
-#define MAG_RATE_XYZ       0,073f // uT/Lsb || mG/(10*Lsb)
-
-struct imu_t
+void menuFirst() // First at boot
 {
- int16_t x;
- int16_t y;
- int16_t z;
-};
+ lcdPrintString(0, 2, PSTR("ROBOT MEUH !"));
+ lcdPrintString(1, 6, PSTR("V001"));
+ menuNavigation(PMT(M_FIRST, M_STATUS, M_DATETIME, M_FIRST)); // Todo values for test
+}
 
-extern imu_t gyro;
-extern imu_t acc;
-extern imu_t mag;
+void menuStatus() // show status
+{
+ lcdPrintString(0, 5, PSTR("STATUS")); // todo
+}
 
-extern int16_t gyroTemp;
+void menuDateTime() // show date time
+{
+ struct tm * utm = localtime((time_t*)&rtcTime);
 
-void initImus();
-
-void initGyro();
-uint8_t readGyro(); // return 0 on success
-uint8_t readGyroTemp(); // return 0 on success
-
-void initAcc();
-uint8_t readAcc(); // return 0 on success
-
-void initMag();
-uint8_t readMag(); // return 0 on success
-
-#endif // GY85_H_INCLUDED
+ lcdPrintf(0, 3, PSTR("%02u/%02u/%u"), utm->tm_mday, utm->tm_mon + 1, utm->tm_year + 1900);
+ lcdPrintf(1, 4, PSTR("%02u:%02u:%02u"), utm->tm_hour, utm->tm_min, utm->tm_sec);
+}

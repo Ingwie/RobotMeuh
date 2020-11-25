@@ -18,9 +18,17 @@
 
 #include "gy85.h"
 
+void initImus() // init gyro, accel and compass
+{
+ initGyro();
+ initAcc();
+ initMag();
+}
+
+
 // ITG3205 code --------------------------------------------------
 
-#define GYRO_ADRESS      0x69
+#define GYRO_ADRESS      (0x68 << 1)
 
 // Register 0x15 – Sample Rate Divider : SMPLRT_DIV
 // F sample = 1Khz / (SMPLRT_DIV+1)
@@ -72,7 +80,7 @@ uint8_t readGyroTemp() // return 0 on success
 
 // ADXL345 code --------------------------------------------------
 
-#define ACC_ADRESS      0x53
+#define ACC_ADRESS      (0x53 << 1)
 
 //Register 0x2C—BW_RATE
 #define BW_RATE         0x2C
@@ -119,7 +127,7 @@ uint8_t readAcc() // return 0 on success
 
 // HMC5883L code --------------------------------------------------
 
-#define MAG_ADRESS      0x1E
+#define MAG_ADRESS      (0x0D << 1)
 
 //Configuration Register A
 #define REGCONA         0x00

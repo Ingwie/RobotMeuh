@@ -27,13 +27,13 @@
  * 16 + 2(TWBR) .4^TWPS
  */
 
-void i2c_init()
+void initI2C()
 {
 // active pullups
  set_output_on(I2cSclPin);
  set_output_on(I2cSdaPin);
 // set I2C speed
- I2C_SPEED_888K();
+ I2C_SPEED_100K();
 }
 
 void i2c_Wait()
