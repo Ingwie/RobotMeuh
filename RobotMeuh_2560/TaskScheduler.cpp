@@ -25,7 +25,7 @@ void initTaskScheduler()
  OCR0A = 124;
 // CTC
  TCCR0A = _BV(WGM01);
-// Prescaler 1024
+// Prescaler 1024 (15625 HZ - 64 uS
  TCCR0B = _BV(CS02) | _BV(CS00);
 // Output Compare Match A Interrupt Enable
  TIMSK0 |= _BV(OCIE0A);

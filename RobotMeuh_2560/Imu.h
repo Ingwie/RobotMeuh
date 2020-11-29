@@ -16,23 +16,20 @@
 /*    Setup_OAVRCBuilder3.exe/file (Pswd : OpenAVRc)   */
 
 
-#ifndef GY85_H_INCLUDED
-#define GY85_H_INCLUDED
+#ifndef IMU_H_INCLUDED
+#define IMU_H_INCLUDED
 
 #include "RobotMeuh.h"
 
 /*
-ITG3205  - 0x69 — Three axis gyroscope
+ITG3205  - 0x68 — Three axis gyroscope
 ADXL345 -  0x53 — Three axis acceleration
-HMC5883L - 0x1E — Three axis magnetic field
+QMC5883L - 0x0D — Three axis magnetic field
 */
-#define I2C_SPEED_GIRO()   I2C_SPEED_400K() // TODO : Test faster
-#define I2C_SPEED_ACC()    I2C_SPEED_400K() // TODO : Test faster
-#define I2C_SPEED_MAG()    I2C_SPEED_400K() // TODO : Test faster
 
-#define GYRO_RATE_XYZ      0.06956521739130434782608695652174f
-#define ACC_RATE_XYZ       0.0039f
-#define MAG_RATE_XYZ       0,073f // uT/Lsb || mG/(10*Lsb)
+#define GYRO_RATE_XYZ      (1.0f/14.375f) // 14.375 LSBs per °/sec
+#define ACC_RATE_XYZ       0.0039f        // 3.9mG
+#define MAG_RATE_XYZ       (0.1f/12.0f)   //  12 lsb = 1mG . 1mG = 0.1 uT
 
 struct imu_t
 {
@@ -41,9 +38,9 @@ struct imu_t
  int16_t z;
 };
 
-extern imu_t gyro;
-extern imu_t acc;
-extern imu_t mag;
+extern imu_t imuGyro;
+extern imu_t imuAcc;
+extern imu_t imuMag;
 
 extern int16_t gyroTemp;
 

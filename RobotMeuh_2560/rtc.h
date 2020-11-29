@@ -21,7 +21,7 @@
 
 #include "RobotMeuh.h"
 
-///// PCF8563T Code /////
+///// PCF8563T Code ///// CR1220
 
 void initRTC();
 void rtcSetTime(struct tm * t);

@@ -21,8 +21,12 @@
 
 #include "RobotMeuh.h"
 
+// Euler angles
+extern FusionEulerAngles eulerAngles;
+// Compas
+extern float heading;
+
 void initFusionImu();
 void computeFusionImu();
-
 
 #endif // FUSIONIMU_H_INCLUDED

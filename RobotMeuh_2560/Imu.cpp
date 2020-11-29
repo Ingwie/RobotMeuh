@@ -16,9 +16,9 @@
 /*    Setup_OAVRCBuilder3.exe/file (Pswd : OpenAVRc)   */
 
 
-#include "gy85.h"
+#include "Imu.h"
 
-void initImus() // init gyro, accel and compass
+void initImus() // init Gyro, accel and compass
 {
  initGyro();
  initAcc();
@@ -32,11 +32,11 @@ void initImus() // init gyro, accel and compass
 
 // Register 0x15 – Sample Rate Divider : SMPLRT_DIV
 // F sample = 1Khz / (SMPLRT_DIV+1)
-#define SMPLRT_DIV       0x00
+#define SMPLRT_DIV       0x1F // 32mS
 
 // Register 0x16 – DLPF, Full Scale
 #define FS_SEL           0x03
-#define DLPF_CFG         0x04 // 20Hz low pass filter
+#define DLPF_CFG         0x03 // 42Hz low pass filter
 #define DLPF             ((FS_SEL << 3) | DLPF_CFG)
 
 // Registers 0x1B to 0x22 – Sensor Registers
@@ -52,12 +52,11 @@ void initImus() // init gyro, accel and compass
 // Register 0x3E – Power Management
 #define CLK_SEL          0x03 // PLL with Z Gyro reference
 
-imu_t gyro;
+imu_t imuGyro;
 int16_t gyroTemp;
 
 void initGyro()
 {
- I2C_SPEED_GIRO();
  i2c_writeRegByte(GYRO_ADRESS, 0x15, SMPLRT_DIV); // Sample Rate Divider
  i2c_writeRegByte(GYRO_ADRESS, 0x16, DLPF); // low pass filter
  i2c_writeRegByte(GYRO_ADRESS, 0x3E, CLK_SEL); // frequency source
@@ -65,14 +64,18 @@ void initGyro()
 
 uint8_t readGyro() // return 0 on success
 {
- I2C_SPEED_GIRO();
- return i2c_readReg(GYRO_ADRESS, GYRO_XOUT_H, (uint8_t*)&gyro, 6);
+ uint8_t ret = i2c_readReg(GYRO_ADRESS, GYRO_XOUT_H, (uint8_t*)&imuGyro, 6);
+// swap bytes
+ imuGyro.x = htons(imuGyro.x);
+ imuGyro.y = htons(imuGyro.y);
+ imuGyro.z = htons(imuGyro.z);
+return ret;
 }
 
 uint8_t readGyroTemp() // return 0 on success
 {
- I2C_SPEED_GIRO();
  uint8_t ret = i2c_readReg(GYRO_ADRESS, TEMP_OUT_H, (uint8_t*)&gyroTemp, 2);
+ gyroTemp = htons(gyroTemp);
  gyroTemp = ((int32_t) 35 + (gyroTemp + 13200) / 280);
  return ret;
 }
@@ -108,11 +111,10 @@ Rate (Hz) Bandwidth (Hz) Rate Code
 // Data
 #define DATAX0          0x32
 
-imu_t acc;
+imu_t imuAcc;
 
 void initAcc()
 {
- I2C_SPEED_ACC();
  i2c_writeRegByte(ACC_ADRESS, BW_RATE, RATE);
  i2c_writeRegByte(ACC_ADRESS, POWER_CTL, ACCMeasure);
  i2c_writeRegByte(ACC_ADRESS, DATA_FORMAT, FULL_RES | SET16G);
@@ -120,41 +122,33 @@ void initAcc()
 
 uint8_t readAcc() // return 0 on success
 {
- I2C_SPEED_ACC();
- return i2c_readReg(ACC_ADRESS, DATAX0, (uint8_t*)&acc, 6);
+ return i2c_readReg(ACC_ADRESS, DATAX0, (uint8_t*)&imuAcc, 6);
 }
 
 
-// HMC5883L code --------------------------------------------------
+// QMC5883L code --------------------------------------------------
 
 #define MAG_ADRESS      (0x0D << 1)
 
-//Configuration Register A
-#define REGCONA         0x00
-#define MA              (0x2 << 5) // Num sample (8)
-#define DO              (0x4 << 2) // Output rate (15hz)
+#define CTRLREG1        0x09
+#define CTRLREG1VAL     0b00000101 // 50Hz, High filter, 2 Gauss
 
-//Configuration Register B
-#define REGCONB         0x01
-#define GN              (0x0 << 5) // Gain 0.73 mG/Lsb 0,073 uT/Lsb
-//Mode Register
-#define REGMODE         0x02
-#define HS              _BV(7) // Hight speed I2C ?? To test
+#define CTRLREG2        0x0A
+#define ROL_PNT         _BV(6)     // To enable pointer roll-over function
 
-#define XMSBRegister    0x03
+#define SETRESETREG     0x0B
+#define SETRESETREGVAL  0x01
 
-imu_t mag;
+imu_t imuMag;
 
 void initMag()
 {
- I2C_SPEED_MAG();
- i2c_writeRegByte(MAG_ADRESS, REGCONA, MA | DO);
- i2c_writeRegByte(MAG_ADRESS, REGCONA, GN);
- i2c_writeRegByte(MAG_ADRESS, REGMODE, 0x00 /* | HS*/);
+ i2c_writeRegByte(MAG_ADRESS, CTRLREG1, CTRLREG1VAL);
+ i2c_writeRegByte(MAG_ADRESS, CTRLREG2, ROL_PNT);
+ i2c_writeRegByte(MAG_ADRESS, SETRESETREG, SETRESETREGVAL);
 }
 
 uint8_t readMag() // return 0 on success
 {
- I2C_SPEED_MAG();
- return i2c_readReg(MAG_ADRESS, XMSBRegister, (uint8_t*)&mag, 6);
+ return i2c_readReg(MAG_ADRESS, 0x00, (uint8_t*)&imuMag, 6);
 }

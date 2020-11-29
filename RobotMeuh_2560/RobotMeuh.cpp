@@ -31,14 +31,6 @@ volatile uint8_t SpiBufNum = 0;
 time_t rtcTime;
 uint8_t counter8mS; // Updated in TaskScheduler (ISR(TIMER0_COMPA_vect))
 
-//IMU
-FusionBias fusionBias;
-FusionAhrs fusionAhrs;
-float samplePeriod = 0.01f; // sample period in seconds
-FusionVector3 gyroscopeSensitivity = {GYRO_RATE_XYZ, GYRO_RATE_XYZ, GYRO_RATE_XYZ};// sensitivity in degrees per second per lsb
-FusionVector3 accelerometerSensitivity = {ACC_RATE_XYZ, ACC_RATE_XYZ, ACC_RATE_XYZ}; // Sensitivity in g per lsb
-FusionVector3 hardIronBias = {0.0f, 0.0f, 0.0f}; //  bias in uT
-
 
 void initRobotMeuh()
 {
@@ -71,7 +63,7 @@ int main(void)
  forceMenu(M_STATUS);
  _delay_ms(1000);
 
- for (uint16_t i = 0; i < 10; ++i)
+ for (uint16_t i = 0; i < 2; ++i)
   {
    forceMenu(M_DATETIME);
    _delay_ms(500);
@@ -82,63 +74,66 @@ int main(void)
  F-RAM     0x50
  PCF8563T  0x51
  ADXL345   0x53
- HMC5883L  0x1E
+ QMC5883L  0x0D
  ITG3205   0x68
  */
-// test I2C address
- uint8_t addr = 0x00;
- do
-  {
-   if (!i2c_start(addr))
-    {
-     lcdClear();
-     lcdPrintf(0, 0, PSTR("I2C -> %02X"), addr);
-     _delay_ms(2000);
-    }
-   ++addr;
-   _delay_ms(1);
-  }
- while (addr <= 0x7F);
 
 
- computeFusionImu();
+  BrushlessBladeCutAt(9000);
+  lcdClear();
+  enableStepperWheel();
 
+  wheelAcceleration = 100;
+  setWheelsSpeed(-32000,32000);
+ /* do
+   {
+    _delay_ms(150);
 
- BrushlessBladeCutAt(1000);
- _delay_ms(150);
+    lcdPrintf(0, 0, PSTR("R%6i A%6i"), L_RequestSpeed, L_ActualSpeed);
+    lcdPrintf(1, 0, PSTR("P%3u St %6u"), (L_Prescaler & 3), L_StepCourse);
 
- lcdPrintf(0, 0, PSTR("Lame%6i O%i"), BrushlessBlade.PWMValue, get_input(BladePwmOutPin));
- _delay_ms(5000);
-
- _delay_ms(100);
- lcdClear();
- enableStepperWheel();
-
- wheelAcceleration = 100;
- setWheelsSpeed(-32000,32000);
- do
-  {
-   _delay_ms(150);
-
-   lcdPrintf(0, 0, PSTR("R%6i A%6i"), L_RequestSpeed, L_ActualSpeed);
-   lcdPrintf(1, 0, PSTR("P%3u St %6u"), (L_Prescaler & 3), L_StepCourse);
-
-  }
- while(L_RequestSpeed != L_ActualSpeed);
- for (uint16_t i = 0; i < 200; ++i)
-  {
-   _delay_ms(100);
-   lcdPrintf(0, 0, PSTR("R%6i A%6i"), L_RequestSpeed, L_ActualSpeed);
-   lcdPrintf(1, 0, PSTR("P%3u St %6u"), (L_Prescaler & 3), L_StepCourse);
-  }
- lcdLedOff();
- _delay_ms(100);
- lcdLedOn();
- _delay_ms(100);
+   }
+  while(L_RequestSpeed != L_ActualSpeed);
+  for (uint16_t i = 0; i < 10; ++i)
+   {
+    _delay_ms(100);
+    lcdPrintf(0, 0, PSTR("R%6i A%6i"), L_RequestSpeed, L_ActualSpeed);
+    lcdPrintf(1, 0, PSTR("P%3u St %6u"), (L_Prescaler & 3), L_StepCourse);
+   }
+  lcdLedOff();
+  _delay_ms(100);
+  lcdLedOn();
+  _delay_ms(100);*/
 
  do
   {
-   _delay_ms(100);
+   _delay_ms(200);
+   lcdDispOffClear();
+   lcdDispOn();
+
+#define EULER
+#if defined (EULER)
+   // Print Euler angles and heading
+   int16_t x=eulerAngles.angle.roll;
+   int16_t y=eulerAngles.angle.pitch;
+   int16_t z=eulerAngles.angle.yaw;
+   int16_t h=heading;
+   lcdPrintf(0,0,PSTR("R:%04i P:%04i"), x, y);
+   lcdPrintf(1,0,PSTR("Y:%04i H:%04i"), z, h);
+#endif
+#if defined (GYRO)
+lcdPrintf(0,0,PSTR("X:%05i Y:%05i"), imuGyro.x, imuGyro.y);
+lcdPrintf(1,0,PSTR("Z:%05i"), imuGyro.z);
+#endif
+#if defined (ACC)
+lcdPrintf(0,0,PSTR("X:%05i Y:%05i"), imuAcc.x, imuAcc.y);
+lcdPrintf(1,0,PSTR("Z:%05i"), imuAcc.z);
+#endif
+#if defined (MAG)
+lcdPrintf(0,0,PSTR("X:%05i Y:%05i"), imuMag.x, imuMag.y);
+lcdPrintf(1,0,PSTR("Z:%05i"), imuMag.z);
+#endif
+
   }
  while(1);
 
@@ -166,5 +161,6 @@ void Task8mS()
 void Task32mS()
 {
  BrushlessBladeUpdateRPM(); // todo call every 1 secondes ?
+ computeFusionImu(); // todo measure elapsed time
 
 }

@@ -24,6 +24,8 @@
 #define FORCEINLINE inline __attribute__ ((always_inline))
 #define NOINLINE __attribute__ ((noinline))
 
+#define htons(x) __builtin_bswap16((uint16_t) (x))
+
 template<class t> FORCEINLINE t min(t a, t b)
 {
  return a<b?a:b;

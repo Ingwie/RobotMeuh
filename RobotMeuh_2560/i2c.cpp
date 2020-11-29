@@ -30,10 +30,10 @@
 void initI2C()
 {
 // active pullups
- set_output_on(I2cSclPin);
- set_output_on(I2cSdaPin);
+ set_output_off(I2cSclPin);
+ set_output_off(I2cSdaPin);
 // set I2C speed
- I2C_SPEED_100K();
+ I2C_SPEED_888K();
 }
 
 void i2c_Wait()

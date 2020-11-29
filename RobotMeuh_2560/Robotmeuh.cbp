@@ -52,6 +52,8 @@
 		<Unit filename="FusionImu.h">
 			<Option target="&lt;{~None~}&gt;" />
 		</Unit>
+		<Unit filename="Imu.cpp" />
+		<Unit filename="Imu.h" />
 		<Unit filename="LcdFunc.cpp" />
 		<Unit filename="LcdFunc.h">
 			<Option target="&lt;{~None~}&gt;" />
@@ -69,8 +71,6 @@
 		</Unit>
 		<Unit filename="TaskScheduler.cpp" />
 		<Unit filename="TaskScheduler.h" />
-		<Unit filename="gy85.cpp" />
-		<Unit filename="gy85.h" />
 		<Unit filename="i2c.cpp" />
 		<Unit filename="i2c.h" />
 		<Unit filename="lib/Fusion.h" />

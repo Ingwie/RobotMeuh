@@ -40,7 +40,7 @@
 #include "rtc.h"
 #include "spi.h"
 #include "i2c.h"
-#include "gy85.h"
+#include "Imu.h"
 #include "AnalogSensor.h"
 #include "lib/Fusion.h"
 #include "FusionImu.h"
@@ -66,6 +66,7 @@ PACK(typedef struct
 extern Status_t RobotStatus;
 extern DataLcdToMain_t lcdReport;
 extern SystemBools_t SystemBools;
+
 // Spi data
 extern char SpiBuf[SPI_BUFFER_LENGHT];
 extern volatile uint8_t SpiBufNum;
@@ -74,14 +75,7 @@ extern volatile uint8_t SpiBufNum;
 extern time_t rtcTime;
 extern uint8_t counter8mS; // Updated in TaskScheduler (ISR(TIMER0_COMPA_vect))
 
-//IMU
-extern FusionBias fusionBias;
-extern FusionAhrs fusionAhrs;
-extern float samplePeriod; // sample period in seconds
-extern FusionVector3 gyroscopeSensitivity;// sensitivity in degrees per second per lsb
-extern FusionVector3 accelerometerSensitivity; // Sensitivity in g per lsb
-extern FusionVector3 hardIronBias; //  bias in uT
-
+//FUNCTIONS
 void Task32mS();
 void Task8mS();
 void setWheelsSpeed(int16_t L_Speed, int16_t R_Speed);

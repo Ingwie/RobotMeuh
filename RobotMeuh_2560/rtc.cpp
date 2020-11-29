@@ -26,9 +26,8 @@ void initRTC()
 {
  /* Read RTC registers */
  uint8_t powerlost;
- uint8_t buf[7];	/* RTC R/W buffer */
 
- if (i2c_readReg(RTC_ADRESS, 0x07, &powerlost, 1)) // Read VL bit in secondes register
+ if (i2c_readReg(RTC_ADRESS, 0x02, &powerlost, 1)) // Read VL bit in secondes register
   {
    lcdDispOn();
    ERR("RTC HS");
@@ -37,15 +36,17 @@ void initRTC()
 
  if (powerlost >> 7)  	/* When data has been volatiled, set default time */
   {
-   /* Reset time to  01 01 2021. (I can't stand 2020 !) Reg[0..7] */
+   uint8_t buf[7];	/* RTC buffer */
+   /* Reset time to  01 01 2021. (I can't stand 2020 !) Reg[2..8] */
    buf[0] = 0x00;
    buf[1] = 0x00;
    buf[2] = 0x00;
    buf[3] = 0x01;
    buf[4] = 0x01;
    buf[5] = 0x01;
-   buf[6] = 0x20;
+   buf[6] = 0x21;
    i2c_writeReg(RTC_ADRESS, 0x02, buf, 7);
+   ERR("PILE RTC HS");
   }
 
  struct tm utm;
@@ -100,7 +101,7 @@ void rtcSetAlarm(uint8_t minutes, uint8_t hour, uint8_t wday)
 // activate ISR
  uint8_t controlStatus2Reg;
  i2c_readReg(RTC_ADRESS, 0x01, &controlStatus2Reg, 1);
- controlStatus2Reg |= 0x01; // AIE activation
+ controlStatus2Reg |= 0x02; // AIE activation
  i2c_writeReg(RTC_ADRESS, 0x01, &controlStatus2Reg, 1);
 }
 
@@ -109,6 +110,6 @@ void rtcResetAlarm()
 // desactivate ISR
  uint8_t controlStatus2Reg;
  i2c_readReg(RTC_ADRESS, 0x01, &controlStatus2Reg, 1);
- controlStatus2Reg &= ~0x01; // AIE desactivation
+ controlStatus2Reg &= ~0x02; // AIE desactivation
  i2c_writeReg(RTC_ADRESS, 0x01, &controlStatus2Reg, 1);
 }
