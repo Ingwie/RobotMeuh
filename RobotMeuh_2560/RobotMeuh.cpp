@@ -19,9 +19,11 @@
 #include "RobotMeuh.h"
 
 //ROBOTMEUH
+RobotMeuh_t RobotMeuh;
 Status_t RobotStatus = {0};
 DataLcdToMain_t lcdReport = {0};
 SystemBools_t SystemBools = {0};
+ImuValues_t ImuValues = {0};
 
 //SPI (LCD com.)
 char SpiBuf[SPI_BUFFER_LENGHT] = {SPI_EOT};
@@ -36,11 +38,14 @@ void initRobotMeuh()
 {
  initSpiMasterMode(); // master SPI
  initI2C();           // I2C
+ //readEeprom();      // Todo Fram ?
  initRTC();
  initImus();
  initFusionImu();
  initStepperWeel();   // timer 3 & 4
+ initDirPid();
  initBrushlessBlade();// timer 5
+ initBladePid();
  initTaskScheduler(); // timer 0
 }
 
@@ -59,93 +64,65 @@ int main(void)
   }
  forceMenu(M_FIRST);
  _delay_ms(1000);
-
- forceMenu(M_STATUS);
- _delay_ms(1000);
-
- for (uint16_t i = 0; i < 2; ++i)
-  {
-   forceMenu(M_DATETIME);
-   _delay_ms(500);
-  }
-
-
  /*
- F-RAM     0x50
- PCF8563T  0x51
- ADXL345   0x53
- QMC5883L  0x0D
- ITG3205   0x68
+  forceMenu(M_STATUS);
+  _delay_ms(1000);
+
+  for (uint16_t i = 0; i < 2; ++i)
+   {
+    forceMenu(M_DATETIME);
+    _delay_ms(500);
+   }
  */
 
 
-  BrushlessBladeCutAt(9000);
-  lcdClear();
-  enableStepperWheel();
 
-  wheelAcceleration = 100;
-  setWheelsSpeed(-32000,32000);
- /* do
-   {
-    _delay_ms(150);
 
-    lcdPrintf(0, 0, PSTR("R%6i A%6i"), L_RequestSpeed, L_ActualSpeed);
-    lcdPrintf(1, 0, PSTR("P%3u St %6u"), (L_Prescaler & 3), L_StepCourse);
-
-   }
-  while(L_RequestSpeed != L_ActualSpeed);
-  for (uint16_t i = 0; i < 10; ++i)
-   {
-    _delay_ms(100);
-    lcdPrintf(0, 0, PSTR("R%6i A%6i"), L_RequestSpeed, L_ActualSpeed);
-    lcdPrintf(1, 0, PSTR("P%3u St %6u"), (L_Prescaler & 3), L_StepCourse);
-   }
-  lcdLedOff();
-  _delay_ms(100);
-  lcdLedOn();
-  _delay_ms(100);*/
-
+ uint8_t onetime = 0;
  do
   {
-   _delay_ms(200);
+   _delay_ms(300);
    lcdDispOffClear();
-   lcdDispOn();
 
-#define EULER
+// TEST //
+#define SW
+
+   if (!onetime)
+    {
+     BrushlessBladeCutAt(9000);
+     wheelAcceleration = 50;
+     enableStepperWheel();
+     onetime = 1;
+    }
+
 #if defined (EULER)
    // Print Euler angles and heading
-   int16_t x=eulerAngles.angle.roll;
-   int16_t y=eulerAngles.angle.pitch;
-   int16_t z=eulerAngles.angle.yaw;
-   int16_t h=heading;
-   lcdPrintf(0,0,PSTR("R:%04i P:%04i"), x, y);
-   lcdPrintf(1,0,PSTR("Y:%04i H:%04i"), z, h);
+   lcdPrintf(0,0,PSTR("R:%04i P:%04i"), ImuValues.roll, ImuValues.pitch);
+   lcdPrintf(1,0,PSTR("Y:%04i H:%04i"), ImuValues.yaw, ImuValues.heading);
 #endif
 #if defined (GYRO)
-lcdPrintf(0,0,PSTR("X:%05i Y:%05i"), imuGyro.x, imuGyro.y);
-lcdPrintf(1,0,PSTR("Z:%05i"), imuGyro.z);
+   lcdPrintf(0,0,PSTR("X:%05i Y:%05i"), imuGyro.x, imuGyro.y);
+   lcdPrintf(1,0,PSTR("Z:%05i"), imuGyro.z);
 #endif
 #if defined (ACC)
-lcdPrintf(0,0,PSTR("X:%05i Y:%05i"), imuAcc.x, imuAcc.y);
-lcdPrintf(1,0,PSTR("Z:%05i"), imuAcc.z);
+   lcdPrintf(0,0,PSTR("X:%05i Y:%05i"), imuAcc.x, imuAcc.y);
+   lcdPrintf(1,0,PSTR("Z:%05i"), imuAcc.z);
 #endif
 #if defined (MAG)
-lcdPrintf(0,0,PSTR("X:%05i Y:%05i"), imuMag.x, imuMag.y);
-lcdPrintf(1,0,PSTR("Z:%05i"), imuMag.z);
+   lcdPrintf(0,0,PSTR("X:%05i Y:%05i"), imuMag.x, imuMag.y);
+   lcdPrintf(1,0,PSTR("Z:%05i"), imuMag.z);
 #endif
-
+#if defined (SW)
+   lcdPrintf(0, 0, PSTR("L%6i A%6i"), L_RequestSpeed, L_ActualSpeed);
+   lcdPrintf(1, 0, PSTR("R%6i A%6i"), R_RequestSpeed, R_ActualSpeed);
+   //lcdPrintf(1, 0, PSTR("V%4i St%8u"), wheelActualSpeed, L_StepCourse);
+#endif
+   lcdDispOn();
   }
  while(1);
 
 
  return 0;
-}
-
-void setWheelsSpeed(int16_t L_Speed, int16_t R_Speed)
-{
- L_RequestSpeed = L_Speed;
- R_RequestSpeed = R_Speed;
- SystemBools.whellSpeedOk = 0; // activate acceleration computation in fast task
 }
 
 // Fast task
@@ -158,9 +135,16 @@ void Task8mS()
 
 }
 
+// Mid task
 void Task32mS()
 {
- BrushlessBladeUpdateRPM(); // todo call every 1 secondes ?
- computeFusionImu(); // todo measure elapsed time
+ computeFusionImu(); // Compute imus (approx 150uS)
+ followCourse(20000, 900);
+}
 
+// Slow task
+void Task1S() // ISR mode
+{
+ BrushlessBladeReadRPM();
+ sei(); // reset ISR mode
 }

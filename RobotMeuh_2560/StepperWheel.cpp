@@ -23,12 +23,13 @@ int16_t R_RequestSpeed = 0;
 // StepperEngine values
 int16_t L_ActualSpeed = 0;
 int16_t R_ActualSpeed = 0;
+int16_t wheelActualSpeed = 0;
 
 uint32_t L_StepCourse = 0;
 uint32_t R_StepCourse = 0;
 
-uint8_t  wheelAcceleration = ACCELDEF;
-uint8_t  wheelDeceleration = DECELDEF;
+uint8_t  wheelAcceleration = STEPPERACCELDEF;
+uint8_t  wheelDeceleration = STEPPERDECELDEF;
 
 static uint16_t L_WheelPulses = 0;
 static uint16_t R_WheelPulses = 0;
@@ -138,8 +139,27 @@ uint8_t computeStepperWheelSpeed() // Must be called at little interval, return 
    R_Prescaler = R_presc;
    R_WheelPulses = R_pulses;
    SREG = sreg; // ISR ON
+   wheelActualSpeed = ((int32_t)L_ActualSpeed + R_ActualSpeed) / 2;
+   RobotStatus.RunForward = (wheelActualSpeed < 0)? 0 : 1;
   }
  return skip;
+}
+
+uint8_t computeStepperWheelDirection(int16_t speed, int16_t turn)
+{
+// espected values
+ int16_t Speed = speed; // needed using constant values
+ int16_t Turn = turn;
+// limit
+ Speed = limit<int16_t>((-MAXROBOTSPEED), Speed, MAXROBOTSPEED);
+ Turn = limit<int16_t>((-MAXROBOTTURN), Turn, MAXROBOTTURN);
+ int8_t direction = sgn(Speed);
+ int16_t Wl = Speed + (Turn * direction);
+ int16_t Wr = Speed - (Turn * direction);
+// write value
+ L_RequestSpeed = Wl;
+ R_RequestSpeed = Wr;
+ return computeStepperWheelSpeed();
 }
 
 void initStepperWeel()
@@ -158,7 +178,7 @@ void initStepperWeel()
  TCCR4B = _BV(WGM43) | _BV(WGM42);
  TCCR4C = 0;
  TIMSK4 = _BV(TOIE4);
- OCR4A = 0xFFFF;
+ OCR4A = 0xF;
  OCR4B = 4;
 
 // PE4 OC3B drive right motor.
@@ -166,7 +186,7 @@ void initStepperWeel()
  TCCR3B = _BV(WGM33) | _BV(WGM32);
  TCCR3C = 0;
  TIMSK3 = _BV(TOIE3);
- OCR3A = 0xFFFF;
+ OCR3A = 0xF;
  OCR3B = 4;
 }
 
@@ -222,16 +242,21 @@ void restartR_StepperWheel()
 ISR(TIMER4_OVF_vect) // left motor
 {
  ++L_StepCourse;
- TCNT4 = 0;
- OCR4A = L_WheelPulses;
- TCCR4B = L_Prescaler;
+ if (!SystemBools.whellSpeedOk)
+  {
+   OCR4A = L_WheelPulses;
+   TCCR4B = L_Prescaler;
+  }
 }
 
 ISR(TIMER3_OVF_vect) // right motor
 {
  ++R_StepCourse;
- TCNT3 = 0;
- OCR3A = R_WheelPulses;
- TCCR3B = R_Prescaler;
+ if (!SystemBools.whellSpeedOk)
+  {
+   OCR3A = R_WheelPulses;
+   TCCR3B = R_Prescaler;
+  }
 }
+
 

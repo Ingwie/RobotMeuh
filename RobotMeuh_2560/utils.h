@@ -58,5 +58,7 @@ template<class t> void SWAP(t & a, t & b)
 // BCD convertions
 uint8_t bin2bcd(int8_t bin);
 int8_t bcd2bin(uint8_t bcd);
+// Stack available
+uint16_t freeSram();
 
 #endif // UTILS_H_INCLUDED

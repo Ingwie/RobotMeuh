@@ -42,9 +42,9 @@ PACK(typedef struct
 
 PACK(typedef struct
 {
- uint8_t IsRunnig:1;
+ uint8_t IsRunning:1;
  uint8_t GoHome:1;
- uint8_t Direction:1;
+ uint8_t RunForward:1;
  uint8_t Unused:1;
  uint8_t RequestAction:4;
 }) Status_t;

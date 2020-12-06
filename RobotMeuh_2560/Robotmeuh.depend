@@ -5,7 +5,7 @@
 1599425782 a:\robotmeuh\robotmeuh_2560\analogsensor.h
 	"RobotMeuh.h"
 
-1606662008 a:\robotmeuh\robotmeuh_2560\robotmeuh.h
+1607216314 a:\robotmeuh\robotmeuh_2560\robotmeuh.h
 	<avr/io.h>
 	<avr/interrupt.h>
 	<avr/pgmspace.h>
@@ -26,9 +26,9 @@
 	"AnalogSensor.h"
 	"lib/Fusion.h"
 	"FusionImu.h"
-	"lib/simplePID.h"
 	"StepperWheel.h"
 	"BrushlessBlade.h"
+	"Motion.h"
 	"LcdFunc.h"
 	"TaskScheduler.h"
 	"MenuManagement.h"
@@ -38,7 +38,7 @@
 
 1605558478 a:\robotmeuh\robotmeuh_2560\pin.h
 
-1606579166 a:\robotmeuh\robotmeuh_2560\utils.h
+1606852844 a:\robotmeuh\robotmeuh_2560\utils.h
 	"RobotMeuh.h"
 
 1606410336 a:\robotmeuh\robotmeuh_2560\rtc.h
@@ -50,7 +50,7 @@
 1606342016 a:\robotmeuh\robotmeuh_2560\i2c.h
 	"RobotMeuh.h"
 
-1606002204 a:\robotmeuh\robotmeuh_2560\protocol.h
+1607015674 a:\robotmeuh\robotmeuh_2560\protocol.h
 	"../Lcd_RobotMeuh_328p/Lcd_RobotMeuh.h"
 	"RobotMeuh.h"
 
@@ -143,13 +143,13 @@
 1549999576 a:\robotmeuh\robotmeuh_2560\lib\fusioncompass.h
 	"FusionTypes.h"
 
-1606661802 a:\robotmeuh\robotmeuh_2560\fusionimu.h
+1607034066 a:\robotmeuh\robotmeuh_2560\fusionimu.h
 	"RobotMeuh.h"
 
-1601159520 a:\robotmeuh\robotmeuh_2560\stepperwheel.h
+1607177814 a:\robotmeuh\robotmeuh_2560\stepperwheel.h
 	"RobotMeuh.h"
 
-1604962810 a:\robotmeuh\robotmeuh_2560\brushlessblade.h
+1606768196 a:\robotmeuh\robotmeuh_2560\brushlessblade.h
 	"RobotMeuh.h"
 
 1605994476 a:\robotmeuh\robotmeuh_2560\lcdfunc.h
@@ -158,10 +158,10 @@
 1606342894 a:\robotmeuh\robotmeuh_2560\menumanagement.h
 	"RobotMeuh.h"
 
-1606160154 source:a:\robotmeuh\robotmeuh_2560\brushlessblade.cpp
+1606768196 source:a:\robotmeuh\robotmeuh_2560\brushlessblade.cpp
 	"BrushlessBlade.h"
 
-1606662008 source:a:\robotmeuh\robotmeuh_2560\fusionimu.cpp
+1607184322 source:a:\robotmeuh\robotmeuh_2560\fusionimu.cpp
 	"FusionImu.h"
 
 1600286944 source:a:\robotmeuh\robotmeuh_2560\gy85.cpp
@@ -208,13 +208,13 @@
 1599600494 source:a:\robotmeuh\robotmeuh_2560\utils.cpp
 	"utils.h"
 
-1606664456 a:\robotmeuh\robotmeuh_2560\imu.h
+1606671848 a:\robotmeuh\robotmeuh_2560\imu.h
 	"RobotMeuh.h"
 
 1606167840 a:\robotmeuh\robotmeuh_2560\taskscheduler.h
 	"RobotMeuh.h"
 
-1606662314 source:a:\robotmeuh\robotmeuh_2560\imu.cpp
+1606670790 source:a:\robotmeuh\robotmeuh_2560\imu.cpp
 	"Imu.h"
 
 1605997248 source:a:\robotmeuh\robotmeuh_2560\menumanagement.cpp
@@ -222,4 +222,7 @@
 
 1606336066 source:a:\robotmeuh\robotmeuh_2560\taskscheduler.cpp
 	"TaskScheduler.h"
+
+1607183842 a:\robotmeuh\robotmeuh_2560\motion.h
+	"RobotMeuh.h"
 

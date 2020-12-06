@@ -21,21 +21,23 @@
 
 #include "RobotMeuh.h"
 
-#define WHEELDIAMETER       270.0f  // mm
+#define WHEELDIAMETER       27.0f   // cM
 #define WEELPERIMETER       WHEELDIAMETER * M_PI
 
-#define MICROSTEP           32.0f  // DRV8825 uStepping used
+#define MICROSTEP           32.0f   // DRV8825 uStepping used
 #define STEPPERREV          200.0f
-#define REDUCTION           5.0f   // To test
+#define GEARREDUCTION       5.0f    // 11 / 55 gear ration (To test ...)
 
-#define MAXPULSEFREQ        (62500.0f / 2.0f)
-#define MINPULSEFREQ        ((62500.0f / 65535.0f) / 2.0f)
-#define MAXROBOTSPEED       (WEELPERIMETER / (REDUCTION * STEPPERREV * MICROSTEP)) * MAXPULSEFREQ // 828.35 mm/Sec
-#define MINROBOTSPEED       (WEELPERIMETER / (REDUCTION * STEPPERREV * MICROSTEP)) * MINPULSEFREQ //0.0126 mm/Sec
+#define MAXSTEPPERSPEED      32000u // 5rev./seconde
+#define MAXROBOTSPEED        19000u
+#define MAXROBOTTURN         (MAXSTEPPERSPEED - MAXROBOTSPEED)
+#define STEPPERACCELDEF      100
+#define STEPPERDECELDEF      255
 
-#define MAXSTEPPERSPEED      32000u
-#define ACCELDEF             100
-#define DECELDEF             255
+#define ROBOTSPEEDFACTOR    (WEELPERIMETER / (GEARREDUCTION * STEPPERREV * MICROSTEP))
+#define MAXWHEELSPEED       (WEELPERIMETER / (GEARREDUCTION * STEPPERREV * MICROSTEP)) * MAXSTEPPERSPEED // 84.8 cM/Sec
+#define MINWHEELSPEED       (WEELPERIMETER / (GEARREDUCTION * STEPPERREV * MICROSTEP)) * 1               // 0.00265 cM/Sec
+
 
 // Prescaler
 #define PRESCVALUE1         1u
@@ -62,26 +64,28 @@
 #define FREQMIN4            (FREQR4/0xFFFE)
 #define FREQMIN5            (FREQR5/0xFFFE)
 // Timer (16bits) switch frequency
-#define FREQ1            (FREQR1/0xFFF)
-#define FREQ2            (FREQR2/0xFFF)
-#define FREQ3            (FREQR3/0xFFF)
-#define FREQ4            (FREQR4/0xFFF)
-#define FREQ5            (FREQR5/0xFFF)
+#define FREQ1               (FREQR1/0xFFF)
+#define FREQ2               (FREQR2/0xFFF)
+#define FREQ3               (FREQR3/0xFFF)
+#define FREQ4               (FREQR4/0xFFF)
+#define FREQ5               (FREQR5/0xFFF)
 
 // Value to drive StepperEngine
+
+// StepperEngine values
 extern int16_t L_RequestSpeed;
 extern int16_t R_RequestSpeed;
-// StepperEngine values
 extern int16_t L_ActualSpeed;
 extern int16_t R_ActualSpeed;
+extern int16_t wheelActualSpeed;
 extern uint8_t  wheelAcceleration;
 extern uint8_t  wheelDeceleration;
 // Total pulses sended
 extern uint32_t L_StepCourse;
 extern uint32_t R_StepCourse;
 
-extern uint8_t L_Prescaler; // todo remove
 
+uint8_t computeStepperWheelDirection(int16_t speed, int16_t turn);
 uint8_t computeStepperWheelSpeed();
 void initStepperWeel();
 void enableStepperWheel();
@@ -92,15 +96,3 @@ void stopR_StepperWheel();
 void restartR_StepperWheel();
 
 #endif // STEPPERWHEEL_H_INCLUDED
-/*
-*
-*
-*
-*
-*
-/
-/
-/
-/
-/
-*/

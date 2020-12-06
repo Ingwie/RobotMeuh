@@ -35,13 +35,12 @@ ISR(TIMER0_COMPA_vect) // Timer 8mS
 {
  if (++counter8mS >= 124) // 1 seconde
   {
-   counter8mS = 0; // reset
+   counter8mS = 0; // reset counter
    ++rtcTime; // increase time
+   Task1S();  // sei() in this function
   }
-
 // enable interupts
  sei();
-
 // fast task 8mS
  Task8mS();
 // slow task 32mS

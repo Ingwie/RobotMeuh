@@ -62,6 +62,8 @@
 		<Unit filename="MenuGeneral.h" />
 		<Unit filename="MenuManagement.cpp" />
 		<Unit filename="MenuManagement.h" />
+		<Unit filename="Motion.cpp" />
+		<Unit filename="Motion.h" />
 		<Unit filename="Protocol.h" />
 		<Unit filename="RobotMeuh.cpp" />
 		<Unit filename="RobotMeuh.h" />
@@ -88,11 +90,6 @@
 		</Unit>
 		<Unit filename="lib/FusionCompass.h" />
 		<Unit filename="lib/FusionTypes.h" />
-		<Unit filename="lib/simplePID.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="lib/simplePID.h" />
-		<Unit filename="lib/simplePID_a.s" />
 		<Unit filename="pin.h" />
 		<Unit filename="pin_helper.h" />
 		<Unit filename="rtc.cpp" />

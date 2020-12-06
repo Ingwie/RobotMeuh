@@ -19,7 +19,7 @@
 
 FusionBias fusionBias;
 FusionAhrs fusionAhrs;
-#define FUSIONPERIOD 0.2f // sample period in seconds
+#define FUSIONPERIOD 0.032f // sample period in seconde
 
 // gyroscope
 #define gyroscopeSensitivity    {GYRO_RATE_XYZ, GYRO_RATE_XYZ, GYRO_RATE_XYZ} // sensitivity in degrees per second per lsb
@@ -40,7 +40,7 @@ FusionVector3 calibratedMagnetometer;
 FusionEulerAngles eulerAngles;
 
 // Compas
-float heading;
+float fusionHeading;
 
 void initFusionImu()
 {
@@ -78,6 +78,12 @@ void computeFusionImu()
  eulerAngles = FusionQuaternionToEulerAngles(FusionAhrsGetQuaternion(&fusionAhrs));
 
 // Calculate heading
- heading = FusionCompassCalculateHeading(calibratedAccelerometer, calibratedMagnetometer);
+ fusionHeading = FusionCompassCalculateHeading(calibratedAccelerometer, calibratedMagnetometer);
+
+// Convert to int16_t
+ ImuValues.roll = eulerAngles.angle.roll * 10;
+ ImuValues.pitch = eulerAngles.angle.pitch * 10;
+ ImuValues.yaw = eulerAngles.angle.yaw * 10;
+ ImuValues.heading = fusionHeading * 10;
 }
 

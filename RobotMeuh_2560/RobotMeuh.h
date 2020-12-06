@@ -44,16 +44,48 @@
 #include "AnalogSensor.h"
 #include "lib/Fusion.h"
 #include "FusionImu.h"
-#include "lib/simplePID.h"
 #include "StepperWheel.h"
 #include "BrushlessBlade.h"
+#include "Motion.h"
 #include "LcdFunc.h"
 #include "TaskScheduler.h"
 #include "MenuManagement.h"
 #include "MenuGeneral.h"
 
-//Debug
+// Debug
 #define ERR(x) {lcdPrintString(0, 0, PSTR(x));_delay_ms(1000);}
+
+// PID
+#define PID_SCALING_FACTOR  1024
+#define Kp_Default          (1.000 * PID_SCALING_FACTOR)
+#define Ki_Default          (0.200 * PID_SCALING_FACTOR)
+#define Kd_Default          (0.050 * PID_SCALING_FACTOR)
+
+/*
+ I2C ADDRESS
+F-RAM     0x50 // F-RAM (option)
+PCF8563T  0x51 // RTC
+ADXL345   0x53 // Acc
+QMC5883L  0x0D // Mag
+ITG3205   0x68 // Gyro
+*/
+
+// Robot values saved to eeprom
+PACK(typedef struct
+{
+// Blade
+ uint16_t  BladeSpeed = 3000; // T/Minute
+ int16_t  Blade_P_Factor = Kp_Default;
+ int16_t  Blade_I_Factor = Ki_Default;
+ int16_t  Blade_D_Factor = Kd_Default;
+// Motion
+ uint8_t  MotionSpeed = 20; // M/Minute
+ int16_t  Dir_P_Factor = Kp_Default;
+ int16_t  Dir_I_Factor = Ki_Default;
+ int16_t  Dir_D_Factor = Kd_Default;
+
+}) RobotMeuh_t;
+
 
 PACK(typedef struct
 {
@@ -61,11 +93,21 @@ PACK(typedef struct
  uint8_t unused:7;
 }) SystemBools_t;
 
+PACK(typedef struct
+{
+// in degres * 10
+ int16_t roll:12;
+ int16_t pitch:12;
+ int16_t yaw:12;
+ int16_t heading:12;
+}) ImuValues_t;
 
 //ROBOTMEUH
+extern RobotMeuh_t RobotMeuh;
 extern Status_t RobotStatus;
 extern DataLcdToMain_t lcdReport;
 extern SystemBools_t SystemBools;
+extern ImuValues_t ImuValues;
 
 // Spi data
 extern char SpiBuf[SPI_BUFFER_LENGHT];
@@ -76,8 +118,8 @@ extern time_t rtcTime;
 extern uint8_t counter8mS; // Updated in TaskScheduler (ISR(TIMER0_COMPA_vect))
 
 //FUNCTIONS
+void Task1S();
 void Task32mS();
 void Task8mS();
-void setWheelsSpeed(int16_t L_Speed, int16_t R_Speed);
 
 #endif // __ROBOTMEUH_H
