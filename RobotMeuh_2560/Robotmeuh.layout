@@ -2,44 +2,24 @@
 <CodeBlocks_layout_file>
 	<FileVersion major="1" minor="0" />
 	<ActiveTarget name="Release" />
-	<File name="AnalogSensor.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="BrushlessBlade.h" open="0" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="1301" topLine="6" />
+			<Cursor1 position="1544" topLine="13" />
 		</Cursor>
 	</File>
-	<File name="spi.cpp" open="0" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="SerialLcd.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="1301" topLine="6" />
+			<Cursor1 position="1471" topLine="0" />
 		</Cursor>
 	</File>
-	<File name="MenuGeneral.h" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="pin.h" open="0" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="1521" topLine="0" />
+			<Cursor1 position="1932" topLine="23" />
 		</Cursor>
 	</File>
-	<File name="i2c.h" open="0" top="0" tabpos="8" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="Motion.cpp" open="0" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="1902" topLine="18" />
-		</Cursor>
-	</File>
-	<File name="FusionImu.cpp" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1470" topLine="2" />
-		</Cursor>
-	</File>
-	<File name="RobotMeuh.cpp" open="1" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="4047" topLine="120" />
-		</Cursor>
-	</File>
-	<File name="pin_helper.h" open="0" top="0" tabpos="11" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="2662" topLine="35" />
-		</Cursor>
-	</File>
-	<File name="Motion.h" open="1" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1433" topLine="0" />
+			<Cursor1 position="3846" topLine="107" />
 		</Cursor>
 	</File>
 	<File name="lib\FusionBias.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -47,34 +27,34 @@
 			<Cursor1 position="2615" topLine="42" />
 		</Cursor>
 	</File>
-	<File name="LcdFunc.cpp" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="Imu.h" open="0" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="2997" topLine="58" />
+			<Cursor1 position="1890" topLine="18" />
 		</Cursor>
 	</File>
-	<File name="TaskScheduler.cpp" open="0" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="spi.cpp" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="1920" topLine="23" />
+			<Cursor1 position="1616" topLine="13" />
 		</Cursor>
 	</File>
-	<File name="AnalogSensor.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="TaskScheduler.cpp" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="1339" topLine="1" />
+			<Cursor1 position="1818" topLine="23" />
 		</Cursor>
 	</File>
-	<File name="spi.h" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="AnalogSensor.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="1421" topLine="0" />
+			<Cursor1 position="1602" topLine="6" />
 		</Cursor>
 	</File>
-	<File name="lib\FusionCompass.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="RobotMeuh.h" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="510" topLine="0" />
+			<Cursor1 position="2068" topLine="28" />
 		</Cursor>
 	</File>
-	<File name="MenuManagement.cpp" open="0" top="0" tabpos="14" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="MenuGeneral.h" open="0" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="1606" topLine="0" />
+			<Cursor1 position="1563" topLine="2" />
 		</Cursor>
 	</File>
 	<File name="lib\Fusion.h" open="0" top="0" tabpos="10" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -82,34 +62,34 @@
 			<Cursor1 position="403" topLine="9" />
 		</Cursor>
 	</File>
-	<File name="FusionImu.h" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="FusionImu.cpp" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="1510" topLine="0" />
+			<Cursor1 position="4004" topLine="61" />
 		</Cursor>
 	</File>
-	<File name="RobotMeuh.h" open="1" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="SerialCli.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="2845" topLine="59" />
+			<Cursor1 position="3010" topLine="48" />
 		</Cursor>
 	</File>
-	<File name="rtc.cpp" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="pin_helper.h" open="0" top="0" tabpos="11" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="1788" topLine="0" />
+			<Cursor1 position="2662" topLine="35" />
 		</Cursor>
 	</File>
-	<File name="Protocol.h" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="Motion.h" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="2189" topLine="38" />
+			<Cursor1 position="1620" topLine="3" />
 		</Cursor>
 	</File>
-	<File name="lib\FusionBias.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="LcdFunc.cpp" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="865" topLine="16" />
+			<Cursor1 position="1890" topLine="30" />
 		</Cursor>
 	</File>
-	<File name="LcdFunc.h" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="spi.h" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="1441" topLine="10" />
+			<Cursor1 position="1461" topLine="0" />
 		</Cursor>
 	</File>
 	<File name="TaskScheduler.h" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -117,24 +97,24 @@
 			<Cursor1 position="1462" topLine="0" />
 		</Cursor>
 	</File>
-	<File name="BrushlessBlade.cpp" open="1" top="1" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="AnalogSensor.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="3191" topLine="79" />
+			<Cursor1 position="1551" topLine="1" />
 		</Cursor>
 	</File>
-	<File name="utils.cpp" open="0" top="0" tabpos="9" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="SerialLcd.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="1520" topLine="8" />
+			<Cursor1 position="2991" topLine="58" />
 		</Cursor>
 	</File>
-	<File name="lib\FusionTypes.h" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="lib\FusionCompass.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="3180" topLine="128" />
+			<Cursor1 position="510" topLine="0" />
 		</Cursor>
 	</File>
-	<File name="MenuManagement.h" open="0" top="0" tabpos="15" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="MenuManagement.cpp" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="1780" topLine="38" />
+			<Cursor1 position="1614" topLine="28" />
 		</Cursor>
 	</File>
 	<File name="lib\FusionAhrs.c" open="0" top="0" tabpos="9" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -142,54 +122,64 @@
 			<Cursor1 position="3396" topLine="31" />
 		</Cursor>
 	</File>
-	<File name="Imu.cpp" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="FusionImu.h" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="2720" topLine="63" />
+			<Cursor1 position="1510" topLine="0" />
 		</Cursor>
 	</File>
-	<File name="StepperWheel.cpp" open="1" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="rtc.cpp" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="5890" topLine="145" />
+			<Cursor1 position="1904" topLine="35" />
 		</Cursor>
 	</File>
-	<File name="rtc.h" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="StepperWheel.cpp" open="0" top="0" tabpos="11" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="1451" topLine="2" />
+			<Cursor1 position="1645" topLine="16" />
 		</Cursor>
 	</File>
-	<File name="lib\FusionCalibration.h" open="0" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="lib\FusionBias.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="879" topLine="16" />
+			<Cursor1 position="865" topLine="16" />
 		</Cursor>
 	</File>
-	<File name="MenuGeneral.cpp" open="0" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="Protocol.h" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="1615" topLine="10" />
+			<Cursor1 position="1756" topLine="23" />
+		</Cursor>
+	</File>
+	<File name="LcdFunc.h" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1574" topLine="9" />
+		</Cursor>
+	</File>
+	<File name="utils.cpp" open="0" top="0" tabpos="9" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1499" topLine="8" />
 		</Cursor>
 	</File>
 	<File name="i2c.cpp" open="0" top="0" tabpos="9" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="1668" topLine="190" />
+			<Cursor1 position="5053" topLine="182" />
 		</Cursor>
 	</File>
-	<File name="BrushlessBlade.h" open="1" top="0" tabpos="8" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="BrushlessBlade.cpp" open="0" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="1569" topLine="14" />
+			<Cursor1 position="3117" topLine="58" />
 		</Cursor>
 	</File>
-	<File name="utils.h" open="0" top="0" tabpos="10" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="SerialCli.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="1849" topLine="31" />
+			<Cursor1 position="1535" topLine="0" />
 		</Cursor>
 	</File>
-	<File name="pin.h" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="lib\FusionTypes.h" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="1908" topLine="23" />
+			<Cursor1 position="9967" topLine="276" />
 		</Cursor>
 	</File>
-	<File name="Motion.cpp" open="1" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="MenuManagement.h" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="1881" topLine="23" />
+			<Cursor1 position="2273" topLine="43" />
 		</Cursor>
 	</File>
 	<File name="lib\FusionAhrs.h" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -197,14 +187,44 @@
 			<Cursor1 position="2057" topLine="30" />
 		</Cursor>
 	</File>
-	<File name="Imu.h" open="0" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="Imu.cpp" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="1518" topLine="17" />
+			<Cursor1 position="2946" topLine="52" />
 		</Cursor>
 	</File>
-	<File name="StepperWheel.h" open="1" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="rtc.h" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="3912" topLine="67" />
+			<Cursor1 position="1579" topLine="2" />
+		</Cursor>
+	</File>
+	<File name="StepperWheel.h" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="3073" topLine="50" />
+		</Cursor>
+	</File>
+	<File name="lib\FusionCalibration.h" open="0" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="879" topLine="16" />
+		</Cursor>
+	</File>
+	<File name="RobotMeuh.cpp" open="0" top="0" tabpos="8" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1807" topLine="26" />
+		</Cursor>
+	</File>
+	<File name="MenuGeneral.cpp" open="0" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1881" topLine="29" />
+		</Cursor>
+	</File>
+	<File name="utils.h" open="0" top="0" tabpos="9" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="3131" topLine="86" />
+		</Cursor>
+	</File>
+	<File name="i2c.h" open="0" top="0" tabpos="8" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="2094" topLine="18" />
 		</Cursor>
 	</File>
 </CodeBlocks_layout_file>

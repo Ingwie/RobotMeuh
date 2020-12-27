@@ -26,6 +26,6 @@
 #define GETRAINSENSORVOLTAGE()    getADC(RainInput)
 
 void adcInit();
-uint16_t getADC(uint8_t input);
+u16 getADC(u8 input);
 
 #endif // ANALOGSENSOR_H_INCLUDED

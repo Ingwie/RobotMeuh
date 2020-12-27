@@ -53,7 +53,7 @@ void initImus() // init Gyro, accel and compass
 #define CLK_SEL          0x03 // PLL with Z Gyro reference
 
 imu_t imuGyro;
-int16_t gyroTemp;
+s16 gyroTemp;
 
 void initGyro()
 {
@@ -62,9 +62,9 @@ void initGyro()
  i2c_writeRegByte(GYRO_ADRESS, 0x3E, CLK_SEL); // frequency source
 }
 
-uint8_t readGyro() // return 0 on success
+u8 readGyro() // return 0 on success
 {
- uint8_t ret = i2c_readReg(GYRO_ADRESS, GYRO_XOUT_H, (uint8_t*)&imuGyro, 6);
+ u8 ret = i2c_readReg(GYRO_ADRESS, GYRO_XOUT_H, (u8*)&imuGyro, 6);
 // swap bytes
  imuGyro.x = htons(imuGyro.x);
  imuGyro.y = htons(imuGyro.y);
@@ -72,11 +72,11 @@ uint8_t readGyro() // return 0 on success
 return ret;
 }
 
-uint8_t readGyroTemp() // return 0 on success
+u8 readGyroTemp() // return 0 on success
 {
- uint8_t ret = i2c_readReg(GYRO_ADRESS, TEMP_OUT_H, (uint8_t*)&gyroTemp, 2);
+ u8 ret = i2c_readReg(GYRO_ADRESS, TEMP_OUT_H, (u8*)&gyroTemp, 2);
  gyroTemp = htons(gyroTemp);
- gyroTemp = ((int32_t) 35 + (gyroTemp + 13200) / 280);
+ gyroTemp = ((s32) 35 + (gyroTemp + 13200) / 280);
  return ret;
 }
 
@@ -120,9 +120,9 @@ void initAcc()
  i2c_writeRegByte(ACC_ADRESS, DATA_FORMAT, FULL_RES | SET16G);
 }
 
-uint8_t readAcc() // return 0 on success
+u8 readAcc() // return 0 on success
 {
- return i2c_readReg(ACC_ADRESS, DATAX0, (uint8_t*)&imuAcc, 6);
+ return i2c_readReg(ACC_ADRESS, DATAX0, (u8*)&imuAcc, 6);
 }
 
 
@@ -148,7 +148,7 @@ void initMag()
  i2c_writeRegByte(MAG_ADRESS, SETRESETREG, SETRESETREGVAL);
 }
 
-uint8_t readMag() // return 0 on success
+u8 readMag() // return 0 on success
 {
- return i2c_readReg(MAG_ADRESS, 0x00, (uint8_t*)&imuMag, 6);
+ return i2c_readReg(MAG_ADRESS, 0x00, (u8*)&imuMag, 6);
 }

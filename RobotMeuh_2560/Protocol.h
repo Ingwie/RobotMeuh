@@ -30,23 +30,23 @@
 
 PACK(typedef struct
 {
- uint8_t KeyPlayPause:1;
- uint8_t KeyHome:1;
- uint8_t KeyEnter:1;
- uint8_t KeyPlus:1;
- uint8_t KeyMinus:1;
- uint8_t DetectRain:1;
- uint8_t DetectUsR:1;
- uint8_t DetectUsL:1;
+ u8 FistByteOne:1; // always 1
+ u8 KeyPlayPause:1;
+ u8 KeyHome:1;
+ u8 KeyEnter:1;
+ u8 KeyPlus:1;
+ u8 KeyMinus:1;
+ u8 DetectRain:1;
+ u8 Todo:1;
 }) DataLcdToMain_t;
 
 PACK(typedef struct
 {
- uint8_t IsRunning:1;
- uint8_t GoHome:1;
- uint8_t RunForward:1;
- uint8_t Unused:1;
- uint8_t RequestAction:4;
+ u8 IsRunning:1;
+ u8 GoHome:1;
+ u8 RunForward:1;
+ u8 Unused:1;
+ u8 RequestAction:4;
 }) Status_t;
 
 #define ISRUNNIG(x)        (x & 0x80)
@@ -71,6 +71,8 @@ enum lcdFunction   // 255 funcions
  B_DispOff,
  B_LedOn,
  B_LedOff,
+ B_BlinkOn,
+ B_BlinkOff,
  B_LShift,
  B_RShift,
  B_2ndRow,

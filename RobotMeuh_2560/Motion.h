@@ -21,7 +21,12 @@
 
 #include "RobotMeuh.h"
 
+#define MAXANGLE 1800 // 180° X 10
+#define MINANGLE (-MAXANGLE)
+
 void initDirPid();
-uint8_t followCourse(int16_t speed, int16_t course);
+u8 Motion_FollowAngle(s16 speed, s16 angle); // angle in degres X 10
+u8 Motion_Turn(s16 rate, s16 radius); // radius in cM
+
 
 #endif // MOTION_H_INCLUDED

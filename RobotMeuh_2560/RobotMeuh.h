@@ -19,6 +19,16 @@
 #ifndef __ROBOTMEUH_H_INCLUDED
 #define __ROBOTMEUH_H_INCLUDED
 
+// integer short name
+#define u8 uint8_t
+#define s8 int8_t
+#define u16 uint16_t
+#define s16 int16_t
+#define u32 uint32_t
+#define s32 int32_t
+#define u64 uint64_t
+#define s64 int64_t
+
 #ifndef PACK
  #define PACK( __Declaration__ ) __Declaration__ __attribute__((__packed__))
 #endif
@@ -40,6 +50,8 @@
 #include "rtc.h"
 #include "spi.h"
 #include "i2c.h"
+#include "SerialCli.h"
+#include "SerialLcd.h"
 #include "Imu.h"
 #include "AnalogSensor.h"
 #include "lib/Fusion.h"
@@ -52,14 +64,33 @@
 #include "MenuManagement.h"
 #include "MenuGeneral.h"
 
+// robot description
+#define WHELLBASE           60      // cM
+#define WHEELDIAMETER       27.0f   // cM
+
+#define WEELPERIMETER       WHEELDIAMETER * M_PI
+
+#define MICROSTEP           32.0f   // DRV8825 uStepping used
+#define STEPPERREV          200.0f
+#define GEARREDUCTION       5.0f    // 11 / 55 gear ration (To test ...)
+
+#define MAXSTEPPERSPEED      32000  // 5rev./seconde
+#define MAXROBOTSPEED        19000
+#define MAXROBOTTURN         (MAXSTEPPERSPEED - MAXROBOTSPEED)
+
+#define ROBOTSPEEDFACTOR    (WEELPERIMETER / (GEARREDUCTION * STEPPERREV * MICROSTEP))
+#define MAXWHEELSPEED       (WEELPERIMETER / (GEARREDUCTION * STEPPERREV * MICROSTEP)) * MAXSTEPPERSPEED // 84.8 cM/Sec
+#define MINWHEELSPEED       (WEELPERIMETER / (GEARREDUCTION * STEPPERREV * MICROSTEP)) * 1               // 0.00265 cM/Sec
+
 // Debug
-#define ERR(x) {lcdPrintString(0, 0, PSTR(x));_delay_ms(1000);}
+#define ERR(x) {lcdPrintString(0, 0, PSTR(x));_delay_ms(1000);lcdDispOn();}
 
 // PID
 #define PID_SCALING_FACTOR  1024
-#define Kp_Default          (1.000 * PID_SCALING_FACTOR)
-#define Ki_Default          (0.200 * PID_SCALING_FACTOR)
-#define Kd_Default          (0.050 * PID_SCALING_FACTOR)
+#define PID_K(x)            (x * PID_SCALING_FACTOR)
+#define Kp_Default          PID_K(0.500)
+#define Ki_Default          PID_K(0.080)
+#define Kd_Default          PID_K(0.050)
 
 /*
  I2C ADDRESS
@@ -74,32 +105,36 @@ ITG3205   0x68 // Gyro
 PACK(typedef struct
 {
 // Blade
- uint16_t  BladeSpeed = 3000; // T/Minute
- int16_t  Blade_P_Factor = Kp_Default;
- int16_t  Blade_I_Factor = Ki_Default;
- int16_t  Blade_D_Factor = Kd_Default;
-// Motion
- uint8_t  MotionSpeed = 20; // M/Minute
- int16_t  Dir_P_Factor = Kp_Default;
- int16_t  Dir_I_Factor = Ki_Default;
- int16_t  Dir_D_Factor = Kd_Default;
+ u16  BladeSpeed = 3000; // T/Minute
+ s16  Blade_P_Factor = Kp_Default;
+ s16  Blade_I_Factor = Ki_Default;
+ s16  Blade_D_Factor = Kd_Default;
+// SteppersWheels
+ u8  MotionSpeed = 20; // M/Minute
+ s16  SW_P_Factor = Kp_Default;
+ s16  SW_I_Factor = Ki_Default;
+ s16  SW_D_Factor = Kd_Default;
+// Motion angle
+ s16  Dir_P_Factor = Kp_Default;
+ s16  Dir_I_Factor = Ki_Default;
+ s16  Dir_D_Factor = Kd_Default;
 
 }) RobotMeuh_t;
 
 
 PACK(typedef struct
 {
- uint8_t whellSpeedOk:1; // no acceleration needed
- uint8_t unused:7;
+ u8 whellSpeedOk:1; // no acceleration needed
+ u8 unused:7;
 }) SystemBools_t;
 
 PACK(typedef struct
 {
 // in degres * 10
- int16_t roll:12;
- int16_t pitch:12;
- int16_t yaw:12;
- int16_t heading:12;
+ s16 roll:12;
+ s16 pitch:12;
+ s16 yaw:12;
+ s16 heading:12;
 }) ImuValues_t;
 
 //ROBOTMEUH
@@ -111,11 +146,11 @@ extern ImuValues_t ImuValues;
 
 // Spi data
 extern char SpiBuf[SPI_BUFFER_LENGHT];
-extern volatile uint8_t SpiBufNum;
+extern volatile u8 SpiBufNum;
 
 //TIME
 extern time_t rtcTime;
-extern uint8_t counter8mS; // Updated in TaskScheduler (ISR(TIMER0_COMPA_vect))
+extern u8 counter8mS; // Updated in TaskScheduler (ISR(TIMER0_COMPA_vect))
 
 //FUNCTIONS
 void Task1S();

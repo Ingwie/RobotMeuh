@@ -21,30 +21,28 @@ void initTimer8mS()
 {
 // TIMER 0 for interrupt frequency 125 Hz / 8mS:
  cli(); // stop interrupts
- TCCR0A = 0; // set entire TCCR0A register to 0
- TCCR0B = 0; // same for TCCR0B
- TCNT0  = 0; // initialize counter value to 0
+ TCCR2A = 0; // set entire TCCR0A register to 0
+ TCCR2B = 0; // same for TCCR0B
+ TCNT2  = 0; // initialize counter value to 0
 // set compare match register for 125 Hz increments
- OCR0A = 124; // = 16000000 / (1024 * 125) - 1 (must be <256)
+ OCR2A = 124; // = 16000000 / (1024 * 125) - 1 (must be <256)
 // turn on CTC mode
- TCCR0B |= (1 << WGM01);
-// Set CS02, CS01 and CS00 bits for 1024 prescaler
- TCCR0B |= (1 << CS02) | (0 << CS01) | (1 << CS00);
+ TCCR2B |= (1 << WGM21);
 // enable timer compare interrupt
- TIMSK0 |= (1 << OCIE0A);
+ TIMSK2 |= (1 << OCIE2A);
+// Set CS02, CS01 and CS00 bits for 1024 prescaler
+ TCCR2B |= (1 << CS22) | (0 << CS21) | (1 << CS20);
  sei(); // allow interrupts
 }
 
-ISR(TIMER0_COMPA_vect, ISR_NOBLOCK)
+ISR(TIMER2_COMPA_vect, ISR_NOBLOCK)
 {
- static uint8_t tik = 0;
- if (++tik == TIKTIMEOUT)
+ static u8 tik = 0;
+ if (++tik >= TIKTIMEOUT)
  {
    tik = 0;
    //Update Report for keys
    updateKeys();
-   cli();
-   memcpy(&SpiRet, &Report, 1); // Update Spiret IRQ mode
-   sei();
+   memcpy((u8*)&SpiRet, &Report, 1); // Update Spiret
  }
 }

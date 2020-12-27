@@ -25,7 +25,7 @@ void adcInit()
 //DIDR0 = 0x3F; // Digital input buffer disabled on unused ana pin.
 }
 
-uint16_t getADC(uint8_t input)
+u16 getADC(u8 input)
 {
  ADMUX = input|ADC_VREF_TYPE;
  ADCSRA |= _BV(ADSC); // Start the AD conversion

@@ -23,7 +23,13 @@
 // All menus
 extern void menuFirst(); // First at boot
 extern void menuStatus(); // show status
+extern void menuLcdReport(); // show lcd report in binary format
 extern void menuDateTime(); // show date time
+extern void menuImuFusion(); // Euler datas
+extern void menuImuGyro(); // Gyroscope datas
+extern void menuImuAcc(); // Accelerometer datas
+extern void menuImuMag(); // Magnetometer datas
+extern void menuFreeSram(); // show free sram
 
 /////////////////////////////////////////
 
@@ -33,7 +39,13 @@ const p_Function MenuFunctions[] PROGMEM = // Menu function array
 {
  menuFirst,
  menuStatus,
+ menuLcdReport,
  menuDateTime,
+ menuFreeSram,
+ menuImuFusion,
+ menuImuGyro,
+ menuImuAcc,
+ menuImuMag,
 
 };
 
@@ -41,8 +53,16 @@ enum menuArray // Image of menu function array
 {
  M_FIRST,
  M_STATUS,
+ M_LCDREPORT,
  M_DATETIME,
+ M_FREESRAM,
+ M_IMUFUSION,
+ M_IMUGYRO,
+ M_IMUACC,
+ M_IMUMAG,
 
+
+ M_MENUNUMBER
 };
 
 PACK(struct MenuTarget_t

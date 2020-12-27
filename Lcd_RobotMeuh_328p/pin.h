@@ -47,11 +47,11 @@
 //-----
 
 //-----> KEYBOARD Pin
-#define KeyPlayPausePin C,0   //PC0
-#define KeyHomePin      C,1   //PC1
+#define KeyHomePin      C,0   //PC0
+#define KeyPlayPausePin C,1   //PC1
 #define KeyEnterPin     C,2   //PC2
-#define KeyPlusPin      C,3   //PC3
-#define KeyMinusPin     C,4   //PC4
+#define KeyMinusPin     C,3   //PC3
+#define KeyPlusPin      C,4   //PC4
 //-----
 
 #define Unused4         C,5   //PC5

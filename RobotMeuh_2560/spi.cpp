@@ -20,22 +20,22 @@
 
 void initSpiMasterMode()
 {
-// Enable SPI as Mester, MSB first, 2Mhz.
+// Enable SPI as Master, MSB first, 2Mhz.
  set_input(SpiMisoPin);
  set_output_off(SpiLcdSSPin);
  set_output_off(SpiMosiPin);
  set_output_off(SpiSckPin);
- SPSR = _BV(SPI2X);
- SPCR = _BV(MSTR) | _BV(SPE) | _BV(SPR0);
+ SPSR |= _BV(SPI2X);
+ SPCR |= _BV(MSTR) | _BV(SPE) | _BV(SPR0);
 }
 
-uint8_t SpiXfer(uint8_t value)
+u8 SpiXfer(u8 value)
 {
 // Full Duplex (4 wire) spi
- //pin_low(SpiLcdSSPin);
+ pin_low(SpiLcdSSPin);
  SPDR = value;
  /* Wait for transfer to complete */
  while (!(SPSR & (1<<SPIF)));
- //pin_high(SpiLcdSSPin);
+ pin_high(SpiLcdSSPin);
  return SPDR;
 }

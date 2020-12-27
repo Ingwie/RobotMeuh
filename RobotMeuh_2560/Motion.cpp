@@ -18,13 +18,13 @@
 #include "Motion.h"
 
 // Last process value, used to find derivative of process value.
-int16_t Dir_lastMeasuredValue = 0;
+s16 Dir_lastMeasuredValue = 0;
 // Summation of errors, used for integrate calculations
-int32_t Dir_sumError = 0;
+s32 Dir_sumError = 0;
 // Maximum allowed error, avoid overflow
-int16_t Dir_maxError = INT16_MAX / (RobotMeuh.Dir_P_Factor + 1);
+s16 Dir_maxError = INT16_MAX / (RobotMeuh.Dir_P_Factor + 1);
 // Maximum allowed sumerror, avoid overflow
-int32_t Dir_maxSumError = (INT32_MAX / 2) / (RobotMeuh.Dir_I_Factor + 1);
+s32 Dir_maxSumError = (INT32_MAX / 2) / (RobotMeuh.Dir_I_Factor + 1);
 
 void initDirPid()
 {
@@ -34,14 +34,14 @@ void initDirPid()
  Dir_maxSumError = (INT32_MAX / 2) / (RobotMeuh.Dir_I_Factor + 1);
 }
 
-int16_t DirPid(int16_t espectedValue, int16_t measuredValue)
+s16 DirPid(s16 espectedValue, s16 measuredValue)
 {
- int16_t error, p_term, d_term;
- int32_t i_term, ret, temp;
+ s16 error, p_term, d_term;
+ s32 i_term, ret, temp;
 
  error = espectedValue - measuredValue;
 
- // Calculate Pterm and limit error overflow
+// Calculate Pterm and limit error overflow
  if (error > Dir_maxError)
   {
    p_term = INT16_MAX;
@@ -55,7 +55,7 @@ int16_t DirPid(int16_t espectedValue, int16_t measuredValue)
    p_term = RobotMeuh.Dir_P_Factor * error;
   }
 
- // Calculate Iterm and limit integral runaway
+// Calculate Iterm and limit integral runaway
  temp = Dir_sumError + error;
  if(temp > Dir_maxSumError)
   {
@@ -73,33 +73,65 @@ int16_t DirPid(int16_t espectedValue, int16_t measuredValue)
    i_term = RobotMeuh.Dir_I_Factor * Dir_sumError;
   }
 
- // Calculate Dterm
+// Calculate Dterm
  d_term = RobotMeuh.Dir_D_Factor * (Dir_lastMeasuredValue - measuredValue);
 
  Dir_lastMeasuredValue = measuredValue;
 
  ret = (p_term + i_term + d_term) / PID_SCALING_FACTOR;
- ret = limit<int32_t>(INT16_MIN, ret, INT16_MAX);
+ ret = limit<s32>(INT16_MIN, ret, INT16_MAX);
 
- return((int16_t)ret);
+ return((s16)ret);
 }
 
-int16_t findShortestAngle(int16_t from, int16_t to) // angles in degres X 10 (-1800 to 1800)
+s16 findShortestAngle(s16 from, s16 to) // angles in degres X 10 (-1800 to 1800)
 {
- int16_t ret = from - to;
- if (ret < -1800)
+ s16 ret = from - to;
+ if (ret < MINANGLE)
   {
-   ret = ret + 2 * 1800;
+   ret = ret + 2 * MAXANGLE;
   }
- else if (ret > 1800)
+ else if (ret > MAXANGLE)
   {
-   ret = ret - 2 * 1800;
+   ret = ret - 2 * MAXANGLE;
   }
  return ret;
 }
 
-uint8_t followCourse(int16_t speed, int16_t course)
+/*
+s16 findActualrRadius(s16 L_Speed, s16 R_Speed)
 {
- int16_t courseDiff = findShortestAngle(ImuValues.yaw, course);
- return computeStepperWheelDirection(speed, DirPid(courseDiff, 0));
+ s16 ret = 0;
+ if (L_Speed != R_Speed) // same speed radius is "0" else compute it
+  {
+   ret = ((WHELLBASE / 2) * ((L_Speed + R_Speed) / (L_Speed - R_Speed)));
+  }
+ return ret;
+}
+
+s16 findSpeedFactorForRadius(s16 radius) // factor * 1024
+{
+ s16 ret = 0;
+ s16 dblRadius = radius << 1; // X 2
+ if (dblRadius = WHELLBASE)
+  {
+    ++dblRadius; // avoid div by 0 = one static wheel
+  }
+   return = (((dblRadius + WHELLBASE) * 1024) / (dblRadius - WHELLBASE));
+}
+*/
+
+/////// MOTION
+
+u8 Motion_FollowAngle(s16 speed, s16 angle)
+{
+ s16 diffAngle = findShortestAngle(ImuValues.yaw, angle);
+ return computeStepperWheelPulses(speed, DirPid(diffAngle, 0));
+}
+
+u8 Motion_Turn(s16 rate, s16 radius) // radius in cM clockwise
+{
+ s16 lSpeed = rate * (radius + (WHELLBASE / 2));
+ s16 rSpeed = rate * (radius - (WHELLBASE / 2));
+ return forceStepperWheelPulses(lSpeed, rSpeed);
 }

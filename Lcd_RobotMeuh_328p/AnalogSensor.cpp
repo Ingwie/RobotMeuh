@@ -22,10 +22,10 @@ void adcInit()
 {
  ADMUX = ADC_VREF_TYPE;
  ADCSRA = _BV(ADEN) | _BV(ADPS2); // ADC enabled, pre-scaler division=16 (no interrupt, no auto-triggering)
- DIDR0 = 0x3F; // Digital input buffer disabled on unused ana pin.
+ //DIDR0 = 0x3F; // Digital input buffer disabled on unused ana pin.
 }
 
-uint16_t getADC(uint8_t input)
+u16 getADC(u8 input)
 {
  ADMUX = input|ADC_VREF_TYPE;
  ADCSRA |= _BV(ADSC); // Start the AD conversion

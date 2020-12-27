@@ -42,7 +42,7 @@ void i2c_Wait()
  while(! (TWCR & (1<<TWINT)) );
 }
 
-uint8_t i2c_start(uint8_t address)
+u8 i2c_start(u8 address)
 {
 // transmit START condition
  TWCR = (1<<TWINT) | (1<<TWSTA) | (1<<TWEN);
@@ -50,7 +50,7 @@ uint8_t i2c_start(uint8_t address)
  i2c_Wait();
 
 // check if the start condition was successfully transmitted
- uint8_t twst = TW_STATUS & 0xF8;
+ u8 twst = TW_STATUS & 0xF8;
  if(! ((twst == TW_START) || (twst == TW_REP_START)) )
   {
    i2c_stop();
@@ -73,7 +73,7 @@ uint8_t i2c_start(uint8_t address)
   }
 }
 
-uint8_t i2c_write(uint8_t data)
+u8 i2c_write(u8 data)
 {
 // load data into data register
  TWDR = data;
@@ -89,7 +89,7 @@ uint8_t i2c_write(uint8_t data)
  return 0;
 }
 
-uint8_t i2c_read_ack()
+u8 i2c_read_ack()
 {
 // start TWI module and acknowledge data after reception
  TWCR = (1<<TWINT) | (1<<TWEN) | (1<<TWEA);
@@ -99,7 +99,7 @@ uint8_t i2c_read_ack()
  return TWDR;
 }
 
-uint8_t i2c_read_nack()
+u8 i2c_read_nack()
 {
 // start receiving without acknowledging reception
  TWCR = (1<<TWINT) | (1<<TWEN);
@@ -116,7 +116,7 @@ void i2c_stop()
  while (TWCR & (1<<TWSTO));
 }
 
-void i2c_writeAndActiveISR(uint8_t data)
+void i2c_writeAndActiveISR(u8 data)
 {
 // load data into data register
  TWDR = data;
@@ -140,11 +140,11 @@ ISR(TWI_vect)
 }
 */
 
-uint8_t i2c_transmit(uint8_t address, uint8_t* data, uint16_t length)
+u8 i2c_transmit(u8 address, u8* data, u16 length)
 {
  if (i2c_start(address | I2C_WRITE)) return 1;
 
- for (uint16_t i = 0; i < length; i++)
+ for (u16 i = 0; i < length; i++)
   {
    if (i2c_write(data[i])) return 1;
   }
@@ -154,11 +154,11 @@ uint8_t i2c_transmit(uint8_t address, uint8_t* data, uint16_t length)
  return 0;
 }
 
-uint8_t i2c_receive(uint8_t address, uint8_t* data, uint16_t length)
+u8 i2c_receive(u8 address, u8* data, u16 length)
 {
  if (i2c_start(address | I2C_READ)) return 1;
 
- for (uint16_t i = 0; i < (length-1); i++)
+ for (u16 i = 0; i < (length-1); i++)
   {
    data[i] = i2c_read_ack();
   }
@@ -169,13 +169,13 @@ uint8_t i2c_receive(uint8_t address, uint8_t* data, uint16_t length)
  return 0;
 }
 
-uint8_t i2c_writeReg(uint8_t devaddr, uint8_t regaddr, uint8_t* data, uint16_t length)
+u8 i2c_writeReg(u8 devaddr, u8 regaddr, u8* data, u16 length)
 {
  if (i2c_start(devaddr | I2C_WRITE)) return 1;
 
  i2c_write(regaddr);
 
- for (uint16_t i = 0; i < length; i++)
+ for (u16 i = 0; i < length; i++)
   {
    if (i2c_write(data[i])) return 1;
   }
@@ -185,7 +185,7 @@ uint8_t i2c_writeReg(uint8_t devaddr, uint8_t regaddr, uint8_t* data, uint16_t l
  return 0;
 }
 
-uint8_t i2c_writeRegByte(uint8_t devaddr, uint8_t regaddr, uint8_t data)
+u8 i2c_writeRegByte(u8 devaddr, u8 regaddr, u8 data)
 {
  if (i2c_start(devaddr | I2C_WRITE)) return 1;
 
@@ -198,7 +198,7 @@ uint8_t i2c_writeRegByte(uint8_t devaddr, uint8_t regaddr, uint8_t data)
  return 0;
 }
 
-uint8_t i2c_readReg(uint8_t devaddr, uint8_t regaddr, uint8_t* data, uint16_t length)
+u8 i2c_readReg(u8 devaddr, u8 regaddr, u8* data, u16 length)
 {
  if (i2c_start(devaddr | I2C_WRITE)) return 1;
 
@@ -206,7 +206,7 @@ uint8_t i2c_readReg(uint8_t devaddr, uint8_t regaddr, uint8_t* data, uint16_t le
 
  if (i2c_start(devaddr | I2C_READ)) return 1;
 
- for (uint16_t i = 0; i < (length-1); i++)
+ for (u16 i = 0; i < (length-1); i++)
   {
    data[i] = i2c_read_ack();
   }

@@ -18,16 +18,16 @@
 #include "BrushlessBlade.h"
 
 BrushlessBlade_t BrushlessBlade;
-volatile uint16_t bladeTick;  // hall sensor tick
+volatile u16 bladeTick;  // hall sensor tick
 
 // Last process value, used to find derivative of process value.
-int16_t Blade_lastMeasuredValue = 0;
+s16 Blade_lastMeasuredValue = 0;
 // Summation of errors, used for integrate calculations
-int32_t Blade_sumError = 0;
+s32 Blade_sumError = 0;
 // Maximum allowed error, avoid overflow
-int16_t Blade_maxError = INT16_MAX / (RobotMeuh.Blade_P_Factor + 1);
+s16 Blade_maxError = INT16_MAX / (RobotMeuh.Blade_P_Factor + 1);
 // Maximum allowed sumerror, avoid overflow
-int32_t Blade_maxSumError = (INT32_MAX / 2) / (RobotMeuh.Blade_I_Factor + 1);
+s32 Blade_maxSumError = (INT32_MAX / 2) / (RobotMeuh.Blade_I_Factor + 1);
 
 void initBladePid()
 {
@@ -37,10 +37,10 @@ void initBladePid()
  Blade_maxSumError = (INT32_MAX / 2) / (RobotMeuh.Blade_I_Factor + 1);
 }
 
-void BladePid(int16_t espectedValue, int16_t measuredValue)
+void BladePid(s16 espectedValue, s16 measuredValue)
 {
- int16_t error, p_term, d_term;
- int32_t i_term, ret, temp;
+ s16 error, p_term, d_term;
+ s32 i_term, ret, temp;
 
  error = espectedValue - measuredValue;
 
@@ -82,9 +82,9 @@ void BladePid(int16_t espectedValue, int16_t measuredValue)
  Blade_lastMeasuredValue = measuredValue;
 
  ret = (p_term + i_term + d_term) / PID_SCALING_FACTOR;
- ret = limit<int32_t>(INT16_MIN, ret, INT16_MAX);
+ ret = limit<s32>(0, ret, 9999);
 
- return((int16_t)ret); todo write OCR5C
+ OCR5C =(u16)ret; // should work, OCR5C is double buffered
 }
 
 void initBrushlessBlade()
@@ -94,6 +94,9 @@ void initBrushlessBlade()
  set_output_off(BladePwmOutPin);
  set_input(BladePulsesinPin);
  memset(&BrushlessBlade, 0, sizeof(BrushlessBlade)); // Reset all fields
+
+// Pid
+ initBladePid();
 
 // Setup Timer 5 Mode 15 fast PWM, OCnA set TOP value, OCnC output & ICR5 capture input.
  TCCR5A = _BV(COM5C1) | _BV(COM5B0) | _BV(WGM51) | _BV(WGM50);
@@ -108,14 +111,15 @@ void initBrushlessBlade()
 
 void BrushlessBladeStop()
 {
- set_output_on(BladeEnablePin); // Stop !
+ set_output_on(BladeEnablePin); // Stop ! todo check brake (delay)
  OCR5C = 0; // off
  TCCR5B &= ~_BV(CS50); // Disable timer 5
  BrushlessBlade.IsCutting = false;
  BrushlessBlade.PWMValue = 0;
+ initBladePid(); // reset pid values
 }
 
-void BrushlessBladeCutAt(int16_t speed)
+void BrushlessBladeCutAt(s16 speed)
 {
  if (!speed) BrushlessBladeStop();
  if (speed > 0) // CW | CCW ?
@@ -128,15 +132,15 @@ void BrushlessBladeCutAt(int16_t speed)
    set_output_off(BladeClockwisePin);
    BrushlessBlade.Clockwise = false;
   }
- limit<int16_t>(-9999, speed, 9999); // 10000 stop output (Todo : test)
+ limit<s16>(-9999, speed, 9999); // 10000 stop output (Todo : test)
  OCR5C = abs(speed); // Set PPM average
  TCCR5B |= _BV(CS50); // Enable timer 5
  set_output_off(BladeEnablePin); // Cut !
  BrushlessBlade.IsCutting = true;
- BrushlessBlade.PWMValue = speed;
+ BrushlessBlade.PWMValue = speed*2;
 }
 
-void BrushlessBladeReadRPM() // called every 1 seconde (ISR mode)
+void BrushlessBladeReadRPM()
 {
 //  3 tick per turn...
 // -> One tick per Sec = 1/3 Turn/Sec
@@ -145,6 +149,13 @@ void BrushlessBladeReadRPM() // called every 1 seconde (ISR mode)
  bladeTick = ((BrushlessBlade.RPM << 2) + bladeTick) / 5; // Poor low pass filter
  BrushlessBlade.RPM = bladeTick;
  bladeTick = 0; // Reset counter
+}
+
+void BrushlessBladeUpdate() // called every 1 seconde (ISR mode)
+{
+ BrushlessBladeReadRPM();
+ sei(); // reset ISR mode
+ BladePid(BrushlessBlade.PWMValue, BrushlessBlade.RPM);
 }
 
 ISR(TIMER5_CAPT_vect, ISR_NOBLOCK) // Hall sensor detected (3 per turn on 42BLS03 with JY01 controler ?)

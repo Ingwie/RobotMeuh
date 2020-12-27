@@ -24,9 +24,9 @@
 * @param  Number of characters defined in the table
 
 */
-void lcdLoadCgram(char tab[], uint8_t charnum)
+void lcdLoadCgram(char tab[], u8 charnum)
 {
- uint8_t index;
+ u8 index;
  /* Each character contains 8 definition values*/
  charnum = charnum * 8;
  for (index = 0; index < charnum; index++)
@@ -70,7 +70,7 @@ void lcdEnable()
 void lcdCmd(char cmd_data)
 {
  pin_low(LCDPinRS);
- uint8_t temp = (LCDPort & 0x0F);
+ u8 temp = (LCDPort & 0x0F);
  LCDPort = (temp | (cmd_data & 0xF0));
  lcdEnable();
  LCDPort = (temp | (cmd_data << 4));
@@ -116,7 +116,7 @@ void lcdInit()
 void lcdPrintchar(char ascode)
 {
  pin_high(LCDPinRS);
- uint8_t temp = (LCDPort & 0x0F);
+ u8 temp = (LCDPort & 0x0F);
  LCDPort = (temp | (ascode & 0xF0));
  lcdEnable();
  LCDPort = (temp | (ascode << 4));
@@ -195,11 +195,27 @@ void lcdDispOff()
 }
 
 /**
+  Set Blink Block On
+*/
+void lcdBlinkOn()
+{
+ lcdCmd(0x0F);
+}
+
+/**
+  Set Set Blink Block Off
+*/
+void lcdBlinkOff()
+{
+ lcdCmd(0x0C);
+}
+
+/**
   Set Cursor to a specified location given by row and column information
 * @param  Row Number (0 to 1)
 * @param  Column Number (0 to 15) Assuming a 2 X 16 characters display
 */
-void lcdLocate(uint8_t row, uint8_t column)
+void lcdLocate(u8 row, u8 column)
 {
  switch (row)
   {
@@ -216,7 +232,7 @@ void lcdLocate(uint8_t row, uint8_t column)
   }
 }
 
-void lcd_printStringAt(uint8_t row, uint8_t column, const char *text)
+void lcd_printStringAt(u8 row, u8 column, const char *text)
 {
 	lcdLocate(row,column);
 	lcdPrintstring(text);

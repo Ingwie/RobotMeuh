@@ -67,6 +67,10 @@
 		<Unit filename="Protocol.h" />
 		<Unit filename="RobotMeuh.cpp" />
 		<Unit filename="RobotMeuh.h" />
+		<Unit filename="SerialCli.cpp" />
+		<Unit filename="SerialCli.h" />
+		<Unit filename="SerialLcd.cpp" />
+		<Unit filename="SerialLcd.h" />
 		<Unit filename="StepperWheel.cpp" />
 		<Unit filename="StepperWheel.h">
 			<Option target="&lt;{~None~}&gt;" />

@@ -40,6 +40,7 @@
 #define Tgl_Port_Bit(p,b)       ((p) ^= _BV(b))
 
 #define Get_Port_Bit(p,b)       (((p) & _BV(b)) != 0)
+#define Get_Port_Bit_Zero(p,b)  (((p) & _BV(b)) == 0)
 
 
 //user functions:
@@ -53,6 +54,7 @@
 
 #define get_output(io)          Get_Port_Bit(PORT(io),BIT(io))
 #define get_input(io)           Get_Port_Bit(PIN(io),BIT(io))
+#define get_input_zero(io)      Get_Port_Bit_Zero(PIN(io),BIT(io))
 
 #define set_dir_in(io)          (Clr_Port_Bit(DDR(io),BIT(io)))
 #define set_dir_out(io)         (Set_Port_Bit(DDR(io),BIT(io)))

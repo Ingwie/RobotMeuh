@@ -18,114 +18,204 @@
 #include "StepperWheel.h"
 
 // Value to drive StepperEngine
-int16_t L_RequestSpeed = 0;
-int16_t R_RequestSpeed = 0;
+s16 L_RequestSpeed = 0;
+s16 R_RequestSpeed = 0;
 // StepperEngine values
-int16_t L_ActualSpeed = 0;
-int16_t R_ActualSpeed = 0;
-int16_t wheelActualSpeed = 0;
+s16 L_ActualSpeed = 0;
+s16 R_ActualSpeed = 0;
+s16 wheelActualSpeed = 0;
 
-uint32_t L_StepCourse = 0;
-uint32_t R_StepCourse = 0;
+u32 L_StepCourse = 0;
+u32 R_StepCourse = 0;
 
-uint8_t  wheelAcceleration = STEPPERACCELDEF;
-uint8_t  wheelDeceleration = STEPPERDECELDEF;
+volatile u16 L_WheelPulses = 0;
+volatile u16 R_WheelPulses = 0;
 
-static uint16_t L_WheelPulses = 0;
-static uint16_t R_WheelPulses = 0;
+volatile u8 L_Prescaler = 0;
+volatile u8 R_Prescaler = 0;
 
-uint8_t L_Prescaler = 0;
-uint8_t R_Prescaler = 0;
+// PID
+// Last process value, used to find derivative of process value.
+s16 L_lastMeasuredValue = 0;
+s16 R_lastMeasuredValue = 0;
+// Summation of errors, used for integrate calculations
+s32 L_sumError = 0;
+s32 R_sumError = 0;
+// Maximum allowed error, avoid overflow
+s16 SW_maxError = INT16_MAX / (RobotMeuh.SW_P_Factor + 1);
+// Maximum allowed sumerror, avoid overflow
+s32 SW_maxSumError = (INT32_MAX / 2) / (RobotMeuh.SW_I_Factor + 1);
 
-static void linearizePulses(uint16_t freq, uint8_t * prescaler, uint16_t * pulses)
+void initStepperPid()
+{
+ L_lastMeasuredValue = 0;
+ L_sumError = 0;
+ R_lastMeasuredValue = 0;
+ R_sumError = 0;
+ SW_maxError = INT16_MAX / (RobotMeuh.SW_P_Factor + 1);
+ SW_maxSumError = (INT32_MAX / 2) / (RobotMeuh.SW_I_Factor + 1);
+}
+
+s16 L_Pid(s16 espectedValue, s16 measuredValue)
+{
+ s16 error, p_term, d_term;
+ s32 i_term, ret, temp;
+
+ error = espectedValue - measuredValue;
+
+// Calculate Pterm and limit error overflow
+ if (error > SW_maxError)
+  {
+   p_term = INT16_MAX;
+  }
+ else if (error < -SW_maxError)
+  {
+   p_term = -INT16_MAX;
+  }
+ else
+  {
+   p_term = RobotMeuh.SW_P_Factor * error;
+  }
+
+// Calculate Iterm and limit integral runaway
+ temp = L_sumError + error;
+
+ if(temp > SW_maxSumError)
+  {
+   i_term = (INT32_MAX / 2);
+   L_sumError = SW_maxSumError;
+  }
+ else if(temp < -SW_maxSumError)
+  {
+   i_term = -(INT32_MAX / 2);
+   L_sumError = -SW_maxSumError;
+  }
+ else
+  {
+   L_sumError = temp;
+   i_term = RobotMeuh.SW_I_Factor * L_sumError;
+  }
+
+// Calculate Dterm
+ d_term = RobotMeuh.SW_D_Factor * (L_lastMeasuredValue - measuredValue);
+
+ L_lastMeasuredValue = measuredValue;
+
+ ret = (p_term + i_term + d_term) / PID_SCALING_FACTOR;
+ ret = limit<s32>(-MAXSTEPPERSPEED, ret, MAXSTEPPERSPEED);
+
+ return((s16)ret);
+}
+
+s16 R_Pid(s16 espectedValue, s16 measuredValue)
+{
+ s16 error, p_term, d_term;
+ s32 i_term, ret, temp;
+
+ error = espectedValue - measuredValue;
+
+// Calculate Pterm and limit error overflow
+ if (error > SW_maxError)
+  {
+   p_term = INT16_MAX;
+  }
+ else if (error < -SW_maxError)
+  {
+   p_term = -INT16_MAX;
+  }
+ else
+  {
+   p_term = RobotMeuh.SW_P_Factor * error;
+  }
+
+// Calculate Iterm and limit integral runaway
+ temp = R_sumError + error;
+
+ if(temp > SW_maxSumError)
+  {
+   i_term = (INT32_MAX / 2);
+   R_sumError = SW_maxSumError;
+  }
+ else if(temp < -SW_maxSumError)
+  {
+   i_term = -(INT32_MAX / 2);
+   R_sumError = -SW_maxSumError;
+  }
+ else
+  {
+   R_sumError = temp;
+   i_term = RobotMeuh.SW_I_Factor * R_sumError;
+  }
+
+// Calculate Dterm
+ d_term = RobotMeuh.SW_D_Factor * (R_lastMeasuredValue - measuredValue);
+
+ R_lastMeasuredValue = measuredValue;
+
+ ret = (p_term + i_term + d_term) / PID_SCALING_FACTOR;
+ ret = limit<s32>(-MAXSTEPPERSPEED, ret, MAXSTEPPERSPEED);
+
+ return((s16)ret);
+}
+
+static void linearizePulses(u16 freq, u8 * prescaler, u16 * pulses)
 {
  if (freq <  FREQ5)
   {
    * prescaler = _BV(WGM33) | _BV(WGM32)  | PRESCALER5;
-   * pulses = (uint16_t)(F_CPU / (freq * PRESCVALUE5));
+   * pulses = (u16)(F_CPU / (freq * PRESCVALUE5));
   }
  else if (freq < FREQ4)
   {
    * prescaler = _BV(WGM33) | _BV(WGM32)  | PRESCALER4;
-   * pulses = (uint16_t)(F_CPU / (freq *PRESCVALUE4));
+   * pulses = (u16)(F_CPU / (freq *PRESCVALUE4));
   }
  else if (freq < FREQ3)
   {
    * prescaler = _BV(WGM33) | _BV(WGM32)  | PRESCALER3;
-   * pulses = (uint16_t)(F_CPU / (freq * PRESCVALUE3));
+   * pulses = (u16)(F_CPU / (freq * PRESCVALUE3));
   }
  else if (freq < FREQ2)
   {
    * prescaler = _BV(WGM33) | _BV(WGM32)  | PRESCALER2;
-   * pulses = (uint16_t)(F_CPU / (freq * PRESCVALUE2));
+   * pulses = (u16)(F_CPU / (freq * PRESCVALUE2));
   }
  else
   {
    * prescaler = _BV(WGM33) | _BV(WGM32) | PRESCALER1;
-   * pulses = (uint16_t)(F_CPU / (freq * PRESCVALUE1));
+   * pulses = (u16)(F_CPU / (freq * PRESCVALUE1));
   }
 }
 
-static int16_t computeWheelAcceleration(int16_t ActualSpeed, int16_t RequestSpeed, int8_t Comp) // Poor acceleration management but should work fine
+u8 computeStepperWheelSpeed() // Must be called at little interval, return 0 if final speed is set
 {
- int16_t ret;
- if (!Comp) // we change direction -> deceleration to 0
-  {
-   if (ActualSpeed > 0)
-    {
-     ret = ActualSpeed - wheelDeceleration;
-     ret = max(ret, 0);
-    }
-   else
-    {
-     ret = ActualSpeed + wheelDeceleration;
-     ret = min(ret, 0);
-    }
-  }
- else if (RequestSpeed > ActualSpeed) // Accelerate in +to+ , decelerate in -to-
-  {
-   ret = (Comp > 0)?/* +to+ */ min(ActualSpeed + wheelAcceleration, RequestSpeed) : min(ActualSpeed + wheelDeceleration, RequestSpeed);
-  }
- else // Decelerate in +to+ , accelerate in -to-
-  {
-   ret = (Comp > 0)?/* +to+ */ max(ActualSpeed - wheelDeceleration, RequestSpeed) : max(ActualSpeed - wheelAcceleration, RequestSpeed);
-  }
- return ret;
-}
-
-uint8_t computeStepperWheelSpeed() // Must be called at little interval, return 0 if final speed is set
-{
- uint8_t skip = 0;
+ u8 skip = 0;
 
 // Left Wheel
  if (L_RequestSpeed != L_ActualSpeed)
   {
    ++skip;
-   L_RequestSpeed = limit<int16_t>(-MAXSTEPPERSPEED, L_RequestSpeed, MAXSTEPPERSPEED);
-   int8_t L_Comp = sgn(L_RequestSpeed) + sgn(L_ActualSpeed); // == 0 if we will change direction
-   L_ActualSpeed = computeWheelAcceleration(L_ActualSpeed, L_RequestSpeed, L_Comp);
+   L_ActualSpeed = L_Pid(L_RequestSpeed, L_ActualSpeed);
   }
 // Right Wheel
  if (R_RequestSpeed != R_ActualSpeed)
   {
    ++skip;
-   R_RequestSpeed = limit<int16_t>(-MAXSTEPPERSPEED, R_RequestSpeed, MAXSTEPPERSPEED);
-   int8_t R_Comp = sgn(R_RequestSpeed) + sgn(R_ActualSpeed); // == 0 if we will change direction
-   R_ActualSpeed = computeWheelAcceleration(R_ActualSpeed, R_RequestSpeed, R_Comp);
+   R_ActualSpeed = R_Pid(R_RequestSpeed, R_ActualSpeed);
   }
 
  if (skip)
   {
 // Choose prescaler & Compute Timer pulses
-   uint8_t  L_presc;
-   uint16_t L_pulses;
+   u8  L_presc;
+   u16 L_pulses;
    linearizePulses(abs(L_ActualSpeed), &L_presc, &L_pulses);
 
-   uint8_t  R_presc;
-   uint16_t R_pulses;
+   u8  R_presc;
+   u16 R_pulses;
    linearizePulses(abs(R_ActualSpeed), &R_presc, &R_pulses);
 
-   uint8_t sreg = SREG; // Set speed in atomic mode
+   u8 sreg = SREG; // Set speed in atomic mode
    cli(); // ISR OFF
 // stop interrupt or re enable it
    (!L_ActualSpeed)? stopL_StepperWheel() : restartL_StepperWheel();
@@ -139,33 +229,39 @@ uint8_t computeStepperWheelSpeed() // Must be called at little interval, return 
    R_Prescaler = R_presc;
    R_WheelPulses = R_pulses;
    SREG = sreg; // ISR ON
-   wheelActualSpeed = ((int32_t)L_ActualSpeed + R_ActualSpeed) / 2;
+   wheelActualSpeed = ((s32)L_ActualSpeed + R_ActualSpeed) / 2;
    RobotStatus.RunForward = (wheelActualSpeed < 0)? 0 : 1;
   }
  return skip;
 }
 
-uint8_t computeStepperWheelDirection(int16_t speed, int16_t turn)
+u8 computeStepperWheelPulses (s16 speed, s16 turn)
 {
 // espected values
- int16_t Speed = speed; // needed using constant values
- int16_t Turn = turn;
+ s16 Speed = speed; // needed using constant values
+ s16 Turn = turn;
 // limit
- Speed = limit<int16_t>((-MAXROBOTSPEED), Speed, MAXROBOTSPEED);
- Turn = limit<int16_t>((-MAXROBOTTURN), Turn, MAXROBOTTURN);
- int8_t direction = sgn(Speed);
- int16_t Wl = Speed + (Turn * direction);
- int16_t Wr = Speed - (Turn * direction);
-// write value
- L_RequestSpeed = Wl;
- R_RequestSpeed = Wr;
+ Speed = limit<s16>((-MAXROBOTSPEED), Speed, MAXROBOTSPEED);
+ Turn = limit<s16>((-MAXROBOTTURN), Turn, MAXROBOTTURN);
+// direction
+ s8 direction = (speed < 0)? -1 : 1; // no speed -> turn running forward
+// update values
+ L_RequestSpeed = Speed + (Turn * direction);
+ R_RequestSpeed = Speed - (Turn * direction);
  return computeStepperWheelSpeed();
 }
 
+u8 forceStepperWheelPulses(s16 lSpeed, s16 rSpeed)
+{
+ L_RequestSpeed = lSpeed;
+ R_RequestSpeed = rSpeed;
+ return computeStepperWheelSpeed();
+}
 void initStepperWeel()
 {
+// output
  set_output_on(L_WheelEnablePin);
- set_output_off(R_WheelEnablePin);
+ set_output_on(R_WheelEnablePin);
  set_output_on(L_WheelDirPin);
  set_output_on(R_WheelDirPin);
  set_output_off(L_WheelPulsePin);
@@ -192,9 +288,10 @@ void initStepperWeel()
 
 void enableStepperWheel()
 {
+ initStepperPid();
  pin_low(L_WheelEnablePin);
  pin_low(R_WheelEnablePin);
- uint8_t sreg = SREG;
+ u8 sreg = SREG;
  cli();
  TCNT4 = 0; // Reset timer value
  TCNT3 = 0; // Reset timer value
@@ -258,5 +355,3 @@ ISR(TIMER3_OVF_vect) // right motor
    TCCR3B = R_Prescaler;
   }
 }
-
-

@@ -25,13 +25,16 @@ void initSpiSlaveMode()
  set_input(SpiMosiPin);
  set_input(SpiSckPin);
  set_output_off(SpiMisoPin);
- SPCR = _BV(SPIE) | _BV(SPE);
+ SPCR |= _BV(SPIE) | _BV(SPE); // init and active isr
 }
 
 ISR(SPI_STC_vect)
 {
- static uint8_t SpiBufCount = 0;
- uint8_t data = SPDR;
+ static u8 SpiBufCount = 0;
+
+   SPDR = SpiRet;
+   u8 data = SPDR;
+
  if (data != SPI_EOT)
   {
    SpiBuf[SpiBufWrite][SpiBufCount++] = data;
@@ -41,6 +44,5 @@ ISR(SPI_STC_vect)
    if(++SpiBufWrite >= SPI_BUFFER_NUM) SpiBufWrite = 0; // Change buffer
    SpiBufCount = 0; // reset counter
   }
- SPDR = SpiRet;
 }
 

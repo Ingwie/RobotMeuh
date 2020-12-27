@@ -80,7 +80,7 @@ void computeFusionImu()
 // Calculate heading
  fusionHeading = FusionCompassCalculateHeading(calibratedAccelerometer, calibratedMagnetometer);
 
-// Convert to int16_t
+// Convert to s16
  ImuValues.roll = eulerAngles.angle.roll * 10;
  ImuValues.pitch = eulerAngles.angle.pitch * 10;
  ImuValues.yaw = eulerAngles.angle.yaw * 10;

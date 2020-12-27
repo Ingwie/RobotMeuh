@@ -26,7 +26,7 @@
 #define CGRAM_address_start 0x40
 
 
-void lcdLoadCgram(char tab[], uint8_t charnum);
+void lcdLoadCgram(char tab[], u8 charnum);
 void lcdLedOn();
 void lcdLedOff();
 void lcdInit();
@@ -40,8 +40,10 @@ void lcdLShift();
 void lcdRShift();
 void lcdDispOn();
 void lcdDispOff();
-void lcdLocate(uint8_t row, uint8_t column);
-void lcd_printStringAt(uint8_t row, uint8_t column, const char *text);
+void lcdBlinkOn();
+void lcdBlinkOff();
+void lcdLocate(u8 row, u8 column);
+void lcd_printStringAt(u8 row, u8 column, const char *text);
 
 #endif /* __HD44780_H */
 

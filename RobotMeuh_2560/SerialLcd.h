@@ -15,18 +15,14 @@
 /*    https://www.mediafire.com/file/cahqfrm90h7c7fy/  */
 /*    Setup_OAVRCBuilder3.exe/file (Pswd : OpenAVRc)   */
 
-
-#ifndef RTC_H_INCLUDED
-#define RTC_H_INCLUDED
+#ifndef SERIALLCD_H_INCLUDED
+#define SERIALLCD_H_INCLUDED
 
 #include "RobotMeuh.h"
 
-///// PCF8563T Code ///// CR1220
+void initSerialLcd();
+void SerialLcdPrint(const char * text);
+void SerialLcdSend();
+void checkSerialLcdRXBuf();
 
-void initRTC();
-void rtcSetTime(struct tm * t);
-void rtcReadTime(struct tm * t);
-void rtcSetAlarm(u8 minutes, u8 hour, u8 wday);
-void rtcResetAlarm();
-
-#endif // RTC_H_INCLUDED
+#endif

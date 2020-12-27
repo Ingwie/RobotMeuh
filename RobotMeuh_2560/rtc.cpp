@@ -25,7 +25,7 @@
 void initRTC()
 {
  /* Read RTC registers */
- uint8_t powerlost;
+ u8 powerlost;
 
  if (i2c_readReg(RTC_ADRESS, 0x02, &powerlost, 1)) // Read VL bit in secondes register
   {
@@ -36,15 +36,15 @@ void initRTC()
 
  if (powerlost >> 7)  	/* When data has been volatiled, set default time */
   {
-   uint8_t buf[7];	/* RTC buffer */
+   u8 buf[7];	/* RTC buffer */
    /* Reset time to  01 01 2021. (I can't stand 2020 !) Reg[2..8] */
-   buf[0] = 0x00;
-   buf[1] = 0x00;
-   buf[2] = 0x00;
-   buf[3] = 0x01;
-   buf[4] = 0x01;
-   buf[5] = 0x01;
-   buf[6] = 0x21;
+   buf[0] = 0x00;    // 0 - 59 from seconds after the minute - [ 0 from 59 ]
+   buf[1] = 0x00;    // 0 - 59 from minutes after the hour - [ 0 from 59 ]
+   buf[2] = 0x00;    // 0 - 23 from hours since midnight - [ 0 from 23 ]
+   buf[3] = 0x01;    // 1 - 31 from day of the month - [ 1 from 31 ]
+   buf[4] = 0x01;    // 0 - 6  from days since Sunday - [ 0 from 6 ]
+   buf[5] = 0x01;    // 1 - 12 from months since January - [ 0 from 11 ]
+   buf[6] = 0x21;    // 0 - 99 from years since 1900
    i2c_writeReg(RTC_ADRESS, 0x02, buf, 7);
    ERR("PILE RTC HS");
   }
@@ -56,7 +56,7 @@ void initRTC()
 
 void rtcSetTime(struct tm * t)
 {
- uint8_t buf[7];
+ u8 buf[7];
 
  buf[0] = bin2bcd(t->tm_sec);         // 0 - 59 from seconds after the minute - [ 0 from 59 ]
  buf[1] = bin2bcd(t->tm_min);         // 0 - 59 from minutes after the hour - [ 0 from 59 ]
@@ -71,7 +71,7 @@ void rtcSetTime(struct tm * t)
 
 void rtcReadTime(struct tm * t)
 {
- uint8_t buf[7];
+ u8 buf[7];
 
  if (i2c_readReg(RTC_ADRESS, 0x02, buf, 7))
   {
@@ -87,11 +87,11 @@ void rtcReadTime(struct tm * t)
  t->tm_year = bcd2bin(buf[6]) + 100;       // 0 - 99 to years since 1900
 }
 
-void rtcSetAlarm(uint8_t minutes, uint8_t hour, uint8_t wday)
+void rtcSetAlarm(u8 minutes, u8 hour, u8 wday)
 {
 #define EnableAlarmField  _BV(7)
 // Set time
- uint8_t buf[4];
+ u8 buf[4];
  buf[0] = bin2bcd(minutes) | EnableAlarmField; // 0 - 59
  buf[1] = bin2bcd(hour) | EnableAlarmField;    // 0 - 23
  buf[2] = 0x00;                                // reset day, use only wday
@@ -99,7 +99,7 @@ void rtcSetAlarm(uint8_t minutes, uint8_t hour, uint8_t wday)
  i2c_writeReg(RTC_ADRESS, 0x09, buf, 4);
 
 // activate ISR
- uint8_t controlStatus2Reg;
+ u8 controlStatus2Reg;
  i2c_readReg(RTC_ADRESS, 0x01, &controlStatus2Reg, 1);
  controlStatus2Reg |= 0x02; // AIE activation
  i2c_writeReg(RTC_ADRESS, 0x01, &controlStatus2Reg, 1);
@@ -108,7 +108,7 @@ void rtcSetAlarm(uint8_t minutes, uint8_t hour, uint8_t wday)
 void rtcResetAlarm()
 {
 // desactivate ISR
- uint8_t controlStatus2Reg;
+ u8 controlStatus2Reg;
  i2c_readReg(RTC_ADRESS, 0x01, &controlStatus2Reg, 1);
  controlStatus2Reg &= ~0x02; // AIE desactivation
  i2c_writeReg(RTC_ADRESS, 0x01, &controlStatus2Reg, 1);

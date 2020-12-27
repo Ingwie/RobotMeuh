@@ -33,27 +33,27 @@ QMC5883L - 0x0D — Three axis magnetic field
 
 struct imu_t
 {
- int16_t x;
- int16_t y;
- int16_t z;
+ s16 x;
+ s16 y;
+ s16 z;
 };
 
 extern imu_t imuGyro;
 extern imu_t imuAcc;
 extern imu_t imuMag;
 
-extern int16_t gyroTemp;
+extern s16 gyroTemp;
 
 void initImus();
 
 void initGyro();
-uint8_t readGyro(); // return 0 on success
-uint8_t readGyroTemp(); // return 0 on success
+u8 readGyro(); // return 0 on success
+u8 readGyroTemp(); // return 0 on success
 
 void initAcc();
-uint8_t readAcc(); // return 0 on success
+u8 readAcc(); // return 0 on success
 
 void initMag();
-uint8_t readMag(); // return 0 on success
+u8 readMag(); // return 0 on success
 
 #endif // GY85_H_INCLUDED

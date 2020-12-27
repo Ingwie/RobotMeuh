@@ -25,22 +25,22 @@
 #define I2C_READ          0x01
 #define I2C_WRITE         0x00
 
-#define I2C_SPEED_100K()  { TWBR = (uint8_t) 72;}
-#define I2C_SPEED_400K()  { TWBR = (uint8_t) 12;}
-#define I2C_SPEED_888K()  { TWBR = (uint8_t) 1; }
-#define I2C_SPEED_1M()    { TWBR = (uint8_t) 0; }
+#define I2C_SPEED_100K()  { TWBR = (u8) 72;}
+#define I2C_SPEED_400K()  { TWBR = (u8) 12;}
+#define I2C_SPEED_888K()  { TWBR = (u8) 1; }
+#define I2C_SPEED_1M()    { TWBR = (u8) 0; }
 
 void initI2C();
-uint8_t i2c_start(uint8_t address);
-uint8_t i2c_write(uint8_t data);
-void i2c_writeAndActiveISR(uint8_t data);
-uint8_t i2c_read_ack();
-uint8_t i2c_read_nack();
-uint8_t i2c_transmit(uint8_t address, uint8_t* data, uint16_t length);
-uint8_t i2c_receive(uint8_t address, uint8_t* data, uint16_t length);
-uint8_t i2c_writeReg(uint8_t devaddr, uint8_t regaddr, uint8_t* data, uint16_t length);
-uint8_t i2c_writeRegByte(uint8_t devaddr, uint8_t regaddr, uint8_t data);
-uint8_t i2c_readReg(uint8_t devaddr, uint8_t regaddr, uint8_t* data, uint16_t length);
+u8 i2c_start(u8 address);
+u8 i2c_write(u8 data);
+void i2c_writeAndActiveISR(u8 data);
+u8 i2c_read_ack();
+u8 i2c_read_nack();
+u8 i2c_transmit(u8 address, u8* data, u16 length);
+u8 i2c_receive(u8 address, u8* data, u16 length);
+u8 i2c_writeReg(u8 devaddr, u8 regaddr, u8* data, u16 length);
+u8 i2c_writeRegByte(u8 devaddr, u8 regaddr, u8 data);
+u8 i2c_readReg(u8 devaddr, u8 regaddr, u8* data, u16 length);
 void i2c_stop();
 
 #endif // I2C_H_INCLUDED

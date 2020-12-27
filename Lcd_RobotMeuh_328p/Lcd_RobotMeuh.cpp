@@ -22,12 +22,12 @@ Status_t RobotStatus = {0};
 DataLcdToMain_t Report = {0};
 
 //SPI
-uint8_t SpiRet = 0;
+volatile u8 SpiRet = 0;
 char SpiBuf[SPI_BUFFER_NUM][SPI_BUFFER_LENGHT] = {SPI_EOT};
-volatile uint8_t SpiBufWrite = 0;
-uint8_t SpiBufRead = 0;
+volatile u8 SpiBufWrite = 0;
+u8 SpiBufRead = 0;
 
-void computeSpiBuf(uint8_t bufferNum)
+void computeSpiBuf(u8 bufferNum)
 {
  memcpy(&RobotStatus, &SpiBuf[bufferNum][0], 1);
 
@@ -48,6 +48,12 @@ void computeSpiBuf(uint8_t bufferNum)
      break;
     case  B_DispOff :
      lcdDispOff();
+     break;
+    case  B_BlinkOn :
+     lcdBlinkOn();
+     break;
+    case  B_BlinkOff :
+     lcdBlinkOff();
      break;
     case  B_LedOn :
      lcdLedOn();
@@ -86,7 +92,7 @@ void computeSpiBuf(uint8_t bufferNum)
 
 void checkSpiBuf()
 {
- uint8_t cont = 1;
+ u8 cont = 1;
  do
   {
    if (SpiBufRead != SpiBufWrite) // there is some datas arrived
@@ -107,13 +113,11 @@ int main()
 // Init All
  lcdInit();
  initKey();
- memcpy(&SpiRet, &Report, 1); // Update Spiret
+ updateKeys(); //Update Report for keys
+ memcpy((u8*)&SpiRet, &Report, 1); // Update Spiret
  initSpiSlaveMode();
  adcInit();
  initTimer8mS();
-
-//Update Report for keys
- updateKeys();
 
  lcdLedOn();
  lcd_printStringAt(0, 3, "ROBOT MEUH");
@@ -123,9 +127,10 @@ int main()
   {
    checkSpiBuf();
    //TODO
-   //uint8_t toremove = GETRAINSENSORVOLTAGE();
+   //u8 toremove = GETRAINSENSORVOLTAGE();
    _delay_ms(10);
   }
+
  while(1);
 
  return 0;

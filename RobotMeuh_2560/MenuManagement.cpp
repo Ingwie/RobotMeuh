@@ -23,7 +23,7 @@ p_Function MenuPointer;
 
 void menuNavigation(PMT_t menuTarget)
 {
- uint8_t tokenMem = menuToken;
+ u8 tokenMem = menuToken;
  MenuTarget_t mt;
 
  memcpy_P(&mt, menuTarget, sizeof(MenuTarget_t)); // load targets values from flash
@@ -55,7 +55,8 @@ void menuCompute()
 {
  lcdDispOffClear();
  MenuPointer = (p_Function)pgm_read_ptr_near(&MenuFunctions[menuToken]); // find menufunction[menuToken] in flash
- MenuPointer(); // call it
+ if (MenuPointer) MenuPointer(); // call it
+ else ERR("pointeur nul");
  lcdDispOn();
 }
 

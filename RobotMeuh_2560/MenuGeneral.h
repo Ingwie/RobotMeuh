@@ -22,6 +22,11 @@
 
 void menuFirst(); // First at boot
 void menuStatus(); // show status
+void menuLcdReport(); // show lcd report in binary format
 void menuDateTime(); // show date time
+void menuFreeSram(); // show free sram
+void menuImuFusion(); // Euler datas
+void menuImuGyro(); // Gyroscope datas
+void menuImuMag(); // Magnetometer datas
 
 #endif

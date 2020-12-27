@@ -34,8 +34,8 @@ void lcdAction(lcdFunction action);
 #define lcd2ndRow()       lcdAction(B_2ndRow)
 #define lcdHome()         lcdAction(B_Home)
 
-void lcdPrintString(uint8_t row, uint8_t column, const char *text);
-void lcdPrintf(uint8_t row, uint8_t column, PGM_P fmt, ...);
+void lcdPrintString(u8 row, u8 column, const char *text);
+void lcdPrintf(u8 row, u8 column, PGM_P fmt, ...);
 
 
 #endif // LCDFUNC_H_INCLUDED

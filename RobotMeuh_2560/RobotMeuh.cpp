@@ -27,25 +27,25 @@ ImuValues_t ImuValues = {0};
 
 //SPI (LCD com.)
 char SpiBuf[SPI_BUFFER_LENGHT] = {SPI_EOT};
-volatile uint8_t SpiBufNum = 0;
+volatile u8 SpiBufNum = 0;
 
 //TIME
 time_t rtcTime;
-uint8_t counter8mS; // Updated in TaskScheduler (ISR(TIMER0_COMPA_vect))
+u8 counter8mS; // Updated in TaskScheduler (ISR(TIMER0_COMPA_vect))
 
 
 void initRobotMeuh()
 {
+ initSerialCli();
+ initSerialLcd();
  initSpiMasterMode(); // master SPI
  initI2C();           // I2C
- //readEeprom();      // Todo Fram ?
+//readEeprom();      // Todo Fram ?
  initRTC();
  initImus();
  initFusionImu();
  initStepperWeel();   // timer 3 & 4
- initDirPid();
  initBrushlessBlade();// timer 5
- initBladePid();
  initTaskScheduler(); // timer 0
 }
 
@@ -55,7 +55,7 @@ int main(void)
  initRobotMeuh(); // global initialisation
  sei(); // Enable interrupt
  lcdDispOffClear();
- for (uint8_t i = 0; i < 10; ++i)
+ for (u8 i = 0; i < 10; ++i)
   {
    lcdLedOff();
    _delay_ms(100);
@@ -63,54 +63,54 @@ int main(void)
    _delay_ms(100);
   }
  forceMenu(M_FIRST);
- _delay_ms(1000);
- /*
-  forceMenu(M_STATUS);
-  _delay_ms(1000);
-
-  for (uint16_t i = 0; i < 2; ++i)
-   {
-    forceMenu(M_DATETIME);
-    _delay_ms(500);
-   }
- */
+ _delay_ms(500);
 
 
 
-
- uint8_t onetime = 0;
+ u8 onetime = 0;
  do
   {
    _delay_ms(300);
    lcdDispOffClear();
 
 // TEST //
-#define SW
+#define TESTMENU
 
    if (!onetime)
     {
      BrushlessBladeCutAt(9000);
-     wheelAcceleration = 50;
      enableStepperWheel();
      onetime = 1;
     }
 
+#if defined (TESTMENU)
+   // Show menus
+   do
+    {
+     for (u16 i = 0; i < 50; ++i)
+      {
+       SerialCliPrint("totototototo");SerialCliPrint("tatatatatata");SerialCliPrint("titititititi");
+       SerialCliSend();
+
+       forceMenu(M_LCDREPORT);
+       //forceMenu((menuArray)onetime);
+       _delay_ms(100);
+      }
+     if (++onetime == M_MENUNUMBER) onetime = M_FIRST;
+    }
+   while (1);
+#endif
 #if defined (EULER)
-   // Print Euler angles and heading
-   lcdPrintf(0,0,PSTR("R:%04i P:%04i"), ImuValues.roll, ImuValues.pitch);
-   lcdPrintf(1,0,PSTR("Y:%04i H:%04i"), ImuValues.yaw, ImuValues.heading);
+   forceMenu(M_IMUFUSION);
 #endif
 #if defined (GYRO)
-   lcdPrintf(0,0,PSTR("X:%05i Y:%05i"), imuGyro.x, imuGyro.y);
-   lcdPrintf(1,0,PSTR("Z:%05i"), imuGyro.z);
+   forceMenu(M_IMUGYRO);
 #endif
 #if defined (ACC)
-   lcdPrintf(0,0,PSTR("X:%05i Y:%05i"), imuAcc.x, imuAcc.y);
-   lcdPrintf(1,0,PSTR("Z:%05i"), imuAcc.z);
+   forceMenu(M_IMUACC);
 #endif
 #if defined (MAG)
-   lcdPrintf(0,0,PSTR("X:%05i Y:%05i"), imuMag.x, imuMag.y);
-   lcdPrintf(1,0,PSTR("Z:%05i"), imuMag.z);
+   forceMenu(M_IMUMAG);
 #endif
 #if defined (SW)
    lcdPrintf(0, 0, PSTR("L%6i A%6i"), L_RequestSpeed, L_ActualSpeed);
@@ -132,19 +132,22 @@ void Task8mS()
   {
    SystemBools.whellSpeedOk = (computeStepperWheelSpeed())? 0 : 1;
   }
-
 }
 
 // Mid task
 void Task32mS()
 {
  computeFusionImu(); // Compute imus (approx 150uS)
- followCourse(20000, 900);
+ Motion_FollowAngle(20000, 900);
+ //Motion_Turn(100, 0);
 }
 
 // Slow task
 void Task1S() // ISR mode
 {
- BrushlessBladeReadRPM();
- sei(); // reset ISR mode
+ if (BrushlessBlade.IsCutting)
+  {
+   BrushlessBladeUpdate(); // reset ISR mode
+  }
+
 }

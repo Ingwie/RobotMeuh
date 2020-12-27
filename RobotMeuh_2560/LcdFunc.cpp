@@ -18,19 +18,27 @@
 
 #include "LcdFunc.h"
 
-uint8_t lcdSpiXferBuff()
+u8 lcdSpiXferBuff()
 {
 // Full Duplex (4 wire) spi
+ u8 ret;
  pin_low(SpiLcdSSPin);
- for (uint8_t i = 0; i <= SpiBufNum; i++)
+ for (u8 i = 0; i <= SpiBufNum; i++)
   {
    SPDR = SpiBuf[i];
    /* Wait for transfer to complete */
    while (!(SPSR & (1<<SPIF)));
+   if (!ret) ret = SPDR;
   }
  pin_high(SpiLcdSSPin);
- return SPDR;
+ return ret;
 }
+
+void updateLcdReport(u8 byte)
+{
+   memcpy(&lcdReport, &byte, 1); // update lcdReport
+}
+
 
 void lcdAction(lcdFunction action)
 {
@@ -39,20 +47,18 @@ void lcdAction(lcdFunction action)
  SpiBuf[1] = action;
  SpiBuf[2] = SPI_EOT;
  SpiBufNum = 2;
- uint8_t temp = lcdSpiXferBuff();
- memcpy(&lcdReport, &temp, 1); // update lcdReport
+ updateLcdReport(lcdSpiXferBuff());
 }
 
-void lcdPrintString(uint8_t row, uint8_t column, const char *text)
+void lcdPrintString(u8 row, u8 column, const char *text)
 {
  RobotStatus.RequestAction = A_printString;
  memcpy(&SpiBuf[0], &RobotStatus, 1);
  SpiBuf[1] = ((row << 4) | (column & 0XF));
- uint8_t len = strlcpy_P(&SpiBuf[2], text, SPI_BUFFER_LENGHT);
+ u8 len = strlcpy_P(&SpiBuf[2], text, SPI_BUFFER_LENGHT);
  SpiBuf[len += 3] = SPI_EOT;
  SpiBufNum = len;
- uint8_t temp = lcdSpiXferBuff();
- memcpy(&lcdReport, &temp, 1); // update lcdReport
+ updateLcdReport(lcdSpiXferBuff());
 }
 
 /* Full options ...
@@ -71,17 +77,16 @@ void lcdPrintString(uint8_t row, uint8_t column, const char *text)
 %X	unsigned hexadecimal, with uppercase letters
 */
 
-void lcdPrintf(uint8_t row, uint8_t column, PGM_P fmt, ...)
+void lcdPrintf(u8 row, u8 column, PGM_P fmt, ...)
 {
  va_list args;
  RobotStatus.RequestAction = A_printString;
  memcpy(&SpiBuf[0], &RobotStatus, 1);
  SpiBuf[1] = ((row << 4) | (column & 0XF));
  va_start(args, fmt);
- uint8_t len = vsprintf_P(&SpiBuf[2], fmt, args);
+ u8 len = vsprintf_P(&SpiBuf[2], fmt, args);
  va_end(args);
  SpiBuf[len += 3] = SPI_EOT;
  SpiBufNum = len;
- uint8_t temp = lcdSpiXferBuff();
- memcpy(&lcdReport, &temp, 1); // update lcdReport
+ updateLcdReport(lcdSpiXferBuff());
 }

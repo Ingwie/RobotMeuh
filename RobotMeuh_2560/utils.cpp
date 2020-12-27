@@ -18,19 +18,19 @@
 
 #include "utils.h"
 
-uint8_t bin2bcd(int8_t bin)
+u8 bin2bcd(s8 bin)
 {
- return (uint8_t)(bin + 6 * (bin / 10));
+ return (u8)(bin + 6 * (bin / 10));
 }
 
-int8_t bcd2bin(uint8_t bcd)
+s8 bcd2bin(u8 bcd)
 {
- return (int8_t)(bcd - 6 * (bcd >> 4));
+ return (s8)(bcd - 6 * (bcd >> 4));
 }
 
-uint16_t freeSram()
+u16 freeSram()
 {
  extern int __heap_start, *__brkval;
- uint16_t v;
- return (uint16_t) &v - (__brkval == 0 ? (int) &__heap_start : (int) __brkval);
+ u16 v;
+ return (u16) &v - (__brkval == 0 ? (int) &__heap_start : (int) __brkval);
 }

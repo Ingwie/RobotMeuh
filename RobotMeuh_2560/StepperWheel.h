@@ -21,24 +21,6 @@
 
 #include "RobotMeuh.h"
 
-#define WHEELDIAMETER       27.0f   // cM
-#define WEELPERIMETER       WHEELDIAMETER * M_PI
-
-#define MICROSTEP           32.0f   // DRV8825 uStepping used
-#define STEPPERREV          200.0f
-#define GEARREDUCTION       5.0f    // 11 / 55 gear ration (To test ...)
-
-#define MAXSTEPPERSPEED      32000u // 5rev./seconde
-#define MAXROBOTSPEED        19000u
-#define MAXROBOTTURN         (MAXSTEPPERSPEED - MAXROBOTSPEED)
-#define STEPPERACCELDEF      100
-#define STEPPERDECELDEF      255
-
-#define ROBOTSPEEDFACTOR    (WEELPERIMETER / (GEARREDUCTION * STEPPERREV * MICROSTEP))
-#define MAXWHEELSPEED       (WEELPERIMETER / (GEARREDUCTION * STEPPERREV * MICROSTEP)) * MAXSTEPPERSPEED // 84.8 cM/Sec
-#define MINWHEELSPEED       (WEELPERIMETER / (GEARREDUCTION * STEPPERREV * MICROSTEP)) * 1               // 0.00265 cM/Sec
-
-
 // Prescaler
 #define PRESCVALUE1         1u
 #define PRESCVALUE2         8u
@@ -73,20 +55,19 @@
 // Value to drive StepperEngine
 
 // StepperEngine values
-extern int16_t L_RequestSpeed;
-extern int16_t R_RequestSpeed;
-extern int16_t L_ActualSpeed;
-extern int16_t R_ActualSpeed;
-extern int16_t wheelActualSpeed;
-extern uint8_t  wheelAcceleration;
-extern uint8_t  wheelDeceleration;
+extern s16 L_RequestSpeed;
+extern s16 R_RequestSpeed;
+extern s16 L_ActualSpeed;
+extern s16 R_ActualSpeed;
+extern s16 wheelActualSpeed;
 // Total pulses sended
-extern uint32_t L_StepCourse;
-extern uint32_t R_StepCourse;
+extern u32 L_StepCourse;
+extern u32 R_StepCourse;
 
 
-uint8_t computeStepperWheelDirection(int16_t speed, int16_t turn);
-uint8_t computeStepperWheelSpeed();
+u8 computeStepperWheelPulses(s16 speed, s16 turn);
+u8 forceStepperWheelPulses(s16 lSpeed, s16 rSpeed);
+u8 computeStepperWheelSpeed();
 void initStepperWeel();
 void enableStepperWheel();
 void disableStepperWheel();
