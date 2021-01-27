@@ -53,7 +53,7 @@ void initImus() // init Gyro, accel and compass
 #define CLK_SEL          0x03 // PLL with Z Gyro reference
 
 imu_t imuGyro;
-s16 gyroTemp;
+s16 gyroTemp; // in °C X 10
 
 void initGyro()
 {
@@ -69,6 +69,10 @@ u8 readGyro() // return 0 on success
  imuGyro.x = htons(imuGyro.x);
  imuGyro.y = htons(imuGyro.y);
  imuGyro.z = htons(imuGyro.z);
+// offset correction (manually)
+ imuGyro.x -= 2;
+ imuGyro.y -= 16;
+ imuGyro.z -= 110;
 return ret;
 }
 
@@ -76,7 +80,7 @@ u8 readGyroTemp() // return 0 on success
 {
  u8 ret = i2c_readReg(GYRO_ADRESS, TEMP_OUT_H, (u8*)&gyroTemp, 2);
  gyroTemp = htons(gyroTemp);
- gyroTemp = ((s32) 35 + (gyroTemp + 13200) / 280);
+ gyroTemp = (350 + (gyroTemp + 13200) / 28);
  return ret;
 }
 
@@ -122,7 +126,12 @@ void initAcc()
 
 u8 readAcc() // return 0 on success
 {
- return i2c_readReg(ACC_ADRESS, DATAX0, (u8*)&imuAcc, 6);
+ u8 ret = i2c_readReg(ACC_ADRESS, DATAX0, (u8*)&imuAcc, 6);
+// offset correction (manually)
+ imuAcc.x += 1;
+ imuAcc.y += 12;
+ imuAcc.z += 26;
+ return ret;
 }
 
 

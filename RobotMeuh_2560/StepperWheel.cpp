@@ -36,15 +36,15 @@ volatile u8 R_Prescaler = 0;
 
 // PID
 // Last process value, used to find derivative of process value.
-s16 L_lastMeasuredValue = 0;
-s16 R_lastMeasuredValue = 0;
+s16 L_lastMeasuredValue;
+s16 R_lastMeasuredValue;
 // Summation of errors, used for integrate calculations
-s32 L_sumError = 0;
-s32 R_sumError = 0;
+s32 L_sumError;
+s32 R_sumError;
 // Maximum allowed error, avoid overflow
-s16 SW_maxError = INT16_MAX / (RobotMeuh.SW_P_Factor + 1);
+s16 SW_maxError;
 // Maximum allowed sumerror, avoid overflow
-s32 SW_maxSumError = (INT32_MAX / 2) / (RobotMeuh.SW_I_Factor + 1);
+s32 SW_maxSumError;
 
 void initStepperPid()
 {
@@ -187,7 +187,7 @@ static void linearizePulses(u16 freq, u8 * prescaler, u16 * pulses)
   }
 }
 
-u8 computeStepperWheelSpeed() // Must be called at little interval, return 0 if final speed is set
+u8 computeStepperWheelSpeed() // Must be called at little interval, return 0 if actual speed == request speed
 {
  u8 skip = 0;
 
@@ -216,18 +216,18 @@ u8 computeStepperWheelSpeed() // Must be called at little interval, return 0 if 
    linearizePulses(abs(R_ActualSpeed), &R_presc, &R_pulses);
 
    u8 sreg = SREG; // Set speed in atomic mode
-   cli(); // ISR OFF
-// stop interrupt or re enable it
-   (!L_ActualSpeed)? stopL_StepperWheel() : restartL_StepperWheel();
-   (!R_ActualSpeed)? stopR_StepperWheel() : restartR_StepperWheel();
 // Set direction
    (L_ActualSpeed >= 0)? pin_low(L_WheelDirPin) : pin_high(L_WheelDirPin);
    (R_ActualSpeed >= 0)? pin_high(R_WheelDirPin) : pin_low(R_WheelDirPin);
 // Update prescaler & pulses
+   cli(); // ISR OFF
    L_Prescaler = L_presc;
    L_WheelPulses = L_pulses;
    R_Prescaler = R_presc;
    R_WheelPulses = R_pulses;
+// stop interrupt or re enable it
+   (!L_ActualSpeed)? stopL_StepperWheel() : restartL_StepperWheel();
+   (!R_ActualSpeed)? stopR_StepperWheel() : restartR_StepperWheel();
    SREG = sreg; // ISR ON
    wheelActualSpeed = ((s32)L_ActualSpeed + R_ActualSpeed) / 2;
    RobotStatus.RunForward = (wheelActualSpeed < 0)? 0 : 1;
@@ -240,11 +240,12 @@ u8 computeStepperWheelPulses (s16 speed, s16 turn)
 // espected values
  s16 Speed = speed; // needed using constant values
  s16 Turn = turn;
+ s16 turnLimit = (s32)(Speed * RobotMeuh.WheelsRotationRate) / 100;
 // limit
  Speed = limit<s16>((-MAXROBOTSPEED), Speed, MAXROBOTSPEED);
- Turn = limit<s16>((-MAXROBOTTURN), Turn, MAXROBOTTURN);
+ Turn = limit<s16>((-turnLimit), Turn, turnLimit);
 // direction
- s8 direction = (speed < 0)? -1 : 1; // no speed -> turn running forward
+ s8 direction = (Speed < 0)? -1 : 1; // no speed -> turn running forward
 // update values
  L_RequestSpeed = Speed + (Turn * direction);
  R_RequestSpeed = Speed - (Turn * direction);
@@ -257,6 +258,7 @@ u8 forceStepperWheelPulses(s16 lSpeed, s16 rSpeed)
  R_RequestSpeed = rSpeed;
  return computeStepperWheelSpeed();
 }
+
 void initStepperWeel()
 {
 // output
@@ -270,20 +272,20 @@ void initStepperWeel()
 // Setup Timer 3 & 4 Mode 15 fast PWM, OCnA set TOP value, OCnB output.
 
 // PH4 OC4B drive left motor.
- TCCR4A = _BV(COM4B1) | _BV(COM4B0) | _BV(WGM41) | _BV(WGM40);
+ TCCR4A = _BV(COM4B1) | _BV(WGM41) | _BV(WGM40);
  TCCR4B = _BV(WGM43) | _BV(WGM42);
  TCCR4C = 0;
  TIMSK4 = _BV(TOIE4);
- OCR4A = 0xF;
- OCR4B = 4;
+ OCR4A = 0xFF;
+ OCR4B = 0xE;
 
 // PE4 OC3B drive right motor.
- TCCR3A = _BV(COM3B1) | _BV(COM3B0) | _BV(WGM31) | _BV(WGM30);
+ TCCR3A = _BV(COM3B1) | _BV(WGM31) | _BV(WGM30);
  TCCR3B = _BV(WGM33) | _BV(WGM32);
  TCCR3C = 0;
  TIMSK3 = _BV(TOIE3);
- OCR3A = 0xF;
- OCR3B = 4;
+ OCR3A = 0xFF;
+ OCR3B = 0xE;
 }
 
 void enableStepperWheel()
@@ -296,16 +298,6 @@ void enableStepperWheel()
  TCNT4 = 0; // Reset timer value
  TCNT3 = 0; // Reset timer value
  SREG = sreg;
-}
-
-void disableStepperWheel()
-{
- TCCR4B &= ~PRESCALERRESETMASK; // Prescaler disabled
- TCCR3B &= ~PRESCALERRESETMASK; // Prescaler disabled
- pin_high(L_WheelEnablePin);
- pin_high(R_WheelEnablePin);
- pin_low(L_WheelPulsePin);
- pin_low(R_WheelPulsePin);
 }
 
 void stopL_StepperWheel()
@@ -336,22 +328,40 @@ void restartR_StepperWheel()
   }
 }
 
+void disableStepperWheel()
+{
+ stopL_StepperWheel(); // Prescaler disabled
+ stopR_StepperWheel(); // Prescaler disabled
+ pin_high(L_WheelEnablePin);
+ pin_high(R_WheelEnablePin);
+ pin_low(L_WheelPulsePin);
+ pin_low(R_WheelPulsePin);
+}
+
 ISR(TIMER4_OVF_vect) // left motor
 {
  ++L_StepCourse;
- if (!SystemBools.whellSpeedOk)
-  {
-   OCR4A = L_WheelPulses;
-   TCCR4B = L_Prescaler;
-  }
+ OCR4A = L_WheelPulses;
+ TCCR4B = L_Prescaler;
 }
 
 ISR(TIMER3_OVF_vect) // right motor
 {
  ++R_StepCourse;
- if (!SystemBools.whellSpeedOk)
-  {
-   OCR3A = R_WheelPulses;
-   TCCR3B = R_Prescaler;
-  }
+ OCR3A = R_WheelPulses;
+ TCCR3B = R_Prescaler;
+}
+
+s16 pulsesToDecimeterPerMinute(s16 pulses)
+{
+ s32 result = (pulses * WHEELDIAMETER * 314 * 6);
+ result /= (100 * GEARREDUCTION * STEPPERREV * MICROSTEP);
+ return result;
+}
+
+s16 decimeterPerMinuteToPulses(s16 dmpm)
+{
+ s32 result = dmpm * (100 * GEARREDUCTION * STEPPERREV * MICROSTEP);
+ result /= (WHEELDIAMETER * 314 * 6);
+ return result;
 }

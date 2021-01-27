@@ -20,7 +20,6 @@
 void initTimer8mS()
 {
 // TIMER 0 for interrupt frequency 125 Hz / 8mS:
- cli(); // stop interrupts
  TCCR2A = 0; // set entire TCCR0A register to 0
  TCCR2B = 0; // same for TCCR0B
  TCNT2  = 0; // initialize counter value to 0
@@ -32,17 +31,22 @@ void initTimer8mS()
  TIMSK2 |= (1 << OCIE2A);
 // Set CS02, CS01 and CS00 bits for 1024 prescaler
  TCCR2B |= (1 << CS22) | (0 << CS21) | (1 << CS20);
- sei(); // allow interrupts
 }
 
 ISR(TIMER2_COMPA_vect, ISR_NOBLOCK)
 {
  static u8 tik = 0;
  if (++tik >= TIKTIMEOUT)
- {
+  {
    tik = 0;
-   //Update Report for keys
+   // Update Report for keys
    updateKeys();
-   memcpy((u8*)&SpiRet, &Report, 1); // Update Spiret
- }
+   // update heartbeat
+   Report.heartbeat = (Report.heartbeat)? 0 : 1;
+
+   memcpy(&serialRet, &Report, 1); // Update Spiret
+   serialRet[NUM_BYTE_RET - 1] = SERIAL_LCD_EOL; // end of packet
+   SerialLcdPrint(serialRet);
+   SerialLcdSend();
+  }
 }

@@ -36,6 +36,7 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>
+#include <avr/eeprom.h>
 #include <inttypes.h>
 #include <string.h>
 #include <util/delay.h>
@@ -47,9 +48,11 @@
 #include "pin.h"
 #include "utils.h"
 #include "Protocol.h"
+#include "eeprom.h"
 #include "rtc.h"
-#include "spi.h"
+//#include "spi.h"
 #include "i2c.h"
+#include "AlarmClock.h"
 #include "SerialCli.h"
 #include "SerialLcd.h"
 #include "Imu.h"
@@ -74,16 +77,15 @@
 #define STEPPERREV          200.0f
 #define GEARREDUCTION       5.0f    // 11 / 55 gear ration (To test ...)
 
-#define MAXSTEPPERSPEED      32000  // 5rev./seconde
-#define MAXROBOTSPEED        19000
-#define MAXROBOTTURN         (MAXSTEPPERSPEED - MAXROBOTSPEED)
+#define MAXSTEPPERSPEED     32000  // 5rev./seconde
+#define MAXROBOTSPEED       28000
 
 #define ROBOTSPEEDFACTOR    (WEELPERIMETER / (GEARREDUCTION * STEPPERREV * MICROSTEP))
 #define MAXWHEELSPEED       (WEELPERIMETER / (GEARREDUCTION * STEPPERREV * MICROSTEP)) * MAXSTEPPERSPEED // 84.8 cM/Sec
 #define MINWHEELSPEED       (WEELPERIMETER / (GEARREDUCTION * STEPPERREV * MICROSTEP)) * 1               // 0.00265 cM/Sec
 
 // Debug
-#define ERR(x) {lcdPrintString(0, 0, PSTR(x));_delay_ms(1000);lcdDispOn();}
+#define ERR(x) {lcdPrintString_P(0, 0, PSTR(x));sendLcdDispOn();_delay_ms(1000);}
 
 // PID
 #define PID_SCALING_FACTOR  1024
@@ -101,31 +103,12 @@ QMC5883L  0x0D // Mag
 ITG3205   0x68 // Gyro
 */
 
-// Robot values saved to eeprom
 PACK(typedef struct
 {
-// Blade
- u16  BladeSpeed = 3000; // T/Minute
- s16  Blade_P_Factor = Kp_Default;
- s16  Blade_I_Factor = Ki_Default;
- s16  Blade_D_Factor = Kd_Default;
-// SteppersWheels
- u8  MotionSpeed = 20; // M/Minute
- s16  SW_P_Factor = Kp_Default;
- s16  SW_I_Factor = Ki_Default;
- s16  SW_D_Factor = Kd_Default;
-// Motion angle
- s16  Dir_P_Factor = Kp_Default;
- s16  Dir_I_Factor = Ki_Default;
- s16  Dir_D_Factor = Kd_Default;
-
-}) RobotMeuh_t;
-
-
-PACK(typedef struct
-{
- u8 whellSpeedOk:1; // no acceleration needed
- u8 unused:7;
+ u8 lcdHeartBeatMem:1; // lcd heartbeat memory
+ u8 lcdISOk:1; // check lcd heartbeat : 0 -> fault
+ u8 toggle500mS:1; // 0.5S toggle
+ u8 unused:5;
 }) SystemBools_t;
 
 PACK(typedef struct
@@ -137,6 +120,40 @@ PACK(typedef struct
  s16 heading:12;
 }) ImuValues_t;
 
+PACK(typedef struct
+{
+ u8 minute:6;
+ u8 hour:5;
+ u8 dayMask:7;
+ u8 duration:6; // X 5 minutes
+}) Alarm_t;
+#define DURATIONLENGHT  5
+
+// Robot values saved to eeprom
+PACK(typedef struct
+{
+// Blade
+ u16  BladeSpeed:13; // T/Minute 5000 max
+ u16  unused:3;
+ s16  Blade_P_Factor;
+ s16  Blade_I_Factor;
+ s16  Blade_D_Factor;
+// SteppersWheels
+ u16  WheelsSpeed:9; // M/Minute 50.0 max
+ u16  WheelsRotationRate:7; // 0 - 100 %
+ s16  SW_P_Factor;
+ s16  SW_I_Factor;
+ s16  SW_D_Factor;
+// Motion angle
+ s16  Dir_P_Factor;
+ s16  Dir_I_Factor;
+ s16  Dir_D_Factor;
+// Alarms
+ Alarm_t FirstAlarm;
+ Alarm_t SecondAlarm;
+}) RobotMeuh_t;
+
+
 //ROBOTMEUH
 extern RobotMeuh_t RobotMeuh;
 extern Status_t RobotStatus;
@@ -144,15 +161,13 @@ extern DataLcdToMain_t lcdReport;
 extern SystemBools_t SystemBools;
 extern ImuValues_t ImuValues;
 
-// Spi data
-extern char SpiBuf[SPI_BUFFER_LENGHT];
-extern volatile u8 SpiBufNum;
 
 //TIME
 extern time_t rtcTime;
 extern u8 counter8mS; // Updated in TaskScheduler (ISR(TIMER0_COMPA_vect))
 
 //FUNCTIONS
+void robotMeuhSetDefault();
 void Task1S();
 void Task32mS();
 void Task8mS();

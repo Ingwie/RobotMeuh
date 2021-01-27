@@ -46,6 +46,7 @@
 			<Add after="avr-objdump -Pmem-usage $(TARGET_OUTPUT_FILE) $(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).elf" />
 		</ExtraCommands>
 		<Unit filename="../RobotMeuh_2560/Protocol.h" />
+		<Unit filename="../RobotMeuh_2560/utils.h" />
 		<Unit filename="AnalogSensor.cpp" />
 		<Unit filename="AnalogSensor.h" />
 		<Unit filename="HD44780.cpp" />
@@ -54,11 +55,16 @@
 		<Unit filename="Keypad.h" />
 		<Unit filename="Lcd_RobotMeuh.cpp" />
 		<Unit filename="Lcd_RobotMeuh.h" />
+		<Unit filename="SerialLcd.cpp" />
+		<Unit filename="SerialLcd.h" />
 		<Unit filename="Timer8mS.cpp" />
 		<Unit filename="Timer8mS.h" />
 		<Unit filename="pin.h" />
 		<Unit filename="pin_helper.h" />
-		<Unit filename="spi.cpp" />
+		<Unit filename="spi.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
 		<Unit filename="spi.h" />
 		<Extensions />
 	</Project>

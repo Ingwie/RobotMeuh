@@ -38,13 +38,13 @@ void initRTC()
   {
    u8 buf[7];	/* RTC buffer */
    /* Reset time to  01 01 2021. (I can't stand 2020 !) Reg[2..8] */
-   buf[0] = 0x00;    // 0 - 59 from seconds after the minute - [ 0 from 59 ]
-   buf[1] = 0x00;    // 0 - 59 from minutes after the hour - [ 0 from 59 ]
-   buf[2] = 0x00;    // 0 - 23 from hours since midnight - [ 0 from 23 ]
-   buf[3] = 0x01;    // 1 - 31 from day of the month - [ 1 from 31 ]
-   buf[4] = 0x01;    // 0 - 6  from days since Sunday - [ 0 from 6 ]
-   buf[5] = 0x01;    // 1 - 12 from months since January - [ 0 from 11 ]
-   buf[6] = 0x21;    // 0 - 99 from years since 1900
+   buf[0] = 0x00;    // 0 - 59 from to seconds after the minute - [ 0 to 59 ]
+   buf[1] = 0x00;    // 0 - 59 from to minute after the hour - [ 0 to 59 ]
+   buf[2] = 0x00;    // 0 - 23 from to hours since midnight - [ 0 to 23 ]
+   buf[3] = 0x01;    // 1 - 31 from to day of the month - [ 1 to 31 ]
+   buf[4] = 0x05;    // 0 - 6  from to days since Sunday - [ 0 to 6 ]
+   buf[5] = 0x01;    // 1 - 12 from to months since January - [ 0 to 11 ]
+   buf[6] = 0x21;    // 0 - 99 from to years since 1900
    i2c_writeReg(RTC_ADRESS, 0x02, buf, 7);
    ERR("PILE RTC HS");
   }
@@ -58,13 +58,13 @@ void rtcSetTime(struct tm * t)
 {
  u8 buf[7];
 
- buf[0] = bin2bcd(t->tm_sec);         // 0 - 59 from seconds after the minute - [ 0 from 59 ]
- buf[1] = bin2bcd(t->tm_min);         // 0 - 59 from minutes after the hour - [ 0 from 59 ]
- buf[2] = bin2bcd(t->tm_hour);        // 0 - 23 from hours since midnight - [ 0 from 23 ]
- buf[3] = bin2bcd(t->tm_wday);        // 1 - 31 from day of the month - [ 1 from 31 ]
- buf[4] = bin2bcd(t->tm_mday);        // 0 - 6  from days since Sunday - [ 0 from 6 ]
- buf[5] = bin2bcd(t->tm_mon + 1);     // 1 - 12 from months since January - [ 0 from 11 ]
- buf[6] = bin2bcd(t->tm_year)-100;    // 0 - 99 from years since 1900
+ buf[0] = bin2bcd(t->tm_sec);         // 0 - 59 from to seconds after the minute - [ 0 to 59 ]
+ buf[1] = bin2bcd(t->tm_min);         // 0 - 59 from to minute after the hour - [ 0 to 59 ]
+ buf[2] = bin2bcd(t->tm_hour);        // 0 - 23 from to hours since midnight - [ 0 to 23 ]
+ buf[3] = bin2bcd(t->tm_mday);        // 1 - 31 from to day of the month - [ 1 to 31 ]
+ buf[4] = bin2bcd(t->tm_wday);        // 0 - 6  from to days since Sunday - [ 0 to 6 ]
+ buf[5] = bin2bcd(t->tm_mon + 1);     // 1 - 12 from to months since January - [ 0 to 11 ]
+ buf[6] = bin2bcd(t->tm_year - 100);  // 0 - 99 from to years since 1900
 
  i2c_writeReg(RTC_ADRESS, 0x02, buf, 7);
 }
@@ -79,23 +79,23 @@ void rtcReadTime(struct tm * t)
    return;
   }
  t->tm_sec =  bcd2bin(buf[0]);             // 0 - 59 to seconds after the minute - [ 0 to 59 ]
- t->tm_min =  bcd2bin(buf[1] & 0x7F);      // 0 - 59 to minutes after the hour - [ 0 to 59 ]
+ t->tm_min =  bcd2bin(buf[1] & 0x7F);      // 0 - 59 to minute after the hour - [ 0 to 59 ]
  t->tm_hour = bcd2bin(buf[2] & 0x3F);      // 0 - 23 to hours since midnight - [ 0 to 23 ]
- t->tm_mday = bcd2bin(buf[4] & 0x3F);      // 1 - 31 to day of the month - [ 1 to 31 ]
- t->tm_wday = bcd2bin((buf[3] & 0x07));    // 0 - 6  to days since Sunday - [ 0 to 6 ]
- t->tm_mon =  bcd2bin((buf[5] & 0x1F)-1);  // 1 - 12 to months since January - [ 0 to 11 ]
+ t->tm_mday = bcd2bin(buf[3] & 0x3F);      // 1 - 31 to day of the month - [ 1 to 31 ]
+ t->tm_wday = bcd2bin(buf[4] & 0x07);      // 0 - 6  to days since Sunday - [ 0 to 6 ]
+ t->tm_mon =  bcd2bin(buf[5] & 0x1F) - 1;  // 1 - 12 to months since January - [ 0 to 11 ]
  t->tm_year = bcd2bin(buf[6]) + 100;       // 0 - 99 to years since 1900
 }
 
-void rtcSetAlarm(u8 minutes, u8 hour, u8 wday)
+void rtcSetAlarm(u8 minute, u8 hour, u8 wday)
 {
 #define EnableAlarmField  _BV(7)
 // Set time
  u8 buf[4];
- buf[0] = bin2bcd(minutes) | EnableAlarmField; // 0 - 59
+ buf[0] = bin2bcd(minute) | EnableAlarmField; // 0 - 59
  buf[1] = bin2bcd(hour) | EnableAlarmField;    // 0 - 23
  buf[2] = 0x00;                                // reset day, use only wday
- buf[3] = bin2bcd(wday) | EnableAlarmField;    // 0 - 6  Alarm when wday, hours, and minutes match
+ buf[3] = bin2bcd(wday) | EnableAlarmField;    // 0 - 6  Alarm when wday, hours, and minute match
  i2c_writeReg(RTC_ADRESS, 0x09, buf, 4);
 
 // activate ISR

@@ -24,20 +24,21 @@
  #include "RobotMeuh.h"
 #endif
 
-#define SPI_BUFFER_LENGHT        20
-#define SPI_BUFFER_NUM           10
-#define SPI_EOT                  0x7F // DEL char
+#define SERIAL_LCD_SPEED            57600
+#define SERIAL_LCD_EOL              0x7F // DEL char
+#define SERIAL_LCD_BUF_LENGHT       20
+#define NUM_BYTE_RET                2 // Num byte of ret message
 
 PACK(typedef struct
 {
- u8 FistByteOne:1; // always 1
- u8 KeyPlayPause:1;
+ u8 heartbeat:1;
+ u8 KeyPlay:1;
  u8 KeyHome:1;
  u8 KeyEnter:1;
  u8 KeyPlus:1;
  u8 KeyMinus:1;
  u8 DetectRain:1;
- u8 Todo:1;
+ u8 todo:1;
 }) DataLcdToMain_t;
 
 PACK(typedef struct
@@ -56,16 +57,18 @@ PACK(typedef struct
 
 enum lcdActions   // 16 actions
 {
- A_none = 0, // just return lcdReport
+ A_none = 0,
  A_lcdFunction,
+ A_locate,
+ A_printChar,
  A_printString,
  A_rainTriggerValue,
 
 };
 
-enum lcdFunction   // 255 funcions
+enum lcdFunction   // 254 funcions
 {
- B_DispOff_Clear,
+ B_DispOff_Clear = 1,
  B_DispOn,
  B_Clear,
  B_DispOff,
@@ -77,6 +80,7 @@ enum lcdFunction   // 255 funcions
  B_RShift,
  B_2ndRow,
  B_Home,
+ B_CmdLoadCg,
 
 };
 

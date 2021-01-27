@@ -20,7 +20,7 @@
 
 #include "Lcd_RobotMeuh.h"
 
-#define TIKTIMEOUT 25 // 200mS
+#define TIKTIMEOUT 4 // 32mS
 
 void initTimer8mS();
 

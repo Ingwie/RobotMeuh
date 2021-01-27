@@ -21,7 +21,7 @@
 #include "RobotMeuh.h"
 
 void initSerialLcd();
-void SerialLcdPrint(const char * text);
+void SerialLcdPrint(char * text);
 void SerialLcdSend();
 void checkSerialLcdRXBuf();
 

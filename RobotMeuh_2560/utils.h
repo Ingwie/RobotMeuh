@@ -19,7 +19,11 @@
 #ifndef UTILS_H_INCLUDED
 #define UTILS_H_INCLUDED
 
-#include "RobotMeuh.h"
+#if defined(LCD_ROBOMEUH)
+ #include "../Lcd_RobotMeuh_328p/Lcd_RobotMeuh.h"
+#else
+ #include "RobotMeuh.h"
+#endif
 
 #define FORCEINLINE inline __attribute__ ((always_inline))
 #define NOINLINE __attribute__ ((noinline))

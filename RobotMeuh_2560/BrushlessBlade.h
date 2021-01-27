@@ -23,11 +23,11 @@
 
 PACK(typedef struct
 {
- s32 IsCutting:1;
- s32 Clockwise:1;
- s32 PWMValue:10;
- s32 Current:10;
- u32 RPM:10;
+ s16 IsCutting:1;
+ s16 Clockwise:1;
+ s16 PWMValue:10;
+ s16 Current:10;
+ u16 RPM:10;
 }) BrushlessBlade_t;
 
 extern BrushlessBlade_t BrushlessBlade;
@@ -37,5 +37,6 @@ void initBrushlessBlade();
 void BrushlessBladeStop();
 void BrushlessBladeCutAt(s16 speed);
 void BrushlessBladeUpdate();
+void initBladePid();
 
 #endif // BRUSHLESSBLADE_H_INCLUDED

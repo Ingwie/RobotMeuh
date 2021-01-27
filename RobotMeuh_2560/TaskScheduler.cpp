@@ -37,7 +37,8 @@ ISR(TIMER0_COMPA_vect) // Timer 8mS
   {
    counter8mS = 0; // reset counter
    ++rtcTime; // increase time
-   Task1S();  // sei() in this function
+   SystemBools.toggle500mS =  0;
+   Task1S();  // conditional sei() in this function
   }
 // enable interupts
  sei();
@@ -47,5 +48,9 @@ ISR(TIMER0_COMPA_vect) // Timer 8mS
  if ((counter8mS & 0x03) == 0x03)
   {
    Task32mS();
+  }
+ if ((counter8mS & 0x3E) == 0x3E) // 500 mS
+  {
+   SystemBools.toggle500mS =  1;
   }
 }

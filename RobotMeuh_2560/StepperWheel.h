@@ -75,5 +75,10 @@ void stopL_StepperWheel();
 void restartL_StepperWheel();
 void stopR_StepperWheel();
 void restartR_StepperWheel();
+void initStepperPid();
+
+
+s16 pulsesToDecimeterPerMinute(s16 pulses);
+s16 decimeterPerMinuteToPulses(s16 cmpm);
 
 #endif // STEPPERWHEEL_H_INCLUDED

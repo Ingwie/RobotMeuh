@@ -25,20 +25,37 @@ DataLcdToMain_t lcdReport = {0};
 SystemBools_t SystemBools = {0};
 ImuValues_t ImuValues = {0};
 
-//SPI (LCD com.)
-char SpiBuf[SPI_BUFFER_LENGHT] = {SPI_EOT};
-volatile u8 SpiBufNum = 0;
-
 //TIME
 time_t rtcTime;
 u8 counter8mS; // Updated in TaskScheduler (ISR(TIMER0_COMPA_vect))
 
 
+void robotMeuhSetDefault()
+{
+ memset(&RobotMeuh, 0, sizeof(RobotMeuh_t)); // reset all
+
+ RobotMeuh.BladeSpeed = 3000; // T/Minute 5000 max
+ //RobotMeuh.unused = 0;
+ RobotMeuh.Blade_P_Factor = Kp_Default;
+ RobotMeuh.Blade_I_Factor = Ki_Default;
+ RobotMeuh.Blade_D_Factor = Kd_Default;
+// SteppersWheels
+ RobotMeuh.WheelsSpeed = 200; // M/Minute 50.0 max
+ RobotMeuh.WheelsRotationRate = 10; // 0 - 100 %
+ RobotMeuh.SW_P_Factor = Kp_Default;
+ RobotMeuh.SW_I_Factor = Ki_Default;
+ RobotMeuh.SW_D_Factor = Kd_Default;
+// Motion angle
+ RobotMeuh.Dir_P_Factor = Kp_Default;
+ RobotMeuh.Dir_I_Factor = Ki_Default;
+ RobotMeuh.Dir_D_Factor = Kd_Default;
+}
+
 void initRobotMeuh()
 {
  initSerialCli();
- initSerialLcd();
- initSpiMasterMode(); // master SPI
+ initSerialLcd();     // Lcd com.
+//initSpiMasterMode(); // master SPI
  initI2C();           // I2C
 //readEeprom();      // Todo Fram ?
  initRTC();
@@ -52,26 +69,29 @@ void initRobotMeuh()
 int main(void)
 {
  _delay_ms(500); // Wake up !
+ eepromReadAll(); // load RobotMeuh settings
  initRobotMeuh(); // global initialisation
  sei(); // Enable interrupt
- lcdDispOffClear();
+ lcdLoadCgram(customChars, 8); // load custom characteres in CGram
+ sendLcdDispOffClear();
  for (u8 i = 0; i < 10; ++i)
   {
-   lcdLedOff();
-   _delay_ms(100);
-   lcdLedOn();
-   _delay_ms(100);
+   sendLcdLedOff();
+   _delay_ms(90);
+   sendLcdLedOn();
+   _delay_ms(90);
   }
- forceMenu(M_FIRST);
- _delay_ms(500);
-
+ sendLcdDispOn();
+ forceMenu(M_FIRST); // welcome !
+ _delay_ms(1500);
+ forceMenu(M_STATUS);
 
 
  u8 onetime = 0;
  do
   {
    _delay_ms(300);
-   lcdDispOffClear();
+   sendLcdDispOffClear();
 
 // TEST //
 #define TESTMENU
@@ -80,6 +100,7 @@ int main(void)
     {
      BrushlessBladeCutAt(9000);
      enableStepperWheel();
+     Motion_FollowAngle(20000, 900);
      onetime = 1;
     }
 
@@ -89,12 +110,11 @@ int main(void)
     {
      for (u16 i = 0; i < 50; ++i)
       {
-       SerialCliPrint("totototototo");SerialCliPrint("tatatatatata");SerialCliPrint("titititititi");
+       SerialCliPrint("totototototo");
        SerialCliSend();
-
-       forceMenu(M_LCDREPORT);
+       menuCompute();
        //forceMenu((menuArray)onetime);
-       _delay_ms(100);
+       _delay_ms(200);
       }
      if (++onetime == M_MENUNUMBER) onetime = M_FIRST;
     }
@@ -113,9 +133,7 @@ int main(void)
    forceMenu(M_IMUMAG);
 #endif
 #if defined (SW)
-   lcdPrintf(0, 0, PSTR("L%6i A%6i"), L_RequestSpeed, L_ActualSpeed);
-   lcdPrintf(1, 0, PSTR("R%6i A%6i"), R_RequestSpeed, R_ActualSpeed);
-   //lcdPrintf(1, 0, PSTR("V%4i St%8u"), wheelActualSpeed, L_StepCourse);
+   forceMenu(M_WHEELSPULSES);
 #endif
    lcdDispOn();
   }
@@ -128,18 +146,17 @@ int main(void)
 // Fast task
 void Task8mS()
 {
- if (!SystemBools.whellSpeedOk) // if we need to compute wheels acceleration
-  {
-   SystemBools.whellSpeedOk = (computeStepperWheelSpeed())? 0 : 1;
-  }
+ computeStepperWheelSpeed();
 }
 
 // Mid task
 void Task32mS()
 {
  computeFusionImu(); // Compute imus (approx 150uS)
- Motion_FollowAngle(20000, 900);
- //Motion_Turn(100, 0);
+//forceStepperWheelPulses(32000, decimeterPerMinuteToPulses(5000));
+ Motion_FollowAngle(decimeterPerMinuteToPulses(RobotMeuh.WheelsSpeed), 900);
+//Motion_Turn(100, 0);
+ checkSerialLcdRXBuf();
 }
 
 // Slow task
@@ -147,7 +164,8 @@ void Task1S() // ISR mode
 {
  if (BrushlessBlade.IsCutting)
   {
-   BrushlessBladeUpdate(); // reset ISR mode
+   BrushlessBladeUpdate(); // this function also reset ISR mode
   }
-
+// update temperature (from gyro)
+ readGyroTemp();
 }

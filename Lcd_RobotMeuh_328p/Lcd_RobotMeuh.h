@@ -41,9 +41,10 @@
 
 #include "pin_helper.h"
 #include "pin.h"
-#include "HD44780.h"
-#include "spi.h"
+#include "../RobotMeuh_2560/utils.h"
 #include "../RobotMeuh_2560/Protocol.h"
+#include "HD44780.h"
+#include "SerialLcd.h"
 #include "Keypad.h"
 #include "AnalogSensor.h"
 #include "Timer8mS.h"
@@ -51,15 +52,7 @@
 //ROBOTMEUH
 extern Status_t RobotStatus;
 extern DataLcdToMain_t Report;
-
-// Spi data
-extern volatile u8 SpiRet;
-extern char SpiBuf[SPI_BUFFER_NUM][SPI_BUFFER_LENGHT];
-extern volatile u8 SpiBufWrite;
-extern u8 SpiBufRead;
-
-void computeSpiBuf();
-void checkSpiBuf();
+extern u8 serialRet[];
 
 
 #endif // __LCD_ROBOTMEUH_H

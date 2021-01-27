@@ -20,11 +20,19 @@
 #define PIN_H_INCLUDED
 
 //-----> SPI Pin
-#define SpiLcdSSPin        B,0
-#define SpiSckPin          B,1
-#define SpiMosiPin         B,2
-#define SpiMisoPin         B,3
+//#define SpiLcdSSPin        B,0
+//#define SpiSckPin          B,1
+//#define SpiMosiPin         B,2
+//#define SpiMisoPin         B,3
 //-----
+
+//-----> LCDSERIAL Pin
+#define LcdSerialRxPin     D,17
+#define LcdSerialTxPin     D,16
+
+//-----> LCDCli Pin
+#define CliSerialRxPin     D,19
+#define CliSerialTxPin     D,18
 
 //-----> I2C Pin
 #define I2cSclPin          D,0

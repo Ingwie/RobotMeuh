@@ -17,11 +17,11 @@
 
 #include "SerialLcd.h"
 
-#define USART_LCD_ID                2
-#define SERIAL_LCD_RX_BUFFER_NUM    4
-#define SERIAL_LCD_RX_BUFFER_LENGHT NUM_BYTE_RET
-#define SERIAL_LCD_TX_BUFFER_NUM    6
-#define SERIAL_LCD_TX_BUFFER_LENGHT SERIAL_LCD_BUF_LENGHT
+#define USART_LCD_ID                0
+#define SERIAL_LCD_RX_BUFFER_NUM    6
+#define SERIAL_LCD_RX_BUFFER_LENGHT SERIAL_LCD_BUF_LENGHT
+#define SERIAL_LCD_TX_BUFFER_NUM    2
+#define SERIAL_LCD_TX_BUFFER_LENGHT NUM_BYTE_RET
 
 
 // RX buffer
@@ -36,11 +36,8 @@ volatile u8 SerialLcdTXBufRead = 0;
 void initSerialLcd()
 {
 // Pin
- set_input(LcdSerialRxPin);
- set_output_off(LcdSerialTxPin);
-// set 8N1
- UCSRB_N(USART_LCD_ID) = (0 << RXCIE_N(USART_LCD_ID)) | (0 << TXCIE_N(USART_LCD_ID)) | (0 << UDRIE_N(USART_LCD_ID)) | (0 << RXEN_N(USART_LCD_ID)) | (0 << TXEN_N(USART_LCD_ID)) | (0 << UCSZ2_N(USART_LCD_ID));
- UCSRC_N(USART_LCD_ID) = (1 << UCSZ1_N(USART_LCD_ID)) | (1 << UCSZ0_N(USART_LCD_ID)); // Set 1 stop bit, No parity bit.
+ set_input(SerialRxPin);
+ set_output_off(SerialTxPin);
 // set baudrate
 #undef BAUD
 #define BAUD SERIAL_LCD_SPEED
@@ -52,6 +49,9 @@ void initSerialLcd()
 #else
  UCSRA_N(USART_LCD_ID) &= ~(1 << U2X_N(USART_LCD_ID));
 #endif
+// set 8N1
+ UCSRB_N(USART_LCD_ID) = (0 << RXCIE_N(USART_LCD_ID)) | (0 << TXCIE_N(USART_LCD_ID)) | (0 << UDRIE_N(USART_LCD_ID)) | (0 << RXEN_N(USART_LCD_ID)) | (0 << TXEN_N(USART_LCD_ID)) | (0 << UCSZ2_N(USART_LCD_ID));
+ UCSRC_N(USART_LCD_ID) = (1 << UCSZ1_N(USART_LCD_ID)) | (1 << UCSZ0_N(USART_LCD_ID)); // Set 1 stop bit, No parity bit.
 // enable RX
  UCSRB_N(USART_LCD_ID) |= (1 << RXEN_N(USART_LCD_ID));  // enable RX
  UCSRB_N(USART_LCD_ID) |= (1 << RXCIE_N(USART_LCD_ID)); // enable Interrupt
@@ -60,17 +60,83 @@ void initSerialLcd()
  UCSRB_N(USART_LCD_ID) |= (1 << TXEN_N(USART_LCD_ID)); // enable TX
 }
 
-void computeSerialRXBuf(u8 buffNum)
+void computeSerialRXBuf(u8 bufferNum)
 {
- memcpy(&lcdReport, &SerialLcdRXBuf[buffNum][0], 1); // update lcdReport
-// check LCD heartbeat
- SystemBools.lcdISOk = (SystemBools.lcdHeartBeatMem ^ lcdReport.heartbeat)? 1 : 0;
- SystemBools.lcdHeartBeatMem = lcdReport.heartbeat;
+ memcpy(&RobotStatus, &SerialLcdRXBuf[bufferNum][0], 1);
+
+ switch (RobotStatus.RequestAction)
+  {
+  case A_lcdFunction :
+   switch (SerialLcdRXBuf[bufferNum][1])
+    {
+    case B_DispOff_Clear :
+     lcdClear();
+     lcdDispOff();
+     break;
+    case  B_DispOn :
+     lcdDispOn();
+     break;
+    case B_Clear :
+     lcdClear();
+     break;
+    case  B_DispOff :
+     lcdDispOff();
+     break;
+    case  B_BlinkOn :
+     lcdBlinkOn();
+     break;
+    case  B_BlinkOff :
+     lcdBlinkOff();
+     break;
+    case  B_LedOn :
+     lcdLedOn();
+     break;
+    case  B_LedOff :
+     lcdLedOff();
+     break;
+    case  B_LShift :
+     lcdLShift();
+     break;
+    case  B_RShift :
+     lcdRShift();
+     break;
+    case  B_2ndRow :
+     lcd2ndRow();
+     break;
+    case  B_Home :
+     lcdHome();
+     break;
+    case  B_CmdLoadCg :
+     lcdCmd(CGRAM_address_start);
+     break;
+
+    }
+   break;
+
+  case A_locate :
+   lcdLocate((SerialLcdRXBuf[bufferNum][1] >> 4), (SerialLcdRXBuf[bufferNum][1] & 0xF));
+   break;
+
+  case A_printChar :
+   lcdPrintchar(SerialLcdRXBuf[bufferNum][1]);
+   break;
+
+  case A_printString :
+   lcd_printStringAt((SerialLcdRXBuf[bufferNum][1] >> 4), (SerialLcdRXBuf[bufferNum][1] & 0xF), &SerialLcdRXBuf[bufferNum][2]);
+   break;
+
+  case A_rainTriggerValue :
+   //todo
+   break;
+
+  default : // case A_none ...
+   break;
+  }
 }
 
-void SerialLcdPrint(char * text)
+void SerialLcdPrint(u8 * text)
 {
- memcpy(&SerialLcdTXBuf[SerialLcdTXBufWrite][0], text, SERIAL_LCD_TX_BUFFER_LENGHT); // copy to TX buffer
+ memcpy(SerialLcdTXBuf[SerialLcdTXBufWrite], text, NUM_BYTE_RET); // copy to TX buffer
  if(++SerialLcdTXBufWrite >= SERIAL_LCD_TX_BUFFER_NUM) // Change buffer
   {
    SerialLcdTXBufWrite = 0;
@@ -103,7 +169,7 @@ void SerialLcdSend()
   }
 }
 
-ISR(USART_RX_vect_N(USART_LCD_ID))
+ISR(USART_RX_vect)
 {
  static u8 SerialLcdRXBufCount = 0;
 
@@ -117,15 +183,13 @@ ISR(USART_RX_vect_N(USART_LCD_ID))
  else
   {
    u8 data = UDR_N(USART_LCD_ID); // USART data register 0
-
-   sei(); // Enable interrupt
-
    if (data != SERIAL_LCD_EOL)
     {
      SerialLcdRXBuf[SerialLcdRXBufWrite][SerialLcdRXBufCount++] = data;
     }
    else
     {
+     SerialLcdRXBuf[SerialLcdRXBufWrite][SerialLcdRXBufCount++] = 0; // end of string
      if(++SerialLcdRXBufWrite >= SERIAL_LCD_RX_BUFFER_NUM)
       {
        SerialLcdRXBufWrite = 0; // Change buffer
@@ -136,7 +200,7 @@ ISR(USART_RX_vect_N(USART_LCD_ID))
 }
 
 // USART0 Transmit Data Register Emtpy ISR (UDR was loaded in Shift Register)
-ISR(USART_UDRE_vect_N(USART_LCD_ID))
+ISR(USART_UDRE_vect)
 {
  static u8 SerialLcdTXBufCount = 0;
 
@@ -144,9 +208,6 @@ ISR(USART_UDRE_vect_N(USART_LCD_ID))
   {
    char data = SerialLcdTXBuf[SerialLcdTXBufRead][SerialLcdTXBufCount++];
    UDR_N(USART_LCD_ID) = data; // send data
-
-   sei(); // Enable interrupt
-
    if (data == SERIAL_LCD_EOL)
     {
      if(++SerialLcdTXBufRead >= SERIAL_LCD_TX_BUFFER_NUM) SerialLcdTXBufRead = 0; // Change buffer

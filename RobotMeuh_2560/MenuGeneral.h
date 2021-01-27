@@ -20,13 +20,32 @@
 
 #include "RobotMeuh.h"
 
-void menuFirst(); // First at boot
-void menuStatus(); // show status
-void menuLcdReport(); // show lcd report in binary format
-void menuDateTime(); // show date time
-void menuFreeSram(); // show free sram
-void menuImuFusion(); // Euler datas
-void menuImuGyro(); // Gyroscope datas
-void menuImuMag(); // Magnetometer datas
+const void menuFirst(); // First at boot
+const void menuStatus(); // show status
+const void menuLcdKeys(); // show lcd keys
+const void menuDateTime(); // show date time
+const void menuFreeSram(); // show free sram
+const void menuImuFusion(); // Euler datas
+const void menuImuGyro(); // Gyroscope datas
+const void menuImuMag(); // Magnetometer datas
+const void menuBladeSpeed(); // Blade speed setting
+const void menuPidBlade(); // PID blade settings
+const void menuWheelsSpeed(); // Wheels speed setting
+const void menuPidDirection(); // PID direction settings
+const void menuWheelsRotationRate(); // Wheels rotation rate setting
+const void menuTemperature(); // show gyro temperature
+const void menuResetEeprom(); // restore default value
+const void menuSetFirstAlarm(); // Set firt alarm
+const void menuSetSecondAlarm(); // Set firt alarm
+const void menuTestSteppers(); // Test wheels motors and controlers
+const void menuTestBrushless(); // Test blade motor and controler
+
+
+const char EMPTYCHAR = '_';
+const char HOUR_MASK[] PROGMEM = "%02u:%02u:%02u";
+const char HOURMINUTE_MASK[] PROGMEM = "%02u:%02u";
+const char IMU_YZ_MASK[] PROGMEM = "Y % 5i Z % 5i";
+const char PID_ID_MASK[] PROGMEM = "I:%01u.%03u  D:%01u.%03u";
+const char WEEK_ALM[] PROGMEM = "-DLMMJVS-";
 
 #endif

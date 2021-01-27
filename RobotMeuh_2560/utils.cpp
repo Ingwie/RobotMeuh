@@ -30,7 +30,7 @@ s8 bcd2bin(u8 bcd)
 
 u16 freeSram()
 {
- extern int __heap_start, *__brkval;
- u16 v;
- return (u16) &v - (__brkval == 0 ? (int) &__heap_start : (int) __brkval);
+ extern s16 __heap_start, *__brkval;
+ u8 v;
+ return (s16) &v - (__brkval == 0 ? (s16) &__heap_start : (s16) __brkval);
 }

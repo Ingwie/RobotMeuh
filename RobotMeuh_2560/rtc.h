@@ -26,7 +26,7 @@
 void initRTC();
 void rtcSetTime(struct tm * t);
 void rtcReadTime(struct tm * t);
-void rtcSetAlarm(u8 minutes, u8 hour, u8 wday);
+void rtcSetAlarm(u8 minute, u8 hour, u8 wday);
 void rtcResetAlarm();
 
 #endif // RTC_H_INCLUDED

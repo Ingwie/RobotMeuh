@@ -21,13 +21,13 @@ BrushlessBlade_t BrushlessBlade;
 volatile u16 bladeTick;  // hall sensor tick
 
 // Last process value, used to find derivative of process value.
-s16 Blade_lastMeasuredValue = 0;
+s16 Blade_lastMeasuredValue;
 // Summation of errors, used for integrate calculations
-s32 Blade_sumError = 0;
+s32 Blade_sumError;
 // Maximum allowed error, avoid overflow
-s16 Blade_maxError = INT16_MAX / (RobotMeuh.Blade_P_Factor + 1);
+s16 Blade_maxError;
 // Maximum allowed sumerror, avoid overflow
-s32 Blade_maxSumError = (INT32_MAX / 2) / (RobotMeuh.Blade_I_Factor + 1);
+s32 Blade_maxSumError;
 
 void initBladePid()
 {
@@ -112,8 +112,8 @@ void initBrushlessBlade()
 void BrushlessBladeStop()
 {
  set_output_on(BladeEnablePin); // Stop ! todo check brake (delay)
- OCR5C = 0; // off
  TCCR5B &= ~_BV(CS50); // Disable timer 5
+ OCR5C = 0; // off
  BrushlessBlade.IsCutting = false;
  BrushlessBlade.PWMValue = 0;
  initBladePid(); // reset pid values

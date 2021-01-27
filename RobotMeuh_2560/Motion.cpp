@@ -18,13 +18,13 @@
 #include "Motion.h"
 
 // Last process value, used to find derivative of process value.
-s16 Dir_lastMeasuredValue = 0;
+s16 Dir_lastMeasuredValue;
 // Summation of errors, used for integrate calculations
-s32 Dir_sumError = 0;
+s32 Dir_sumError;
 // Maximum allowed error, avoid overflow
-s16 Dir_maxError = INT16_MAX / (RobotMeuh.Dir_P_Factor + 1);
+s16 Dir_maxError;
 // Maximum allowed sumerror, avoid overflow
-s32 Dir_maxSumError = (INT32_MAX / 2) / (RobotMeuh.Dir_I_Factor + 1);
+s32 Dir_maxSumError;
 
 void initDirPid()
 {

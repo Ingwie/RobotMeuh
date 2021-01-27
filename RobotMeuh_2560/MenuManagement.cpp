@@ -21,43 +21,92 @@ menuArray menuToken;
 
 p_Function MenuPointer;
 
+MenuVar_t menuVar = {0};
+
 void menuNavigation(PMT_t menuTarget)
 {
- u8 tokenMem = menuToken;
  MenuTarget_t mt;
 
- memcpy_P(&mt, menuTarget, sizeof(MenuTarget_t)); // load targets values from flash
+ if (!menuVar.editMode) // edit mode -> exit
+  {
+   memcpy_P(&mt, menuTarget, sizeof(MenuTarget_t)); // load targets values from flash
 
- if (lcdReport.KeyPlayPause)
-  {
-   menuToken = mt.PlayPause;
+   if (lcdReport.KeyHome) menuToken = M_STATUS;
+   else if (lcdReport.KeyPlay) menuToken = mt.Play;
+   else if (lcdReport.KeyEnter) menuToken = mt.Enter;
+   else if (lcdReport.KeyPlus) menuToken = mt.Plus;
+   else if (lcdReport.KeyMinus) menuToken = mt.Minus;
+   if (!IS_IN_RANGE(menuToken,M_FIRST,M_MENUNUMBER))
+    {
+     ERR("Menu inconnu");
+     menuToken = M_FIRST;
+     // StopAll(); todo
+    }
   }
- else if (lcdReport.KeyEnter)
+  else
   {
-   menuToken = mt.Enter;
+    if (!menuVar.maxField) menuVar.editMode = 0; // no editable field -> reset edit mode
   }
- else if (lcdReport.KeyPlus)
-  {
-   menuToken = mt.Plus;
-  }
- else if (lcdReport.KeyMinus)
-  {
-   menuToken = mt.Minus;
-  }
+}
 
- if (tokenMem != menuToken)
+s16 setMenuValue(s16 actual, s16 maxi, s16 mini, s16 step)
+{
+// field
+ if (lcdReport.KeyPlay)
   {
-   menuCompute();
+   if (menuVar.field < menuVar.maxField) ++menuVar.field;
+   else menuVar.editMode = 0;
   }
+ if (lcdReport.KeyEnter)
+  {
+   if (menuVar.field > 1) --menuVar.field;
+   else menuVar.editMode = 0;
+  }
+// value
+ s16 valueMem = actual;
+ if (lcdReport.KeyHome) step *= 100; // increase step
+ if (lcdReport.KeyMinus)
+  {
+   if (actual >= (mini + step)) actual -= step;
+   else  actual = mini;
+  }
+ if (lcdReport.KeyPlus)
+  {
+   if (actual <= (maxi - step)) actual += step;
+   else actual = maxi;
+  }
+ memset(&lcdReport, 0, sizeof(lcdReport)); // reset keys
+ if(valueMem != actual) menuVar.wasEdited = 1;
+ return actual;
 }
 
 void menuCompute()
 {
+ static u8 tokenMem = 0;
+
+ if (menuToken != tokenMem) // change menu ?
+  {
+   tokenMem = menuToken;
+   memset(&menuVar, 0, sizeof(menuVar)); // reset edit mode, field and value
+  }
+ else
+  {
+   if (lcdReport.KeyPlus && lcdReport.KeyMinus)
+    {
+     menuVar.editMode = !menuVar.editMode; // edit (field)value
+     if (menuVar.editMode) menuVar.field = 1; // set first field
+    }
+  }
  lcdDispOffClear();
  MenuPointer = (p_Function)pgm_read_ptr_near(&MenuFunctions[menuToken]); // find menufunction[menuToken] in flash
  if (MenuPointer) MenuPointer(); // call it
  else ERR("pointeur nul");
- lcdDispOn();
+
+ if (!SystemBools.lcdISOk) lcdPrintString_P(0, 0, PSTR("PB ecran")); // todo remove
+
+ (menuVar.editMode)? lcdBlinkOn() : lcdDispOn(); // blink on edit mode
+
+ SerialLcdSend(); // send serial buffer
 }
 
 void forceMenu(menuArray num)

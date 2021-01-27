@@ -19,7 +19,7 @@
 
 void initKey()
 {
- set_input_pullup(KeyPlayPausePin);
+ set_input_pullup(KeyPlayPin);
  set_input_pullup(KeyHomePin);
  set_input_pullup(KeyEnterPin);
  set_input_pullup(KeyPlusPin);
@@ -28,11 +28,9 @@ void initKey()
 
 void updateKeys()
 {
- Report.FistByteOne = 1;
- Report.KeyPlayPause = get_input_zero(KeyPlayPausePin);
+ Report.KeyPlay = get_input_zero(KeyPlayPin);
  Report.KeyHome = get_input_zero(KeyHomePin);
  Report.KeyEnter = get_input_zero(KeyEnterPin);
  Report.KeyPlus = get_input_zero(KeyPlusPin);
  Report.KeyMinus = get_input_zero(KeyMinusPin);
- Report.DetectRain = 1; // Todo remove
 }

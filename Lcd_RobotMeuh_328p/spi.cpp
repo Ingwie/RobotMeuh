@@ -30,19 +30,5 @@ void initSpiSlaveMode()
 
 ISR(SPI_STC_vect)
 {
- static u8 SpiBufCount = 0;
-
-   SPDR = SpiRet;
-   u8 data = SPDR;
-
- if (data != SPI_EOT)
-  {
-   SpiBuf[SpiBufWrite][SpiBufCount++] = data;
-  }
- else
-  {
-   if(++SpiBufWrite >= SPI_BUFFER_NUM) SpiBufWrite = 0; // Change buffer
-   SpiBufCount = 0; // reset counter
-  }
 }
 

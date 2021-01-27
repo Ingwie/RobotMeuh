@@ -15,39 +15,13 @@
 /*    https://www.mediafire.com/file/cahqfrm90h7c7fy/  */
 /*    Setup_OAVRCBuilder3.exe/file (Pswd : OpenAVRc)   */
 
-#include "Lcd_RobotMeuh.h"
 
-//ROBOTMEUH
-Status_t RobotStatus = {0};
-DataLcdToMain_t Report = {0};
-u8 serialRet[NUM_BYTE_RET];
+#ifndef EEPROM_H_INCLUDED
+#define EEPROM_H_INCLUDED
 
-int main()
-{
-// Init All
- lcdInit();
- initKey();
- updateKeys(); //Update Report for keys
- initSerialLcd();
- memcpy((u8*)&serialRet, &Report, 1); // Update Spiret
- serialRet[NUM_BYTE_RET - 1] = 0; // end of string
- adcInit();
- initTimer8mS();
- sei(); // allow interrupts
+#include "RobotMeuh.h"
 
- lcdLedOn();
- lcd_printStringAt(0, 3, "ROBOT MEUH");
- lcd_printStringAt(1, 2, "Connection...");
+void eepromReadAll(); // load RobotMeuh settings
+void eepromWritedAll(); // write RobotMeuh settings
 
- do
-  {
-   checkSerialLcdRXBuf();
-   //TODO
-   //u8 toremove = GETRAINSENSORVOLTAGE();
-   _delay_ms(10);
-  }
-
- while(1);
-
- return 0;
-}
+#endif // EEPROM_H_INCLUDED

@@ -36,12 +36,15 @@ volatile u8 SerialCliTXBufRead = 0;
 
 void initSerialCli()
 {
+// Pin
+ set_input(CliSerialRxPin);
+ set_output_off(CliSerialTxPin);
 // set 8N1
  UCSRB_N(USART_CLI_ID) = (0 << RXCIE_N(USART_CLI_ID)) | (0 << TXCIE_N(USART_CLI_ID)) | (0 << UDRIE_N(USART_CLI_ID)) | (0 << RXEN_N(USART_CLI_ID)) | (0 << TXEN_N(USART_CLI_ID)) | (0 << UCSZ2_N(USART_CLI_ID));
  UCSRC_N(USART_CLI_ID) = (1 << UCSZ1_N(USART_CLI_ID)) | (1 << UCSZ0_N(USART_CLI_ID)); // Set 1 stop bit, No parity bit.
 // set baudrate
 #undef BAUD
-#define BAUD 38400
+#define BAUD 57600
 #include <util/setbaud.h>
  UBRRH_N(USART_CLI_ID) = UBRRH_VALUE;
  UBRRL_N(USART_CLI_ID) = UBRRL_VALUE;

@@ -15,10 +15,10 @@
 				<Compiler>
 					<Add option="-flto" />
 					<Add option="-Os" />
+					<Add option="-g" />
 				</Compiler>
 				<Linker>
 					<Add option="-flto" />
-					<Add option="-s" />
 				</Linker>
 			</Target>
 			<Environment>
@@ -42,6 +42,8 @@
 			<Add after="avr-objcopy --no-change-warnings -j .signature --change-section-lma .signature=0 -O ihex $(TARGET_OUTPUT_FILE) $(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).sig" />
 			<Add after="avr-objdump -Pmem-usage $(TARGET_OUTPUT_FILE) $(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).elf" />
 		</ExtraCommands>
+		<Unit filename="AlarmClock.cpp" />
+		<Unit filename="AlarmClock.h" />
 		<Unit filename="AnalogSensor.cpp" />
 		<Unit filename="AnalogSensor.h" />
 		<Unit filename="BrushlessBlade.cpp" />
@@ -77,6 +79,8 @@
 		</Unit>
 		<Unit filename="TaskScheduler.cpp" />
 		<Unit filename="TaskScheduler.h" />
+		<Unit filename="eeprom.cpp" />
+		<Unit filename="eeprom.h" />
 		<Unit filename="i2c.cpp" />
 		<Unit filename="i2c.h" />
 		<Unit filename="lib/Fusion.h" />
@@ -98,7 +102,10 @@
 		<Unit filename="pin_helper.h" />
 		<Unit filename="rtc.cpp" />
 		<Unit filename="rtc.h" />
-		<Unit filename="spi.cpp" />
+		<Unit filename="spi.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
 		<Unit filename="spi.h" />
 		<Unit filename="utils.cpp" />
 		<Unit filename="utils.h" />

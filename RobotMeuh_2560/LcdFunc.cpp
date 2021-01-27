@@ -18,47 +18,66 @@
 
 #include "LcdFunc.h"
 
-u8 lcdSpiXferBuff()
-{
-// Full Duplex (4 wire) spi
- u8 ret;
- pin_low(SpiLcdSSPin);
- for (u8 i = 0; i <= SpiBufNum; i++)
-  {
-   SPDR = SpiBuf[i];
-   /* Wait for transfer to complete */
-   while (!(SPSR & (1<<SPIF)));
-   if (!ret) ret = SPDR;
-  }
- pin_high(SpiLcdSSPin);
- return ret;
-}
+char localBuf[SERIAL_LCD_BUF_LENGHT]; // static buffer -> Faster
 
-void updateLcdReport(u8 byte)
-{
-   memcpy(&lcdReport, &byte, 1); // update lcdReport
-}
+// glyphs
 
+const char customChars[] PROGMEM = {
+0x00,0x14,0x16,0x17,0x16,0x14,0x00,0x00, //playpause \b
+0x1e,0x01,0x05,0x09,0x1e,0x08,0x04,0x00, //enter     \1
+0x00,0x0e,0x15,0x17,0x11,0x0e,0x00,0x00, //clock     \2
+0x0e,0x1f,0x11,0x11,0x11,0x11,0x1f,0x00, //battery   \3
+0x00,0x00,0x0a,0x00,0x11,0x0e,0x00,0x00, //smilley   \4
+0x04,0x0e,0x0e,0x0e,0x1f,0x00,0x04,0x00, //alarm     \5
+0x04,0x0e,0x1f,0x1f,0x02,0x0a,0x04,0x00, //umbrella  \6
+0x1f,0x11,0x11,0x11,0x11,0x11,0x1f,0x00, //perimeter \7
+};
 
 void lcdAction(lcdFunction action)
 {
  RobotStatus.RequestAction = A_lcdFunction;
- memcpy(&SpiBuf[0], &RobotStatus, 1);
- SpiBuf[1] = action;
- SpiBuf[2] = SPI_EOT;
- SpiBufNum = 2;
- updateLcdReport(lcdSpiXferBuff());
+ memcpy(&localBuf[0], &RobotStatus, 1);
+ localBuf[1] = action;
+ localBuf[2] = SERIAL_LCD_EOL; // end of packet
+ SerialLcdPrint(localBuf);
 }
 
-void lcdPrintString(u8 row, u8 column, const char *text)
+void lcdLocate(u8 row, u8 column)
+{
+ RobotStatus.RequestAction = A_locate;
+ memcpy(&localBuf[0], &RobotStatus, 1);
+ localBuf[1] = ((row << 4) | (column & 0XF));
+ localBuf[2] = SERIAL_LCD_EOL; // end of packet
+ SerialLcdPrint(localBuf);
+}
+
+void lcdPrintchar(char code)
+{
+ RobotStatus.RequestAction = A_printChar;
+ memcpy(&localBuf[0], &RobotStatus, 1);
+ localBuf[1] = code;
+ localBuf[2] = SERIAL_LCD_EOL; // end of packet
+ SerialLcdPrint(localBuf);
+}
+
+void lcdPrintString(u8 row, u8 column, char *text)
 {
  RobotStatus.RequestAction = A_printString;
- memcpy(&SpiBuf[0], &RobotStatus, 1);
- SpiBuf[1] = ((row << 4) | (column & 0XF));
- u8 len = strlcpy_P(&SpiBuf[2], text, SPI_BUFFER_LENGHT);
- SpiBuf[len += 3] = SPI_EOT;
- SpiBufNum = len;
- updateLcdReport(lcdSpiXferBuff());
+ memcpy(&localBuf[0], &RobotStatus, 1);
+ localBuf[1] = ((row << 4) | (column & 0XF));
+ u8 len = strlcpy(&localBuf[2], text, SERIAL_LCD_BUF_LENGHT - 2);
+ localBuf[len + 3] = SERIAL_LCD_EOL; // end of packet
+ SerialLcdPrint(localBuf);
+}
+
+void lcdPrintString_P(u8 row, u8 column, const char *text)
+{
+ RobotStatus.RequestAction = A_printString;
+ memcpy(&localBuf[0], &RobotStatus, 1);
+ localBuf[1] = ((row << 4) | (column & 0XF));
+ u8 len = strlcpy_P(&localBuf[2], text, SERIAL_LCD_BUF_LENGHT - 2);
+ localBuf[len + 3] = SERIAL_LCD_EOL; // end of packet
+ SerialLcdPrint(localBuf);
 }
 
 /* Full options ...
@@ -81,12 +100,25 @@ void lcdPrintf(u8 row, u8 column, PGM_P fmt, ...)
 {
  va_list args;
  RobotStatus.RequestAction = A_printString;
- memcpy(&SpiBuf[0], &RobotStatus, 1);
- SpiBuf[1] = ((row << 4) | (column & 0XF));
+ memcpy(&localBuf[0], &RobotStatus, 1);
+ localBuf[1] = ((row << 4) | (column & 0XF));
  va_start(args, fmt);
- u8 len = vsprintf_P(&SpiBuf[2], fmt, args);
+ u8 len = vsprintf_P(&localBuf[2], fmt, args);
  va_end(args);
- SpiBuf[len += 3] = SPI_EOT;
- SpiBufNum = len;
- updateLcdReport(lcdSpiXferBuff());
+ localBuf[len + 3] = SERIAL_LCD_EOL; // end of packet
+ SerialLcdPrint(localBuf);
+}
+
+void lcdLoadCgram(const char * tab, u8 charnum)
+{
+ sendLcdCmdLoadCg(); // send command
+// Each character contains 8 definition values
+ charnum *= 8;
+ for (u8 index = 0; index < charnum; index++)
+  {
+   _delay_ms(10); // don't overflow serial buffers
+   // Store values in LCD
+   lcdPrintchar(pgm_read_byte_near(&tab[index]));
+   SerialLcdSend();
+  }
 }

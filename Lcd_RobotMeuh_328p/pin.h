@@ -40,15 +40,19 @@
 #define Unused3         B,1   // PB1
 
 //-----> SPI Pin
-#define SpiSSPin        B,2   // PB2
-#define SpiMosiPin      B,3   // PB3
-#define SpiMisoPin      B,4   // PB4
-#define SpiSckPin       B,5   // PB5
+//#define SpiSSPin        B,2   // PB2
+//#define SpiMosiPin      B,3   // PB3
+//#define SpiMisoPin      B,4   // PB4
+//#define SpiSckPin       B,5   // PB5
 //-----
+
+//-----> SERIAL Pin
+#define SerialRxPin     D,0   //PD0
+#define SerialTxPin     D,1   //PC1
 
 //-----> KEYBOARD Pin
 #define KeyHomePin      C,0   //PC0
-#define KeyPlayPausePin C,1   //PC1
+#define KeyPlayPin      C,1   //PC1
 #define KeyEnterPin     C,2   //PC2
 #define KeyMinusPin     C,3   //PC3
 #define KeyPlusPin      C,4   //PC4
