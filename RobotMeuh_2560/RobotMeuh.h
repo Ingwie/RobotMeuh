@@ -127,7 +127,7 @@ PACK(typedef struct
  u8 dayMask:7;
  u8 duration:6; // X 5 minutes
 }) Alarm_t;
-#define DURATIONLENGHT  5
+#define ALMDURATIONLENGHT  5
 
 // Robot values saved to eeprom
 PACK(typedef struct
@@ -167,6 +167,7 @@ extern time_t rtcTime;
 extern u8 counter8mS; // Updated in TaskScheduler (ISR(TIMER0_COMPA_vect))
 
 //FUNCTIONS
+void StackPaint() __attribute__ ((naked)) __attribute__ ((section (".init1")));
 void robotMeuhSetDefault();
 void Task1S();
 void Task32mS();

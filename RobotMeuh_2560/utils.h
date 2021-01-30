@@ -63,7 +63,11 @@ template<class t> void SWAP(t & a, t & b)
 u8 bin2bcd(s8 bin);
 s8 bcd2bin(u8 bcd);
 // Stack available
-u16 freeSram();
+#define STACKCHAR  0b10101010
+extern u8 _end;
+extern u8 __stack;
+void StackPaint() __attribute__ ((naked)) __attribute__ ((used)) __attribute__ ((section (".init1")));
+u16 StackCount();
 
 // USART driver (static register dispatcher)
 #define RXD_DDR1 DDRD

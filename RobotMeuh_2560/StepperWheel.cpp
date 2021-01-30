@@ -238,17 +238,15 @@ u8 computeStepperWheelSpeed() // Must be called at little interval, return 0 if 
 u8 computeStepperWheelPulses (s16 speed, s16 turn)
 {
 // espected values
- s16 Speed = speed; // needed using constant values
- s16 Turn = turn;
- s16 turnLimit = (s32)(Speed * RobotMeuh.WheelsRotationRate) / 100;
+ s16 turnLimit = (s32)(speed * RobotMeuh.WheelsRotationRate) / 100;
 // limit
- Speed = limit<s16>((-MAXROBOTSPEED), Speed, MAXROBOTSPEED);
- Turn = limit<s16>((-turnLimit), Turn, turnLimit);
+ speed = limit<s16>((-MAXROBOTSPEED), speed, MAXROBOTSPEED);
+ turn = limit<s16>((-turnLimit), turn, turnLimit);
 // direction
- s8 direction = (Speed < 0)? -1 : 1; // no speed -> turn running forward
+ s8 direction = (speed < 0)? -1 : 1; // no speed -> turn running forward
 // update values
- L_RequestSpeed = Speed + (Turn * direction);
- R_RequestSpeed = Speed - (Turn * direction);
+ L_RequestSpeed = speed + (turn * direction);
+ R_RequestSpeed = speed - (turn * direction);
  return computeStepperWheelSpeed();
 }
 

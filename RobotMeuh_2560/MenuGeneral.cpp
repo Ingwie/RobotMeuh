@@ -88,17 +88,15 @@ const void menuDateTime() // show date time
     }
 
    rtcTime = mk_gmtime(utm);
-
-   if (menuVar.wasEdited && !menuVar.editMode) rtcSetTime(utm); // update RTC chip
   }
+ else if (menuVar.wasEdited) rtcSetTime(utm);   // update RTC chip
  menuNavigation(PMT(M_FREESRAM, M_LCDKEYS, M_DATETIME, M_DATETIME));
 }
 
 const void menuFreeSram() // show free sram
 {
  lcdPrintString_P(0, 3, PSTR("SRAM libre:"));
- u16 fs = freeSram();
- lcdPrintf(1, 3, PSTR("%04u Octets"), fs);
+ lcdPrintf(1, 3, PSTR("%04u Octets"), StackCount());
  menuNavigation(PMT(M_IMUFUSION, M_DATETIME, M_FREESRAM, M_FREESRAM));
 }
 
@@ -150,16 +148,16 @@ const void menuBladeSpeed() // Blade speed setting
    RobotMeuh.BladeSpeed = setMenuValue(RobotMeuh.BladeSpeed, 5000, 0, 50);
    lcdLocate(1,7);
   }
+ else if (menuVar.wasEdited) eepromWritedAll(); // write to eeprom
  menuNavigation(PMT(M_PIDBLADE, M_WHEELSPULSES, M_BLADESPEED, M_BLADESPEED));
 }
-
 
 const void menuPidBlade() // PID blade settings
 {
  div_t P = div(RobotMeuh.Blade_P_Factor, PID_SCALING_FACTOR);
  div_t I = div(RobotMeuh.Blade_I_Factor, PID_SCALING_FACTOR);
  div_t D = div(RobotMeuh.Blade_D_Factor, PID_SCALING_FACTOR);
- lcdPrintf(0, 0, PSTR("PID Lame: %01u.%03u"), P.quot, P.rem);
+ lcdPrintf(0, 0, PSTR("PID Lame P:%01u.%03u"), P.quot, P.rem);
  lcdPrintf(1, 0, PID_ID_MASK, I.quot, I.rem, D.quot, D.rem);
 
  if (menuVar.editMode)
@@ -171,7 +169,7 @@ const void menuPidBlade() // PID blade settings
     {
     case 1:
      RobotMeuh.Blade_P_Factor = setMenuValue(RobotMeuh.Blade_P_Factor, 9*PID_SCALING_FACTOR, 0, 1);
-     lcdLocate(0,14);
+     lcdLocate(0,15);
      break;
     case 2:
      RobotMeuh.Blade_I_Factor = setMenuValue(RobotMeuh.Blade_I_Factor, 9*PID_SCALING_FACTOR, 0, 1);
@@ -183,7 +181,11 @@ const void menuPidBlade() // PID blade settings
      break;
     }
   }
- if (menuVar.wasEdited && !menuVar.editMode) initBladePid(); // init on changes
+ else if (menuVar.wasEdited)
+  {
+   eepromWritedAll(); // write to eeprom
+   initBladePid(); // init on changes
+  }
  menuNavigation(PMT(M_WHEELSSPEED, M_BLADESPEED, M_PIDBLADE, M_PIDBLADE));
 }
 
@@ -200,7 +202,7 @@ const void menuWheelsSpeed() // Wheels speed setting
    RobotMeuh.WheelsSpeed = setMenuValue(RobotMeuh.WheelsSpeed, 500, 0, 1);
    lcdLocate(1,7);
   }
- if (menuVar.wasEdited && !menuVar.editMode) eepromWritedAll(); // write to eeprom
+ else if (menuVar.wasEdited) eepromWritedAll(); // write to eeprom
  menuNavigation(PMT(M_WHEELSROTRATE, M_PIDBLADE, M_WHEELSSPEED, M_WHEELSSPEED));
 }
 
@@ -213,9 +215,10 @@ const void menuWheelsRotationRate() // Wheels rotation rate setting
    SerialLcdSend(); // send buffer
    menuVar.maxField = 1; // set max field
    _delay_ms(1); // time to send and free some buffers
-   RobotMeuh.WheelsRotationRate = setMenuValue(RobotMeuh.WheelsRotationRate, 100, 0, 1);
+   RobotMeuh.WheelsRotationRate = (u8)setMenuValue((u8)RobotMeuh.WheelsRotationRate, 100, 0, 1);
    lcdLocate(1,8);
   }
+ else if (menuVar.wasEdited) eepromWritedAll(); // write to eeprom
  menuNavigation(PMT(M_PIDWHEELS, M_WHEELSSPEED, M_WHEELSROTRATE, M_WHEELSROTRATE));
 }
 
@@ -224,7 +227,7 @@ const void menuPidWheels() // PID wheels settings
  div_t P = div(RobotMeuh.SW_P_Factor, PID_SCALING_FACTOR);
  div_t I = div(RobotMeuh.SW_I_Factor, PID_SCALING_FACTOR);
  div_t D = div(RobotMeuh.SW_D_Factor, PID_SCALING_FACTOR);
- lcdPrintf(0, 0, PSTR("PID roues: %01u.%03u"), P.quot, P.rem);
+ lcdPrintf(0, 0, PSTR("PID roue P:%01u.%03u"), P.quot, P.rem);
  lcdPrintf(1, 0, PID_ID_MASK, I.quot, I.rem, D.quot, D.rem);
 
  if (menuVar.editMode)
@@ -248,7 +251,11 @@ const void menuPidWheels() // PID wheels settings
      break;
     }
   }
- if (menuVar.wasEdited && !menuVar.editMode) initStepperPid(); // init on changes
+ else if (menuVar.wasEdited)
+  {
+   eepromWritedAll(); // write to eeprom
+   initStepperPid(); // init on changes
+  }
  menuNavigation(PMT(M_PIDDIR, M_WHEELSROTRATE, M_PIDWHEELS, M_PIDWHEELS));
 }
 
@@ -257,7 +264,7 @@ const void menuPidDirection() // PID direction settings
  div_t P = div(RobotMeuh.Dir_P_Factor, PID_SCALING_FACTOR);
  div_t I = div(RobotMeuh.Dir_I_Factor, PID_SCALING_FACTOR);
  div_t D = div(RobotMeuh.Dir_D_Factor, PID_SCALING_FACTOR);
- lcdPrintf(0, 0, PSTR("PID cap:  %01u.%03u"), P.quot, P.rem);
+ lcdPrintf(0, 0, PSTR("PID cap  P:%01u.%03u"), P.quot, P.rem);
  lcdPrintf(1, 0, PID_ID_MASK, I.quot, I.rem, D.quot, D.rem);
 
  if (menuVar.editMode)
@@ -269,7 +276,7 @@ const void menuPidDirection() // PID direction settings
     {
     case 1:
      RobotMeuh.Dir_P_Factor = setMenuValue(RobotMeuh.Dir_P_Factor, 9*PID_SCALING_FACTOR, 0, 1);
-     lcdLocate(0,14);
+     lcdLocate(0,15);
      break;
     case 2:
      RobotMeuh.Dir_I_Factor = setMenuValue(RobotMeuh.Dir_I_Factor, 9*PID_SCALING_FACTOR, 0, 1);
@@ -281,7 +288,11 @@ const void menuPidDirection() // PID direction settings
      break;
     }
   }
- if (menuVar.wasEdited && !menuVar.editMode) initDirPid(); // init on changes
+ else if (menuVar.wasEdited)
+  {
+   eepromWritedAll(); // write to eeprom
+   initDirPid(); // init on changes
+  }
  menuNavigation(PMT(M_TEMPERATURE, M_PIDWHEELS, M_PIDDIR, M_PIDDIR));
 }
 
@@ -296,12 +307,12 @@ const void menuTemperature() // show gyro temperature
 const void menuResetEeprom() // restore default value
 {
  lcdPrintString_P(0, 2, PSTR("Reset eeprom"));
- if (menuVar.editMode)
+ if ((menuVar.editMode) && (!menuVar.wasEdited))
   {
    robotMeuhSetDefault(); // reset to default values
    eepromWritedAll(); // write to eeprom
    lcdPrintString_P(1, 5, PSTR("Fait"));
-
+   _delay_ms(500);
   }
  menuNavigation(PMT(M_SETFIRSTALARM, M_TEMPERATURE, M_RESETEEPROM, M_RESETEEPROM));
 }
@@ -360,12 +371,11 @@ const void menuSetFirstAlarm() // Set first alarm
      break;
     }
   }
- if (menuVar.wasEdited && !menuVar.editMode)
+ else if (menuVar.wasEdited)
   {
    eepromWritedAll(); // write to eeprom
    sheduleNextAlarm(); // write to RTC
   }
-
  menuNavigation(PMT(M_SETSECONDTALARM, M_RESETEEPROM, M_SETFIRSTALARM, M_SETFIRSTALARM));
 }
 
@@ -423,12 +433,11 @@ const void menuSetSecondAlarm() // Set second alarm
      break;
     }
   }
- if (menuVar.wasEdited && !menuVar.editMode)
+ else if (menuVar.wasEdited)
   {
    eepromWritedAll(); // write to eeprom
    sheduleNextAlarm(); // write to RTC
   }
-
  menuNavigation(PMT(M_TESTSTEPPERS, M_SETFIRSTALARM, M_SETSECONDTALARM, M_SETSECONDTALARM));
 }
 

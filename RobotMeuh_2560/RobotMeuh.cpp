@@ -35,7 +35,7 @@ void robotMeuhSetDefault()
  memset(&RobotMeuh, 0, sizeof(RobotMeuh_t)); // reset all
 
  RobotMeuh.BladeSpeed = 3000; // T/Minute 5000 max
- //RobotMeuh.unused = 0;
+//RobotMeuh.unused = 0;
  RobotMeuh.Blade_P_Factor = Kp_Default;
  RobotMeuh.Blade_I_Factor = Ki_Default;
  RobotMeuh.Blade_D_Factor = Kd_Default;
@@ -63,7 +63,7 @@ void initRobotMeuh()
  initFusionImu();
  initStepperWeel();   // timer 3 & 4
  initBrushlessBlade();// timer 5
- initTaskScheduler(); // timer 0
+//initTaskScheduler(); // timer 0 wait ... init later
 }
 
 int main(void)
@@ -84,6 +84,7 @@ int main(void)
  sendLcdDispOn();
  forceMenu(M_FIRST); // welcome !
  _delay_ms(1500);
+ initTaskScheduler(); // timer 0
  forceMenu(M_STATUS);
 
 
@@ -112,6 +113,18 @@ int main(void)
       {
        SerialCliPrint("totototototo");
        SerialCliSend();
+       if (!SystemBools.lcdISOk) ERR("PB ecran"); // todo remove
+       if (isTimeToWork())
+        {
+         if (SystemBools.toggle500mS)
+          {
+           sendLcdLedOn();
+          }
+         else
+          {
+           sendLcdLedOff();
+          }
+        }
        menuCompute();
        //forceMenu((menuArray)onetime);
        _delay_ms(200);

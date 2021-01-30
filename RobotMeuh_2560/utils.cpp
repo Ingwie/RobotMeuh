@@ -28,9 +28,24 @@ s8 bcd2bin(u8 bcd)
  return (s8)(bcd - 6 * (bcd >> 4));
 }
 
-u16 freeSram()
+void StackPaint() // .init1 function
 {
- extern s16 __heap_start, *__brkval;
- u8 v;
- return (s16) &v - (__brkval == 0 ? (s16) &__heap_start : (s16) __brkval);
+ u8 *p = &_end;
+ while(p <= &__stack)
+  {
+   *p = STACKCHAR;
+   ++p;
+  }
+}
+
+u16 StackCount()
+{
+ const u8 *p = &_end;
+ u16 c = 0;
+ while(*p == STACKCHAR && p <= &__stack)
+  {
+   ++p;
+   ++c;
+  }
+ return c;
 }

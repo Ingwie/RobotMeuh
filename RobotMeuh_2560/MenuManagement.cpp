@@ -102,8 +102,6 @@ void menuCompute()
  if (MenuPointer) MenuPointer(); // call it
  else ERR("pointeur nul");
 
- if (!SystemBools.lcdISOk) lcdPrintString_P(0, 0, PSTR("PB ecran")); // todo remove
-
  (menuVar.editMode)? lcdBlinkOn() : lcdDispOn(); // blink on edit mode
 
  SerialLcdSend(); // send serial buffer

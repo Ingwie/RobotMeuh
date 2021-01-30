@@ -24,5 +24,6 @@
 #define DAYISSCHEDULED(wday, daymask)  ((daymask & _BV(wday)) != 0)
 
 void sheduleNextAlarm();
+u8 isTimeToWork(); // return 1 if we are in working time scheduled now
 
 #endif // ALARMCLOCK_H_INCLUDED
