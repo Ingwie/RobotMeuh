@@ -118,9 +118,9 @@ void FusionAhrsUpdate(FusionAhrs * const fusionAhrs, const FusionVector3 gyrosco
 
         // Calculate direction of gravity assumed by quaternion
         const FusionVector3 halfGravity = {
-            .axis.x = Q.x * Q.z - Q.w * Q.y,
-            .axis.y = Q.w * Q.x + Q.y * Q.z,
-            .axis.z = Q.w * Q.w - 0.5f + Q.z * Q.z,
+            /*(Ingwie mod) .axis.x = */Q.x * Q.z - Q.w * Q.y,
+            /*(Ingwie mod) .axis.y = */Q.w * Q.x + Q.y * Q.z,
+            /*(Ingwie mod) .axis.z = */Q.w * Q.w - 0.5f + Q.z * Q.z,
         }; // equal to 3rd column of rotation matrix representation scaled by 0.5
 
         // Calculate accelerometer feedback error
@@ -134,9 +134,9 @@ void FusionAhrsUpdate(FusionAhrs * const fusionAhrs, const FusionVector3 gyrosco
 
         // Compute direction of 'magnetic west' assumed by quaternion
         const FusionVector3 halfWest = {
-            .axis.x = Q.x * Q.y + Q.w * Q.z,
-            .axis.y = Q.w * Q.w - 0.5f + Q.y * Q.y,
-            .axis.z = Q.y * Q.z - Q.w * Q.x
+            /*(Ingwie mod) .axis.x = */Q.x * Q.y + Q.w * Q.z,
+            /*(Ingwie mod) .axis.y = */Q.w * Q.w - 0.5f + Q.y * Q.y,
+            /*(Ingwie mod) .axis.z = */Q.y * Q.z - Q.w * Q.x
         }; // equal to 2nd column of rotation matrix representation scaled by 0.5
 
         // Calculate magnetometer feedback error
@@ -168,9 +168,9 @@ void FusionAhrsUpdate(FusionAhrs * const fusionAhrs, const FusionVector3 gyrosco
 
     // Calculate linear acceleration
     const FusionVector3 gravity = {
-        .axis.x = 2.0f * (Q.x * Q.z - Q.w * Q.y),
-        .axis.y = 2.0f * (Q.w * Q.x + Q.y * Q.z),
-        .axis.z = 2.0f * (Q.w * Q.w - 0.5f + Q.z * Q.z),
+        /*(Ingwie mod) .axis.x = */2.0f * (Q.x * Q.z - Q.w * Q.y),
+        /*(Ingwie mod) .axis.y = */2.0f * (Q.w * Q.x + Q.y * Q.z),
+        /*(Ingwie mod) .axis.z = */2.0f * (Q.w * Q.w - 0.5f + Q.z * Q.z),
     }; // equal to 3rd column of rotation matrix representation
     fusionAhrs->linearAcceleration = FusionVectorSubtract(accelerometer, gravity);
 
@@ -238,9 +238,9 @@ FusionVector3 FusionAhrsGetEarthAcceleration(const FusionAhrs * const fusionAhrs
     const float qxqz = Q.x * Q.z;
     const float qyqz = Q.y * Q.z;
     const FusionVector3 earthAcceleration = {
-        .axis.x = 2.0f * ((qwqw - 0.5f + Q.x * Q.x) * A.x + (qxqy - qwqz) * A.y + (qxqz + qwqy) * A.z),
-        .axis.y = 2.0f * ((qxqy + qwqz) * A.x + (qwqw - 0.5f + Q.y * Q.y) * A.y + (qyqz - qwqx) * A.z),
-        .axis.z = 2.0f * ((qxqz - qwqy) * A.x + (qyqz + qwqx) * A.y + (qwqw - 0.5f + Q.z * Q.z) * A.z),
+        /*(Ingwie mod) .axis.x = */2.0f * ((qwqw - 0.5f + Q.x * Q.x) * A.x + (qxqy - qwqz) * A.y + (qxqz + qwqy) * A.z),
+        /*(Ingwie mod) .axis.y = */2.0f * ((qxqy + qwqz) * A.x + (qwqw - 0.5f + Q.y * Q.y) * A.y + (qyqz - qwqx) * A.z),
+        /*(Ingwie mod) .axis.z = */2.0f * ((qxqz - qwqy) * A.x + (qyqz + qwqx) * A.y + (qwqw - 0.5f + Q.z * Q.z) * A.z),
     }; // transpose of a rotation matrix representation of the quaternion multiplied with the linear acceleration
     return earthAcceleration;
 #undef Q // undefine shorthand label
@@ -279,10 +279,10 @@ void FusionAhrsSetYaw(FusionAhrs * const fusionAhrs, const float yaw) {
     const float inverseYaw = atan2f(Q.x * Q.y + Q.w * Q.z, Q.w * Q.w - 0.5f + Q.x * Q.x); // Euler angle of conjugate
     const float halfInverseYawMinusOffset = 0.5f * (inverseYaw - FusionDegreesToRadians(yaw));
     const FusionQuaternion inverseYawQuaternion = {
-        .element.w = cosf(halfInverseYawMinusOffset),
-        .element.x = 0.0f,
-        .element.y = 0.0f,
-        .element.z = -1.0f * sinf(halfInverseYawMinusOffset),
+        /*(Ingwie mod) .element.w = */cosf(halfInverseYawMinusOffset),
+        /*(Ingwie mod) .element.x = */0.0f,
+        /*(Ingwie mod) .element.y = */0.0f,
+        /*(Ingwie mod) .element.z = */-1.0f * sinf(halfInverseYawMinusOffset),
     };
     fusionAhrs->quaternion = FusionQuaternionMultiply(inverseYawQuaternion, fusionAhrs->quaternion);
 #undef Q // undefine shorthand label

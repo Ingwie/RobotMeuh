@@ -19,6 +19,10 @@
 #ifndef PIN_H_INCLUDED
 #define PIN_H_INCLUDED
 
+//-----> Analog Pins
+#define ANA_BAT            0 //K,0
+#define ANA_CHARGE         1 //K,1
+
 //-----> SPI Pin
 //#define SpiLcdSSPin        B,0
 //#define SpiSckPin          B,1

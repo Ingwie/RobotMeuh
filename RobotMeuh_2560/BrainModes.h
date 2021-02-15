@@ -15,30 +15,51 @@
 /*    https://www.mediafire.com/file/cahqfrm90h7c7fy/  */
 /*    Setup_OAVRCBuilder3.exe/file (Pswd : OpenAVRc)   */
 
-
-#ifndef ANALOGSENSOR_H_INCLUDED
-#define ANALOGSENSOR_H_INCLUDED
+#ifndef BRAINMODES_H_INCLUDED
+#define BRAINMODES_H_INCLUDED
 
 #include "RobotMeuh.h"
 
+// All brains
+extern const void brainWakeUp(); // first brain
+extern const void brainCharging(); // manage battery voltage
+extern const void brainExitChargingStation(); // Move 1 meter backward
 
-// all 62.5mS (16Hz) -> 16.5 'wave' @ 8kHz (16.5 * 125 µS = 2062.5 µS) 8-&
+/////////////////////////////////////////
 
+const p_Function brainFunctions[] PROGMEM = // Brain function array
+{
+ brainWakeUp,
+ brainCharging,
+ brainExitChargingStation,
 
-#define ANALOG_INPUT_MASK  0b00000011 // inputs used (Bat, charge, ....
-#define ADC_VREF_TYPE      _BV(REFS0) // AVCC with external capacitor at AREF pin
-#define ADC_PRESCALER2     1
-#define ADC_PRESCALER4     2
-#define ADC_PRESCALER8     3
-#define ADC_PRESCALER16    4
-#define ADC_PRESCALER32    5
-#define ADC_PRESCALER64    6
-#define ADC_PRESCALER128   7
+};
 
-//extern volatile u16 ana[];
-//extern volatile u8  anaCounter;
+enum brainArray // Image of brain function array
+{
+ B_WAKEUP,
+ B_CHARGING,
+ B_EXITCHARGINGSTATION,
 
-void adcInit();
-u16 getADC(u8 input);
+ B_NUMBER
+};
 
-#endif // ANALOGSENSOR_H_INCLUDED
+PACK(typedef struct
+{
+ brainArray prevBrainToken; // to remember last state
+ u8  init:1; // used to init brain values (is reseted in brainCompute())
+ u8 unused:3;
+ s16 angle; // angle :12
+ u16 deltaDist; // distance
+ s16 speed; // speed
+ u16 counter; // counter
+}) BrainDatas_t;
+
+extern brainArray brainToken;
+extern p_Function brainPointer; // brainPointer() call brain[brainToken] function
+extern BrainDatas_t BrainData;
+
+void brainCompute();
+void forceBrain(brainArray num);
+
+#endif // BRAINMODES_H_INCLUDED

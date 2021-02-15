@@ -34,6 +34,8 @@ void robotMeuhSetDefault()
 {
  memset(&RobotMeuh, 0, sizeof(RobotMeuh_t)); // reset all
 
+ RobotMeuh.Battery = 0;
+ RobotMeuh.BatteryAlarm = 245; // 24.5 V
  RobotMeuh.BladeSpeed = 3000; // T/Minute 5000 max
 //RobotMeuh.unused = 0;
  RobotMeuh.Blade_P_Factor = Kp_Default;
@@ -41,7 +43,7 @@ void robotMeuhSetDefault()
  RobotMeuh.Blade_D_Factor = Kd_Default;
 // SteppersWheels
  RobotMeuh.WheelsSpeed = 200; // M/Minute 50.0 max
- RobotMeuh.WheelsRotationRate = 10; // 0 - 100 %
+ RobotMeuh.WheelsRotationSpeedRate = 25; // 0 - 100 %
  RobotMeuh.SW_P_Factor = Kp_Default;
  RobotMeuh.SW_I_Factor = Ki_Default;
  RobotMeuh.SW_D_Factor = Kd_Default;
@@ -63,6 +65,7 @@ void initRobotMeuh()
  initFusionImu();
  initStepperWeel();   // timer 3 & 4
  initBrushlessBlade();// timer 5
+ adcInit();
 //initTaskScheduler(); // timer 0 wait ... init later
 }
 
@@ -71,6 +74,7 @@ int main(void)
  _delay_ms(500); // Wake up !
  eepromReadAll(); // load RobotMeuh settings
  initRobotMeuh(); // global initialisation
+ readBatteryVoltage();
  sei(); // Enable interrupt
  lcdLoadCgram(customChars, 8); // load custom characteres in CGram
  sendLcdDispOffClear();
@@ -84,8 +88,10 @@ int main(void)
  sendLcdDispOn();
  forceMenu(M_FIRST); // welcome !
  _delay_ms(1500);
- initTaskScheduler(); // timer 0
  forceMenu(M_STATUS);
+ forceBrain(B_WAKEUP);
+// start tasks
+ initTaskScheduler(); // timer 0
 
 
  u8 onetime = 0;
@@ -100,8 +106,7 @@ int main(void)
    if (!onetime)
     {
      BrushlessBladeCutAt(9000);
-     enableStepperWheel();
-     Motion_FollowAngle(20000, 900);
+     //ADCSRA |= _BV(ADSC); // Start the AD conversion
      onetime = 1;
     }
 
@@ -114,7 +119,7 @@ int main(void)
        SerialCliPrint("totototototo");
        SerialCliSend();
        if (!SystemBools.lcdISOk) ERR("PB ecran"); // todo remove
-       if (isTimeToWork())
+       if (0)//(isTimeToWork())
         {
          if (SystemBools.toggle500mS)
           {
@@ -126,6 +131,7 @@ int main(void)
           }
         }
        menuCompute();
+
        //forceMenu((menuArray)onetime);
        _delay_ms(200);
       }
@@ -167,8 +173,9 @@ void Task32mS()
 {
  computeFusionImu(); // Compute imus (approx 150uS)
 //forceStepperWheelPulses(32000, decimeterPerMinuteToPulses(5000));
- Motion_FollowAngle(decimeterPerMinuteToPulses(RobotMeuh.WheelsSpeed), 900);
+ //Motion_FollowAngle(decimeterPerMinuteToPulses(RobotMeuh.WheelsSpeed), 900);
 //Motion_Turn(100, 0);
+ brainCompute();
  checkSerialLcdRXBuf();
 }
 
@@ -181,4 +188,32 @@ void Task1S() // ISR mode
   }
 // update temperature (from gyro)
  readGyroTemp();
+// update battery voltage
+ readBatteryVoltage();
 }
+
+/////////////////// INCLUDE ALL CPP AND C FILES HERE ////////////////////////
+
+#include "utils.cpp"
+#include "eeprom.cpp"
+#include "rtc.cpp"
+//#include "spi.cpp"
+#include "i2c.cpp"
+#include "AlarmClock.cpp"
+#include "SerialCli.cpp"
+#include "SerialLcd.cpp"
+#include "Imu.cpp"
+#include "AnalogSensor.cpp"
+#include "PowerManagement.cpp"
+#include "lib/FusionAhrs.c"
+#include "lib/FusionBias.c"
+#include "lib/FusionCompass.c"
+#include "FusionImu.cpp"
+#include "StepperWheel.cpp"
+#include "BrushlessBlade.cpp"
+#include "Motion.cpp"
+#include "LcdFunc.cpp"
+#include "TaskScheduler.cpp"
+#include "MenuManagement.cpp"
+#include "MenuGeneral.cpp"
+#include "BrainModes.cpp"

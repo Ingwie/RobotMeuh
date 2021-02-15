@@ -2,13 +2,14 @@
 1599600494 source:a:\robotmeuh\robotmeuh_2560\analogsensor.c
 	"AnalogSensor.h"
 
-1599425782 a:\robotmeuh\robotmeuh_2560\analogsensor.h
+1612558692 a:\robotmeuh\robotmeuh_2560\analogsensor.h
 	"RobotMeuh.h"
 
-1607216314 a:\robotmeuh\robotmeuh_2560\robotmeuh.h
+1612563350 a:\robotmeuh\robotmeuh_2560\robotmeuh.h
 	<avr/io.h>
 	<avr/interrupt.h>
 	<avr/pgmspace.h>
+	<avr/eeprom.h>
 	<inttypes.h>
 	<string.h>
 	<util/delay.h>
@@ -19,11 +20,15 @@
 	"pin.h"
 	"utils.h"
 	"Protocol.h"
+	"eeprom.h"
 	"rtc.h"
-	"spi.h"
 	"i2c.h"
+	"AlarmClock.h"
+	"SerialCli.h"
+	"SerialLcd.h"
 	"Imu.h"
 	"AnalogSensor.h"
+	"PowerManagement.h"
 	"lib/Fusion.h"
 	"FusionImu.h"
 	"StepperWheel.h"
@@ -33,28 +38,30 @@
 	"TaskScheduler.h"
 	"MenuManagement.h"
 	"MenuGeneral.h"
+	"BrainModes.h"
 
 1598738048 a:\robotmeuh\robotmeuh_2560\pin_helper.h
 
-1605558478 a:\robotmeuh\robotmeuh_2560\pin.h
+1612558692 a:\robotmeuh\robotmeuh_2560\pin.h
 
-1606852844 a:\robotmeuh\robotmeuh_2560\utils.h
+1612479056 a:\robotmeuh\robotmeuh_2560\utils.h
+	"../Lcd_RobotMeuh_328p/Lcd_RobotMeuh.h"
 	"RobotMeuh.h"
 
-1606410336 a:\robotmeuh\robotmeuh_2560\rtc.h
+1611690340 a:\robotmeuh\robotmeuh_2560\rtc.h
 	"RobotMeuh.h"
 
 1600438636 a:\robotmeuh\robotmeuh_2560\spi.h
 	"RobotMeuh.h"
 
-1606342016 a:\robotmeuh\robotmeuh_2560\i2c.h
+1607806720 a:\robotmeuh\robotmeuh_2560\i2c.h
 	"RobotMeuh.h"
 
-1607015674 a:\robotmeuh\robotmeuh_2560\protocol.h
+1609681410 a:\robotmeuh\robotmeuh_2560\protocol.h
 	"../Lcd_RobotMeuh_328p/Lcd_RobotMeuh.h"
 	"RobotMeuh.h"
 
-1606002254 a:\robotmeuh\lcd_robotmeuh_328p\lcd_robotmeuh.h
+1609244254 a:\robotmeuh\lcd_robotmeuh_328p\lcd_robotmeuh.h
 	<avr/io.h>
 	<avr/interrupt.h>
 	<inttypes.h>
@@ -62,18 +69,19 @@
 	<util/delay.h>
 	"pin_helper.h"
 	"pin.h"
-	"HD44780.h"
-	"spi.h"
+	"../RobotMeuh_2560/utils.h"
 	"../RobotMeuh_2560/Protocol.h"
+	"HD44780.h"
+	"SerialLcd.h"
 	"Keypad.h"
 	"AnalogSensor.h"
 	"Timer8mS.h"
 
-1598738048 a:\robotmeuh\lcd_robotmeuh_328p\pin_helper.h
+1608510244 a:\robotmeuh\lcd_robotmeuh_328p\pin_helper.h
 
-1599422866 a:\robotmeuh\lcd_robotmeuh_328p\pin.h
+1609681502 a:\robotmeuh\lcd_robotmeuh_328p\pin.h
 
-1600676534 a:\robotmeuh\lcd_robotmeuh_328p\hd44780.h
+1608391280 a:\robotmeuh\lcd_robotmeuh_328p\hd44780.h
 	"Lcd_RobotMeuh.h"
 
 1598904260 a:\robotmeuh\lcd_robotmeuh_328p\spi.h
@@ -82,10 +90,10 @@
 1598904260 a:\robotmeuh\lcd_robotmeuh_328p\keypad.h
 	"Lcd_RobotMeuh.h"
 
-1598898312 a:\robotmeuh\lcd_robotmeuh_328p\analogsensor.h
+1607873352 a:\robotmeuh\lcd_robotmeuh_328p\analogsensor.h
 	"Lcd_RobotMeuh.h"
 
-1598908056 a:\robotmeuh\lcd_robotmeuh_328p\timer8ms.h
+1609186448 a:\robotmeuh\lcd_robotmeuh_328p\timer8ms.h
 	"Lcd_RobotMeuh.h"
 
 1599600494 a:\robotmeuh\robotmeuh_2560\lib\simplepid.h
@@ -112,7 +120,7 @@
 1599600494 source:a:\robotmeuh\robotmeuh_2560\utils.c
 	"utils.h"
 
-1599600494 source:a:\robotmeuh\robotmeuh_2560\analogsensor.cpp
+1612540170 source:a:\robotmeuh\robotmeuh_2560\analogsensor.cpp
 	"AnalogSensor.h"
 
 1600286944 a:\robotmeuh\robotmeuh_2560\gy85.h
@@ -146,32 +154,32 @@
 1607034066 a:\robotmeuh\robotmeuh_2560\fusionimu.h
 	"RobotMeuh.h"
 
-1607177814 a:\robotmeuh\robotmeuh_2560\stepperwheel.h
+1610405018 a:\robotmeuh\robotmeuh_2560\stepperwheel.h
 	"RobotMeuh.h"
 
-1606768196 a:\robotmeuh\robotmeuh_2560\brushlessblade.h
+1611001252 a:\robotmeuh\robotmeuh_2560\brushlessblade.h
 	"RobotMeuh.h"
 
-1605994476 a:\robotmeuh\robotmeuh_2560\lcdfunc.h
+1611259422 a:\robotmeuh\robotmeuh_2560\lcdfunc.h
 	"RobotMeuh.h"
 
-1606342894 a:\robotmeuh\robotmeuh_2560\menumanagement.h
+1612705916 a:\robotmeuh\robotmeuh_2560\menumanagement.h
 	"RobotMeuh.h"
 
-1606768196 source:a:\robotmeuh\robotmeuh_2560\brushlessblade.cpp
+1612519780 source:a:\robotmeuh\robotmeuh_2560\brushlessblade.cpp
 	"BrushlessBlade.h"
 
-1607184322 source:a:\robotmeuh\robotmeuh_2560\fusionimu.cpp
+1607806720 source:a:\robotmeuh\robotmeuh_2560\fusionimu.cpp
 	"FusionImu.h"
 
 1600286944 source:a:\robotmeuh\robotmeuh_2560\gy85.cpp
 	"gy85.h"
 
-1606409610 source:a:\robotmeuh\robotmeuh_2560\i2c.cpp
+1611167424 source:a:\robotmeuh\robotmeuh_2560\i2c.cpp
 	"i2c.h"
 	<util/twi.h>
 
-1605996204 source:a:\robotmeuh\robotmeuh_2560\lcdfunc.cpp
+1611261490 source:a:\robotmeuh\robotmeuh_2560\lcdfunc.cpp
 	"LcdFunc.h"
 
 1549999576 source:a:\robotmeuh\robotmeuh_2560\lib\fusionahrs.c
@@ -187,42 +195,83 @@
 	"FusionCompass.h"
 	<math.h>
 
-1606661312 source:a:\robotmeuh\robotmeuh_2560\robotmeuh.cpp
+1612620746 source:a:\robotmeuh\robotmeuh_2560\robotmeuh.cpp
 	"RobotMeuh.h"
 
-1606169546 a:\robotmeuh\robotmeuh_2560\menugeneral.h
+1611682788 a:\robotmeuh\robotmeuh_2560\menugeneral.h
 	"RobotMeuh.h"
 
-1606343084 source:a:\robotmeuh\robotmeuh_2560\menugeneral.cpp
+1612706598 source:a:\robotmeuh\robotmeuh_2560\menugeneral.cpp
 	"MenuGeneral.h"
 
-1606420390 source:a:\robotmeuh\robotmeuh_2560\rtc.cpp
+1611690340 source:a:\robotmeuh\robotmeuh_2560\rtc.cpp
 	"rtc.h"
 
 1606004232 source:a:\robotmeuh\robotmeuh_2560\spi.cpp
 	"spi.h"
 
-1606336376 source:a:\robotmeuh\robotmeuh_2560\stepperwheel.cpp
+1612122262 source:a:\robotmeuh\robotmeuh_2560\stepperwheel.cpp
 	"StepperWheel.h"
 
-1599600494 source:a:\robotmeuh\robotmeuh_2560\utils.cpp
+1612037502 source:a:\robotmeuh\robotmeuh_2560\utils.cpp
 	"utils.h"
 
-1606671848 a:\robotmeuh\robotmeuh_2560\imu.h
+1607806720 a:\robotmeuh\robotmeuh_2560\imu.h
 	"RobotMeuh.h"
 
 1606167840 a:\robotmeuh\robotmeuh_2560\taskscheduler.h
 	"RobotMeuh.h"
 
-1606670790 source:a:\robotmeuh\robotmeuh_2560\imu.cpp
+1611167264 source:a:\robotmeuh\robotmeuh_2560\imu.cpp
 	"Imu.h"
 
-1605997248 source:a:\robotmeuh\robotmeuh_2560\menumanagement.cpp
+1612548788 source:a:\robotmeuh\robotmeuh_2560\menumanagement.cpp
 	"MenuManagement.h"
 
-1606336066 source:a:\robotmeuh\robotmeuh_2560\taskscheduler.cpp
+1612710506 source:a:\robotmeuh\robotmeuh_2560\taskscheduler.cpp
 	"TaskScheduler.h"
 
-1607183842 a:\robotmeuh\robotmeuh_2560\motion.h
+1612714274 a:\robotmeuh\robotmeuh_2560\motion.h
 	"RobotMeuh.h"
+
+1612048756 source:a:\robotmeuh\robotmeuh_2560\alarmclock.cpp
+	"AlarmClock.h"
+
+1611943034 a:\robotmeuh\robotmeuh_2560\alarmclock.h
+	"RobotMeuh.h"
+
+1609244254 a:\robotmeuh\lcd_robotmeuh_328p\seriallcd.h
+	"Lcd_RobotMeuh.h"
+
+1610488428 a:\robotmeuh\robotmeuh_2560\eeprom.h
+	"RobotMeuh.h"
+
+1608761896 a:\robotmeuh\robotmeuh_2560\serialcli.h
+	"RobotMeuh.h"
+
+1609077622 a:\robotmeuh\robotmeuh_2560\seriallcd.h
+	"RobotMeuh.h"
+
+1611482932 source:a:\robotmeuh\robotmeuh_2560\eeprom.cpp
+	"eeprom.h"
+
+1612106162 source:a:\robotmeuh\robotmeuh_2560\motion.cpp
+	"Motion.h"
+
+1609192390 source:a:\robotmeuh\robotmeuh_2560\serialcli.cpp
+	"SerialCli.h"
+	<util/setbaud.h>
+
+1609709822 source:a:\robotmeuh\robotmeuh_2560\seriallcd.cpp
+	"SerialLcd.h"
+	<util/setbaud.h>
+
+1612558692 a:\robotmeuh\robotmeuh_2560\powermanagement.h
+	"RobotMeuh.h"
+
+1612710792 a:\robotmeuh\robotmeuh_2560\brainmodes.h
+	"RobotMeuh.h"
+
+1612563350 source:a:\robotmeuh\robotmeuh_2560\powermanagement.cpp
+	"PowerManagement.h"
 

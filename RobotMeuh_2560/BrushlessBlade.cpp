@@ -116,7 +116,6 @@ void BrushlessBladeStop()
  OCR5C = 0; // off
  BrushlessBlade.IsCutting = false;
  BrushlessBlade.PWMValue = 0;
- initBladePid(); // reset pid values
 }
 
 void BrushlessBladeCutAt(s16 speed)

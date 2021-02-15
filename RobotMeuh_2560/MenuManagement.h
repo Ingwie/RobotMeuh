@@ -46,9 +46,7 @@ extern const void menuTestBrushless(); // Test blade motor and controler
 
 /////////////////////////////////////////
 
-typedef const void (*p_Function)(void);
-
-const p_Function MenuFunctions[] PROGMEM = // Menu function array
+const p_Function menuFunctions[] PROGMEM = // Menu function array
 {
  menuFirst,
  menuStatus,
@@ -117,14 +115,14 @@ PACK(struct MenuVar_t
  u8 wasEdited:1;
  u8 field:4;    // 15 max
  u8 maxField:4; // 15 max
- u8 value:6;    // 63 max
+ s8 value:6;    // +-31 max
 });
 
 #define PMT(a,b,c,d)      (__extension__({static const MenuTarget_t __mt PROGMEM = {a,b,c,d}; &__mt;}))
 #define PMT_t             const MenuTarget_t *
 
 extern menuArray menuToken;
-extern p_Function MenuPointer; // MenuPointer() call menu[menuToken] function
+extern p_Function menuPointer; // menuPointer() call menu[menuToken] function
 extern MenuVar_t menuVar;
 
 void menuNavigation(PMT_t menuTarget);

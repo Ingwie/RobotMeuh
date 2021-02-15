@@ -18,11 +18,16 @@
 
 #include "AnalogSensor.h"
 
+//volatile u16 ana[256] = {0};
+//volatile u8 anaCounter = 0;
+
 void adcInit()
 {
  ADMUX = ADC_VREF_TYPE;
- ADCSRA = _BV(ADEN) | _BV(ADPS2); // ADC enabled, pre-scaler division=16 (no interrupt, no auto-triggering)
-//DIDR0 = 0x3F; // Digital input buffer disabled on unused ana pin.
+ ADCSRA = _BV(ADEN) | ADC_PRESCALER16 ; // ADC enabled, no interrupt, no auto-triggering
+ //ADCSRA = _BV(ADEN) | _BV(ADATE) | _BV(ADIE) | ADC_PRESCALER16 ; // ADC enabled, interrupt, auto-triggering
+ //ADCSRB &= ~(_BV(ADTS2) | _BV(ADTS1) | _BV(ADTS0)); // continuous convertion
+ DIDR0 = ANALOG_INPUT_MASK; // Digital input buffer disabled on unused ana pin.
 }
 
 u16 getADC(u8 input)
@@ -32,3 +37,10 @@ u16 getADC(u8 input)
  while bit_is_set(ADCSRA,ADSC); // Wait for the AD conversion to complete
  return ADC;
 }
+
+ISR(ADC_vect)
+{
+  //ana[anaCounter++] = ADC;
+}
+
+

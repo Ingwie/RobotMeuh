@@ -47,7 +47,7 @@ template<class t> FORCEINLINE t sgn(t a)
 
 template<class t> FORCEINLINE t limit(t mi, t x, t ma)
 {
- return min(max(mi,x),ma);
+  return min(max(mi,x),ma);
 }
 
 template<class t> void SWAP(t & a, t & b)

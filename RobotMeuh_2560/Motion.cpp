@@ -37,7 +37,8 @@ void initDirPid()
 s16 DirPid(s16 espectedValue, s16 measuredValue)
 {
  s16 error, p_term, d_term;
- s32 i_term, ret, temp;
+ s32 i_term, ret;
+#define DIRPIDTMP ret // re use ret as temp value
 
  error = espectedValue - measuredValue;
 
@@ -56,20 +57,20 @@ s16 DirPid(s16 espectedValue, s16 measuredValue)
   }
 
 // Calculate Iterm and limit integral runaway
- temp = Dir_sumError + error;
- if(temp > Dir_maxSumError)
+ DIRPIDTMP = Dir_sumError + error;
+ if(DIRPIDTMP > Dir_maxSumError)
   {
    i_term = (INT32_MAX / 2);
    Dir_sumError = Dir_maxSumError;
   }
- else if(temp < -Dir_maxSumError)
+ else if(DIRPIDTMP < -Dir_maxSumError)
   {
    i_term = -(INT32_MAX / 2);
    Dir_sumError = -Dir_maxSumError;
   }
  else
   {
-   Dir_sumError = temp;
+   Dir_sumError = DIRPIDTMP;
    i_term = RobotMeuh.Dir_I_Factor * Dir_sumError;
   }
 
@@ -86,7 +87,7 @@ s16 DirPid(s16 espectedValue, s16 measuredValue)
 
 s16 findShortestAngle(s16 from, s16 to) // angles in degres X 10 (-1800 to 1800)
 {
- s16 ret = from - to;
+ s16 ret = to - from;
  if (ret < MINANGLE)
   {
    ret = ret + 2 * MAXANGLE;

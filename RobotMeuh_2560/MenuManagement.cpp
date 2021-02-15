@@ -19,16 +19,15 @@
 
 menuArray menuToken;
 
-p_Function MenuPointer;
+p_Function menuPointer;
 
 MenuVar_t menuVar = {0};
 
 void menuNavigation(PMT_t menuTarget)
 {
- MenuTarget_t mt;
-
  if (!menuVar.editMode) // edit mode -> exit
   {
+   MenuTarget_t mt;
    memcpy_P(&mt, menuTarget, sizeof(MenuTarget_t)); // load targets values from flash
 
    if (lcdReport.KeyHome) menuToken = M_STATUS;
@@ -40,12 +39,11 @@ void menuNavigation(PMT_t menuTarget)
     {
      ERR("Menu inconnu");
      menuToken = M_FIRST;
-     // StopAll(); todo
     }
   }
-  else
+ else
   {
-    if (!menuVar.maxField) menuVar.editMode = 0; // no editable field -> reset edit mode
+   if (!menuVar.maxField) menuVar.editMode = 0; // no editable field -> reset edit mode
   }
 }
 
@@ -82,7 +80,7 @@ s16 setMenuValue(s16 actual, s16 maxi, s16 mini, s16 step)
 
 void menuCompute()
 {
- static u8 tokenMem = 0;
+ static u8 tokenMem = 0xFF;
 
  if (menuToken != tokenMem) // change menu ?
   {
@@ -98,8 +96,8 @@ void menuCompute()
     }
   }
  lcdDispOffClear();
- MenuPointer = (p_Function)pgm_read_ptr_near(&MenuFunctions[menuToken]); // find menufunction[menuToken] in flash
- if (MenuPointer) MenuPointer(); // call it
+ menuPointer = (p_Function)pgm_read_ptr_near(&menuFunctions[menuToken]); // find menufunction[menuToken] in flash
+ if (menuPointer) menuPointer(); // call it
  else ERR("pointeur nul");
 
  (menuVar.editMode)? lcdBlinkOn() : lcdDispOn(); // blink on edit mode

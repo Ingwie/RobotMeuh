@@ -25,7 +25,7 @@ void initTaskScheduler()
  OCR0A = 124;
 // CTC
  TCCR0A = _BV(WGM01);
-// Prescaler 1024 (15625 HZ - 64 uS
+// Prescaler 1024 (15625 HZ - 64 uS)
  TCCR0B = _BV(CS02) | _BV(CS00);
 // Output Compare Match A Interrupt Enable
  TIMSK0 |= _BV(OCIE0A);
@@ -33,24 +33,28 @@ void initTaskScheduler()
 
 ISR(TIMER0_COMPA_vect) // Timer 8mS
 {
- if (++counter8mS >= 124) // 1 seconde
+ if (++counter8mS >= 125) // 1 seconde
   {
    counter8mS = 0; // reset counter
    ++rtcTime; // increase time
-   SystemBools.toggle500mS =  0;
    Task1S();  // conditional sei() in this function
+   SystemBools.toggle500mS = 0;
   }
 // enable interupts
  sei();
-// fast task 8mS
- Task8mS();
-// slow task 32mS
- if ((counter8mS & 0x03) == 0x03)
+ if ((counter8mS & 0x07) == 0x04)
   {
+// slow task 32mS
    Task32mS();
   }
+ else
+  {
+// fast task 8mS
+   Task8mS();
+  }
+
  if ((counter8mS & 0x3E) == 0x3E) // 500 mS
   {
-   SystemBools.toggle500mS =  1;
+   SystemBools.toggle500mS = 1;
   }
 }

@@ -32,7 +32,8 @@ const void menuStatus() // show status
  div_t L = div(pulsesToDecimeterPerMinute(L_ActualSpeed), 10);
  div_t R = div(pulsesToDecimeterPerMinute(R_ActualSpeed), 10);
 //lcdPrintf(1, 0, PSTR("%06i    %06i"), L_ActualSpeed, R_ActualSpeed);
- lcdPrintf(1, 0, PSTR("%02i.%01i        %02i.%01i"), L.quot, L.rem, R.quot, R.rem);
+ //lcdPrintf(1, 0, PSTR("%02i.%01i        %02i.%01i"), L.quot, L.rem, R.quot, R.rem);
+ lcdPrintf(1, 0, PSTR("%+03i.%01i  %3i %+03i.%01i"), L.quot, abs(L.rem),RobotMeuh.Battery , R.quot, abs(R.rem));
  menuNavigation(PMT(M_LCDKEYS, M_TESTBRUSHLESS, M_STATUS, M_STATUS));
 }
 
@@ -109,21 +110,21 @@ const void menuImuFusion() // Euler datas
 
 const void menuImuGyro() // Gyroscope raw datas
 {
- lcdPrintf(0,0,PSTR("Gyro : X % 5i"), imuGyro.x);
+ lcdPrintf(0,0,PSTR("Gyro:   X % 5i"), imuGyro.x);
  lcdPrintf(1,0, IMU_YZ_MASK, imuGyro.y, imuGyro.z);
  menuNavigation(PMT(M_IMUACC, M_IMUFUSION, M_IMUGYRO, M_IMUGYRO));
 }
 
 const void menuImuAcc() // Accelerometer raw datas
 {
- lcdPrintf(0,0,PSTR("Accel: X % 5i"), imuAcc.x);
+ lcdPrintf(0,0,PSTR("Accel:  X % 5i"), imuAcc.x);
  lcdPrintf(1,0, IMU_YZ_MASK, imuAcc.y, imuAcc.z);
  menuNavigation(PMT(M_IMUMAG, M_IMUGYRO, M_IMUMAG, M_IMUACC));
 }
 
 const void menuImuMag() // Accelerometer raw datas
 {
- lcdPrintf(0,0,PSTR("Magne: X % 5i"), imuMag.x);
+ lcdPrintf(0,0,PSTR("Magne:  X % 5i"), imuMag.x);
  lcdPrintf(1,0, IMU_YZ_MASK, imuMag.y, imuMag.z);
  menuNavigation(PMT(M_WHEELSPULSES, M_IMUACC, M_IMUMAG, M_IMUMAG));
 }
@@ -209,13 +210,13 @@ const void menuWheelsSpeed() // Wheels speed setting
 const void menuWheelsRotationRate() // Wheels rotation rate setting
 {
  lcdPrintString_P(0, 0, PSTR("Taux de rotation"));
- lcdPrintf(1, 6, PSTR("%03u %%"), RobotMeuh.WheelsRotationRate);
+ lcdPrintf(1, 6, PSTR("%03u %%"), RobotMeuh.WheelsRotationSpeedRate);
  if (menuVar.editMode)
   {
    SerialLcdSend(); // send buffer
    menuVar.maxField = 1; // set max field
    _delay_ms(1); // time to send and free some buffers
-   RobotMeuh.WheelsRotationRate = (u8)setMenuValue((u8)RobotMeuh.WheelsRotationRate, 100, 0, 1);
+   RobotMeuh.WheelsRotationSpeedRate = (u8)setMenuValue((u8)RobotMeuh.WheelsRotationSpeedRate, 100, 0, 1);
    lcdLocate(1,8);
   }
  else if (menuVar.wasEdited) eepromWritedAll(); // write to eeprom
@@ -312,7 +313,7 @@ const void menuResetEeprom() // restore default value
    robotMeuhSetDefault(); // reset to default values
    eepromWritedAll(); // write to eeprom
    lcdPrintString_P(1, 5, PSTR("Fait"));
-   _delay_ms(500);
+   _delay_ms(800);
   }
  menuNavigation(PMT(M_SETFIRSTALARM, M_TEMPERATURE, M_RESETEEPROM, M_RESETEEPROM));
 }
@@ -446,17 +447,16 @@ const void menuTestSteppers() // Test wheels motors and controlers
  lcdPrintString_P(0, 0, PSTR("Test Propulsion"));
  div_t L = div(pulsesToDecimeterPerMinute(L_ActualSpeed), 10);
  div_t R = div(pulsesToDecimeterPerMinute(R_ActualSpeed), 10);
- s16 testSpeed = decimeterPerMinuteToPulses(menuVar.value * 6);
+ s16 testSpeed = decimeterPerMinuteToPulses(menuVar.value * 10);
  forceStepperWheelPulses(testSpeed, testSpeed);
- div_t T = div(pulsesToDecimeterPerMinute(testSpeed), 10);
- lcdPrintf(1, 0, PSTR("%02i.%01i  %02i.%01i  %02i.%01i"), L.quot, L.rem, T.quot, T.rem, R.quot, R.rem);
+ lcdPrintf(1, 0, PSTR("%+3i.%01i  %+3i %+3i.%01i"), L.quot, abs(L.rem), (s8)menuVar.value, R.quot, abs(R.rem));
  if (menuVar.editMode)
   {
-   if (!get_output(L_WheelEnablePin)) enableStepperWheel(); // enable steppers controler if they are "OFF"
+   if (get_output(L_WheelEnablePin)) enableStepperWheel(); // enable steppers controler if they are "OFF"
    SerialLcdSend(); // send buffer
    menuVar.maxField = 1; // set max field
    _delay_ms(1); // time to send and free some buffers
-   menuVar.value = setMenuValue(menuVar.value, 63, 0, 1);
+   menuVar.value = (s8)setMenuValue(menuVar.value, 31, -31, 1);
    lcdLocate(1,9);
   }
  else
@@ -470,15 +470,15 @@ const void menuTestSteppers() // Test wheels motors and controlers
 const void menuTestBrushless() // Test blade motor and controler
 {
  lcdPrintString_P(0, 1, PSTR("Test Mot. lame"));
- s16 testSpeed = menuVar.value * 200;
+ s16 testSpeed = menuVar.value * 400;
  BrushlessBladeCutAt(testSpeed);
- lcdPrintf(1, 6, PSTR("%03u %%"), testSpeed / 100);
+ lcdPrintf(1, 5, PSTR("%4i %%"), testSpeed / 100);
  if (menuVar.editMode)
   {
    SerialLcdSend(); // send buffer
    menuVar.maxField = 1; // set max field
    _delay_ms(1); // time to send and free some buffers
-   menuVar.value = setMenuValue(menuVar.value, 50, 0, 1);
+   menuVar.value = (s8)setMenuValue(menuVar.value, 25, -25, 1);
    lcdLocate(1,8);
   }
  else if (menuVar.wasEdited)

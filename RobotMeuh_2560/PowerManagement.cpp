@@ -15,30 +15,26 @@
 /*    https://www.mediafire.com/file/cahqfrm90h7c7fy/  */
 /*    Setup_OAVRCBuilder3.exe/file (Pswd : OpenAVRc)   */
 
-
-#ifndef ANALOGSENSOR_H_INCLUDED
-#define ANALOGSENSOR_H_INCLUDED
-
-#include "RobotMeuh.h"
+#include "PowerManagement.h"
 
 
-// all 62.5mS (16Hz) -> 16.5 'wave' @ 8kHz (16.5 * 125 µS = 2062.5 µS) 8-&
+void readBatteryVoltage()
+{
+ u32 temp = ((getADC(ANA_BAT) * 5L /*AVCC*/ * 10L) / 60L * 2048L); // 1 / 60 resistors division ???
+ RobotMeuh.Battery = 255;//temp;
+}
 
+u8 checkBattery() // return 0 if OK
+{
+ //readBatteryVoltage();
+ u8 ret = 0;
+ //if (RobotMeuh.Battery < MIN_BATTERY_VOLTAGE) shutdown();
+ if (RobotMeuh.Battery < RobotMeuh.BatteryAlarm) ret = 1;
+ return ret;
+}
 
-#define ANALOG_INPUT_MASK  0b00000011 // inputs used (Bat, charge, ....
-#define ADC_VREF_TYPE      _BV(REFS0) // AVCC with external capacitor at AREF pin
-#define ADC_PRESCALER2     1
-#define ADC_PRESCALER4     2
-#define ADC_PRESCALER8     3
-#define ADC_PRESCALER16    4
-#define ADC_PRESCALER32    5
-#define ADC_PRESCALER64    6
-#define ADC_PRESCALER128   7
-
-//extern volatile u16 ana[];
-//extern volatile u8  anaCounter;
-
-void adcInit();
-u16 getADC(u8 input);
-
-#endif // ANALOGSENSOR_H_INCLUDED
+u16 readChargerVoltage()
+{
+ u32 temp = ((getADC(ANA_CHARGE) * 5L /*AVCC*/ * 10L) / 60L * 2048L); // 1 / 60 resistors division ???
+ return 255;//temp;
+}

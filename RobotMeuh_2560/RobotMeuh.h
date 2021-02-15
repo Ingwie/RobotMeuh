@@ -33,6 +33,9 @@
  #define PACK( __Declaration__ ) __Declaration__ __attribute__((__packed__))
 #endif
 
+// pointer to function
+typedef const void (*p_Function)(void);
+
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>
@@ -57,6 +60,7 @@
 #include "SerialLcd.h"
 #include "Imu.h"
 #include "AnalogSensor.h"
+#include "PowerManagement.h"
 #include "lib/Fusion.h"
 #include "FusionImu.h"
 #include "StepperWheel.h"
@@ -66,6 +70,7 @@
 #include "TaskScheduler.h"
 #include "MenuManagement.h"
 #include "MenuGeneral.h"
+#include "BrainModes.h"
 
 // robot description
 #define WHELLBASE           60      // cM
@@ -84,13 +89,16 @@
 #define MAXWHEELSPEED       (WEELPERIMETER / (GEARREDUCTION * STEPPERREV * MICROSTEP)) * MAXSTEPPERSPEED // 84.8 cM/Sec
 #define MINWHEELSPEED       (WEELPERIMETER / (GEARREDUCTION * STEPPERREV * MICROSTEP)) * 1               // 0.00265 cM/Sec
 
+// Battery
+#define MIN_BATTERY_VOLTAGE (7u * 33u) // 3.3 V mini/element
+
 // Debug
 #define ERR(x) {lcdPrintString_P(0, 0, PSTR(x));sendLcdDispOn();_delay_ms(1000);}
 
 // PID
 #define PID_SCALING_FACTOR  1024
 #define PID_K(x)            (x * PID_SCALING_FACTOR)
-#define Kp_Default          PID_K(0.500)
+#define Kp_Default          PID_K(0.200)
 #define Ki_Default          PID_K(0.080)
 #define Kd_Default          PID_K(0.050)
 
@@ -132,15 +140,18 @@ PACK(typedef struct
 // Robot values saved to eeprom
 PACK(typedef struct
 {
+ u16  unused:1;
+// Battery
+ u16  BatteryAlarm:9;
+ u16  Battery:9; // Actual (or last)
 // Blade
  u16  BladeSpeed:13; // T/Minute 5000 max
- u16  unused:3;
  s16  Blade_P_Factor;
  s16  Blade_I_Factor;
  s16  Blade_D_Factor;
 // SteppersWheels
  u16  WheelsSpeed:9; // M/Minute 50.0 max
- u16  WheelsRotationRate:7; // 0 - 100 %
+ u8  WheelsRotationSpeedRate:7; // 0 - 100 %
  s16  SW_P_Factor;
  s16  SW_I_Factor;
  s16  SW_D_Factor;
@@ -161,7 +172,6 @@ extern DataLcdToMain_t lcdReport;
 extern SystemBools_t SystemBools;
 extern ImuValues_t ImuValues;
 
-
 //TIME
 extern time_t rtcTime;
 extern u8 counter8mS; // Updated in TaskScheduler (ISR(TIMER0_COMPA_vect))
@@ -169,6 +179,7 @@ extern u8 counter8mS; // Updated in TaskScheduler (ISR(TIMER0_COMPA_vect))
 //FUNCTIONS
 void StackPaint() __attribute__ ((naked)) __attribute__ ((section (".init1")));
 void robotMeuhSetDefault();
+
 void Task1S();
 void Task32mS();
 void Task8mS();

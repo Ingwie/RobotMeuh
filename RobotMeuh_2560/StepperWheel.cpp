@@ -59,7 +59,8 @@ void initStepperPid()
 s16 L_Pid(s16 espectedValue, s16 measuredValue)
 {
  s16 error, p_term, d_term;
- s32 i_term, ret, temp;
+ s32 i_term, ret;
+#define LPIDTMP ret // re use ret as temp value
 
  error = espectedValue - measuredValue;
 
@@ -78,21 +79,21 @@ s16 L_Pid(s16 espectedValue, s16 measuredValue)
   }
 
 // Calculate Iterm and limit integral runaway
- temp = L_sumError + error;
+ LPIDTMP = L_sumError + error;
 
- if(temp > SW_maxSumError)
+ if(LPIDTMP > SW_maxSumError)
   {
    i_term = (INT32_MAX / 2);
    L_sumError = SW_maxSumError;
   }
- else if(temp < -SW_maxSumError)
+ else if(LPIDTMP < -SW_maxSumError)
   {
    i_term = -(INT32_MAX / 2);
    L_sumError = -SW_maxSumError;
   }
  else
   {
-   L_sumError = temp;
+   L_sumError = LPIDTMP;
    i_term = RobotMeuh.SW_I_Factor * L_sumError;
   }
 
@@ -110,7 +111,8 @@ s16 L_Pid(s16 espectedValue, s16 measuredValue)
 s16 R_Pid(s16 espectedValue, s16 measuredValue)
 {
  s16 error, p_term, d_term;
- s32 i_term, ret, temp;
+ s32 i_term, ret;
+#define RPIDTMP ret // re use ret as temp value
 
  error = espectedValue - measuredValue;
 
@@ -129,21 +131,21 @@ s16 R_Pid(s16 espectedValue, s16 measuredValue)
   }
 
 // Calculate Iterm and limit integral runaway
- temp = R_sumError + error;
+ RPIDTMP = R_sumError + error;
 
- if(temp > SW_maxSumError)
+ if(RPIDTMP > SW_maxSumError)
   {
    i_term = (INT32_MAX / 2);
    R_sumError = SW_maxSumError;
   }
- else if(temp < -SW_maxSumError)
+ else if(RPIDTMP < -SW_maxSumError)
   {
    i_term = -(INT32_MAX / 2);
    R_sumError = -SW_maxSumError;
   }
  else
   {
-   R_sumError = temp;
+   R_sumError = RPIDTMP;
    i_term = RobotMeuh.SW_I_Factor * R_sumError;
   }
 
@@ -235,18 +237,19 @@ u8 computeStepperWheelSpeed() // Must be called at little interval, return 0 if 
  return skip;
 }
 
-u8 computeStepperWheelPulses (s16 speed, s16 turn)
+u8 computeStepperWheelPulses(s16 speed, s16 turn)
 {
-// espected values
- s16 turnLimit = (s32)(speed * RobotMeuh.WheelsRotationRate) / 100;
-// limit
+// limit speed
  speed = limit<s16>((-MAXROBOTSPEED), speed, MAXROBOTSPEED);
- turn = limit<s16>((-turnLimit), turn, turnLimit);
-// direction
- s8 direction = (speed < 0)? -1 : 1; // no speed -> turn running forward
+// espected values
+ s32 turnLimit = abs(speed);
+ turnLimit *= RobotMeuh.WheelsRotationSpeedRate;
+ turnLimit /= 100;
+// limit turn
+ turn = limit<s16>((s16)(-turnLimit), turn, (s16)turnLimit);
 // update values
- L_RequestSpeed = speed + (turn * direction);
- R_RequestSpeed = speed - (turn * direction);
+ L_RequestSpeed = speed - turn;
+ R_RequestSpeed = speed + turn;
  return computeStepperWheelSpeed();
 }
 
@@ -288,6 +291,7 @@ void initStepperWeel()
 
 void enableStepperWheel()
 {
+ initDirPid();
  initStepperPid();
  pin_low(L_WheelEnablePin);
  pin_low(R_WheelEnablePin);

@@ -42,72 +42,139 @@
 			<Add after="avr-objcopy --no-change-warnings -j .signature --change-section-lma .signature=0 -O ihex $(TARGET_OUTPUT_FILE) $(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).sig" />
 			<Add after="avr-objdump -Pmem-usage $(TARGET_OUTPUT_FILE) $(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).elf" />
 		</ExtraCommands>
-		<Unit filename="AlarmClock.cpp" />
+		<Unit filename="AlarmClock.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
 		<Unit filename="AlarmClock.h" />
-		<Unit filename="AnalogSensor.cpp" />
+		<Unit filename="AnalogSensor.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
 		<Unit filename="AnalogSensor.h" />
-		<Unit filename="BrushlessBlade.cpp" />
+		<Unit filename="BrainModes.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="BrainModes.h" />
+		<Unit filename="BrushlessBlade.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
 		<Unit filename="BrushlessBlade.h">
 			<Option target="&lt;{~None~}&gt;" />
 		</Unit>
-		<Unit filename="FusionImu.cpp" />
+		<Unit filename="FusionImu.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
 		<Unit filename="FusionImu.h">
 			<Option target="&lt;{~None~}&gt;" />
 		</Unit>
-		<Unit filename="Imu.cpp" />
+		<Unit filename="Imu.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
 		<Unit filename="Imu.h" />
-		<Unit filename="LcdFunc.cpp" />
+		<Unit filename="LcdFunc.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
 		<Unit filename="LcdFunc.h">
 			<Option target="&lt;{~None~}&gt;" />
 		</Unit>
-		<Unit filename="MenuGeneral.cpp" />
+		<Unit filename="MenuGeneral.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
 		<Unit filename="MenuGeneral.h" />
-		<Unit filename="MenuManagement.cpp" />
+		<Unit filename="MenuManagement.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
 		<Unit filename="MenuManagement.h" />
-		<Unit filename="Motion.cpp" />
+		<Unit filename="Motion.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
 		<Unit filename="Motion.h" />
+		<Unit filename="PowerManagement.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="PowerManagement.h" />
 		<Unit filename="Protocol.h" />
 		<Unit filename="RobotMeuh.cpp" />
 		<Unit filename="RobotMeuh.h" />
-		<Unit filename="SerialCli.cpp" />
+		<Unit filename="SerialCli.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
 		<Unit filename="SerialCli.h" />
-		<Unit filename="SerialLcd.cpp" />
+		<Unit filename="SerialLcd.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
 		<Unit filename="SerialLcd.h" />
-		<Unit filename="StepperWheel.cpp" />
+		<Unit filename="StepperWheel.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
 		<Unit filename="StepperWheel.h">
 			<Option target="&lt;{~None~}&gt;" />
 		</Unit>
-		<Unit filename="TaskScheduler.cpp" />
+		<Unit filename="TaskScheduler.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
 		<Unit filename="TaskScheduler.h" />
-		<Unit filename="eeprom.cpp" />
+		<Unit filename="eeprom.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
 		<Unit filename="eeprom.h" />
-		<Unit filename="i2c.cpp" />
+		<Unit filename="i2c.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
 		<Unit filename="i2c.h" />
 		<Unit filename="lib/Fusion.h" />
 		<Unit filename="lib/FusionAhrs.c">
 			<Option compilerVar="CC" />
+			<Option compile="0" />
+			<Option link="0" />
 		</Unit>
 		<Unit filename="lib/FusionAhrs.h" />
 		<Unit filename="lib/FusionBias.c">
 			<Option compilerVar="CC" />
+			<Option compile="0" />
+			<Option link="0" />
 		</Unit>
 		<Unit filename="lib/FusionBias.h" />
 		<Unit filename="lib/FusionCalibration.h" />
 		<Unit filename="lib/FusionCompass.c">
 			<Option compilerVar="CC" />
+			<Option compile="0" />
+			<Option link="0" />
 		</Unit>
 		<Unit filename="lib/FusionCompass.h" />
 		<Unit filename="lib/FusionTypes.h" />
 		<Unit filename="pin.h" />
 		<Unit filename="pin_helper.h" />
-		<Unit filename="rtc.cpp" />
+		<Unit filename="rtc.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
 		<Unit filename="rtc.h" />
 		<Unit filename="spi.cpp">
 			<Option compile="0" />
 			<Option link="0" />
 		</Unit>
 		<Unit filename="spi.h" />
-		<Unit filename="utils.cpp" />
+		<Unit filename="utils.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
 		<Unit filename="utils.h" />
 		<Extensions>
 			<lib_finder disable_auto="1" />
