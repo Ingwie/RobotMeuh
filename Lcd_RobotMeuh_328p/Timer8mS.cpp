@@ -42,7 +42,7 @@ ISR(TIMER2_COMPA_vect, ISR_NOBLOCK)
    // Update Report for keys
    updateKeys();
    // update heartbeat
-   Report.heartbeat = (Report.heartbeat)? 0 : 1;
+   Report.HeartBeat = (Report.HeartBeat)? 0 : 1;
 
    memcpy(&serialRet, &Report, 1); // Update Spiret
    serialRet[NUM_BYTE_RET - 1] = SERIAL_LCD_EOL; // end of packet
