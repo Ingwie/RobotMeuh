@@ -31,14 +31,14 @@
 
 PACK(typedef struct
 {
- u8 heartbeat:1;
+ u8 HeartBeat:1;
  u8 KeyPlay:1;
  u8 KeyHome:1;
  u8 KeyEnter:1;
  u8 KeyPlus:1;
  u8 KeyMinus:1;
  u8 DetectRain:1;
- u8 todo:1;
+ u8 unused:1;
 }) DataLcdToMain_t;
 
 PACK(typedef struct

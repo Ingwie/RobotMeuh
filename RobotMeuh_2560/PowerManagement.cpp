@@ -21,7 +21,8 @@
 void readBatteryVoltage()
 {
  u32 temp = ((getADC(ANA_BAT) * 5L /*AVCC*/ * 10L) / 60L * 2048L); // 1 / 60 resistors division ???
- RobotMeuh.Battery = 255;//temp;
+ temp = 255; // todo remove
+ RobotMeuh.Battery = temp;
 }
 
 u8 checkBattery() // return 0 if OK
@@ -36,5 +37,6 @@ u8 checkBattery() // return 0 if OK
 u16 readChargerVoltage()
 {
  u32 temp = ((getADC(ANA_CHARGE) * 5L /*AVCC*/ * 10L) / 60L * 2048L); // 1 / 60 resistors division ???
- return 255;//temp;
+ temp = 255; // todo remove
+ return temp;
 }

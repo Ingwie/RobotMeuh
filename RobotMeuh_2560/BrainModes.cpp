@@ -23,12 +23,12 @@ BrainDatas_t BrainData;
 
 void brainCompute()
 {
- static u8 tokenMem = 0xFF;
+ static brainArray tokenMem = B_NUMBER;
 
  if (brainToken != tokenMem) // change brain ?
   {
-   BrainData.init = 1; // reset initialisation flag
-   BrainData.prevBrainToken = (brainArray)tokenMem; // store previous brain
+   BrainData.init = 1; // set initialisation flag
+   BrainData.prevBrainToken = tokenMem; // store previous brain
    tokenMem = brainToken;
    brainPointer = (p_Function)pgm_read_ptr_near(&brainFunctions[brainToken]); // find brainfunction[brainToken] in flash
   }
@@ -70,7 +70,7 @@ const void brainWakeUp() // first at boot
       }
      else // not wirred : whait for play key to mow
       {
-       //forceBrain(B_STARTMOWING);
+       if (lcdReport.KeyPlay) forceBrain(B_STARTMOWING);
       }
     }
   } // no else : checkbattery auto shut down RobotMeuh
@@ -90,7 +90,7 @@ const void brainExitChargingStation() // Move ~1 meter backward straight + ~1 me
    BrainData.angle = ImuValues.yaw; // store direction
    enableStepperWheel();
   }
- if (++BrainData.counter < 200)
+ if (++BrainData.counter < 220)
   {
    BrainData.speed = decimeterPerMinuteToPulses(-200);
    Motion_FollowAngle(BrainData.speed, BrainData.angle); // move away from charging station
@@ -99,7 +99,18 @@ const void brainExitChargingStation() // Move ~1 meter backward straight + ~1 me
   }
  else
   {
-   //forceBrain(B_STARTMOWING);
-
+   forceBrain(B_STARTMOWING);
   }
+}
+
+const void brainStartMowing() // cut grass !
+{
+ if (BrainData.init) // brain initialisation
+  {
+   BrainData.init = 0;
+   //BrainData.counter = 0;
+   BrainData.angle = ImuValues.yaw += 450; // todo random direction
+   BrushlessBladeCutAt((BrainData.bladeDir)? RobotMeuh.BladeSpeed : -RobotMeuh.BladeSpeed); // every day change direction
+  }
+ Motion_FollowAngle(decimeterPerMinuteToPulses(RobotMeuh.WheelsSpeed), BrainData.angle); // start mowing
 }

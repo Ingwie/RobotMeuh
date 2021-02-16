@@ -105,7 +105,7 @@ int main(void)
 
    if (!onetime)
     {
-     BrushlessBladeCutAt(9000);
+
      //ADCSRA |= _BV(ADSC); // Start the AD conversion
      onetime = 1;
     }
@@ -171,10 +171,7 @@ void Task8mS()
 // Mid task
 void Task32mS()
 {
- computeFusionImu(); // Compute imus (approx 150uS)
-//forceStepperWheelPulses(32000, decimeterPerMinuteToPulses(5000));
- //Motion_FollowAngle(decimeterPerMinuteToPulses(RobotMeuh.WheelsSpeed), 900);
-//Motion_Turn(100, 0);
+ computeFusionImu(); // Compute Euler angles and magnetic north (approx 150uS)
  brainCompute();
  checkSerialLcdRXBuf();
 }
@@ -192,7 +189,7 @@ void Task1S() // ISR mode
  readBatteryVoltage();
 }
 
-/////////////////// INCLUDE ALL CPP AND C FILES HERE ////////////////////////
+/////////////////// INCLUDE ALL CPP AND C FILES HERE //////////////////////// -> Faster compilation
 
 #include "utils.cpp"
 #include "eeprom.cpp"

@@ -111,9 +111,9 @@ void initBrushlessBlade()
 
 void BrushlessBladeStop()
 {
- set_output_on(BladeEnablePin); // Stop ! todo check brake (delay)
  TCCR5B &= ~_BV(CS50); // Disable timer 5
  OCR5C = 0; // off
+ set_output_on(BladeEnablePin); // Stop ! todo check brake (delay)
  BrushlessBlade.IsCutting = false;
  BrushlessBlade.PWMValue = 0;
 }

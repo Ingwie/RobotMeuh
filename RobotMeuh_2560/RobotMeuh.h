@@ -137,6 +137,14 @@ PACK(typedef struct
 }) Alarm_t;
 #define ALMDURATIONLENGHT  5
 
+PACK(typedef struct
+{
+ u8 enabled:1;
+ u8 percent; // 0 - 100% (surface)
+ s8 distance; // X2 M (240 M Max)
+}) Zone_t;
+#define ZONEDISTFACTOR     2 // M
+
 // Robot values saved to eeprom
 PACK(typedef struct
 {
@@ -162,6 +170,10 @@ PACK(typedef struct
 // Alarms
  Alarm_t FirstAlarm;
  Alarm_t SecondAlarm;
+// Zones
+ u16    NumRun; // inc every run
+ Zone_t FirstZone;
+ Zone_t SecondZone;
 }) RobotMeuh_t;
 
 

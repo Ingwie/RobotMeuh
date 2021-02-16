@@ -85,6 +85,9 @@ void rtcReadTime(struct tm * t)
  t->tm_wday = bcd2bin(buf[4] & 0x07);      // 0 - 6  to days since Sunday - [ 0 to 6 ]
  t->tm_mon =  bcd2bin(buf[5] & 0x1F) - 1;  // 1 - 12 to months since January - [ 0 to 11 ]
  t->tm_year = bcd2bin(buf[6]) + 100;       // 0 - 99 to years since 1900
+
+ // set blade direction
+ BrainData.bladeDir = (t->tm_wday & 0x1)? 1 : 0;
 }
 
 void rtcSetAlarm(u8 minute, u8 hour, u8 wday)

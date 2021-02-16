@@ -64,8 +64,8 @@ void computeSerialRXBuf(u8 buffNum)
 {
  memcpy(&lcdReport, &SerialLcdRXBuf[buffNum][0], 1); // update lcdReport
 // check LCD heartbeat
- SystemBools.lcdISOk = (SystemBools.lcdHeartBeatMem ^ lcdReport.heartbeat)? 1 : 0;
- SystemBools.lcdHeartBeatMem = lcdReport.heartbeat;
+ SystemBools.lcdISOk = (SystemBools.lcdHeartBeatMem ^ lcdReport.HeartBeat)? 1 : 0;
+ SystemBools.lcdHeartBeatMem = lcdReport.HeartBeat;
 }
 
 void SerialLcdPrint(char * text)

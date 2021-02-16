@@ -80,7 +80,7 @@ s16 setMenuValue(s16 actual, s16 maxi, s16 mini, s16 step)
 
 void menuCompute()
 {
- static u8 tokenMem = 0xFF;
+ static menuArray tokenMem = M_MENUNUMBER;
 
  if (menuToken != tokenMem) // change menu ?
   {

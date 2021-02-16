@@ -34,7 +34,7 @@ const void menuStatus() // show status
 //lcdPrintf(1, 0, PSTR("%06i    %06i"), L_ActualSpeed, R_ActualSpeed);
  //lcdPrintf(1, 0, PSTR("%02i.%01i        %02i.%01i"), L.quot, L.rem, R.quot, R.rem);
  lcdPrintf(1, 0, PSTR("%+03i.%01i  %3i %+03i.%01i"), L.quot, abs(L.rem),RobotMeuh.Battery , R.quot, abs(R.rem));
- menuNavigation(PMT(M_LCDKEYS, M_TESTBRUSHLESS, M_STATUS, M_STATUS));
+ menuNavigation(PMT(M_LCDKEYS, M_SETSECONDZONE, M_STATUS, M_STATUS));
 }
 
 const void menuLcdKeys() // show lcd keys
@@ -486,5 +486,71 @@ const void menuTestBrushless() // Test blade motor and controler
    menuVar.value = 0; // Reset value
    BrushlessBladeStop();
   }
- menuNavigation(PMT(M_STATUS, M_TESTSTEPPERS, M_TESTBRUSHLESS, M_TESTBRUSHLESS));
+ menuNavigation(PMT(M_SETFIRSTZONE, M_TESTSTEPPERS, M_TESTBRUSHLESS, M_TESTBRUSHLESS));
+}
+
+const void menuSetFirstZone() // extra zone 1 settings
+{
+ lcdPrintf(0, 0, ZONE_NUM_ACTIVE, 1, RobotMeuh.FirstZone.enabled);
+ lcdPrintf(1, 0, ZONE_DIST_PERCENT, RobotMeuh.FirstZone.distance * ZONEDISTFACTOR, RobotMeuh.FirstZone.percent);
+
+ if (menuVar.editMode)
+  {
+   SerialLcdSend(); // send buffer
+   menuVar.maxField = 3; // set max field
+   _delay_ms(1); // time to send and free some buffers
+   switch (menuVar.field)
+    {
+    case 1:
+     RobotMeuh.FirstZone.enabled = setMenuValue((u8)RobotMeuh.FirstZone.enabled, 1, 0, 1);
+     lcdLocate(0,15);
+     break;
+    case 2:
+     RobotMeuh.FirstZone.distance = setMenuValue(RobotMeuh.FirstZone.distance, 120, -120, 1);
+     lcdLocate(1,8);
+     break;
+    case 3:
+     RobotMeuh.FirstZone.percent = setMenuValue(RobotMeuh.FirstZone.percent, 100, 0, 1);
+     lcdLocate(1,14);
+     break;
+    }
+  }
+ else if (menuVar.wasEdited)
+  {
+   eepromWritedAll(); // write to eeprom
+  }
+ menuNavigation(PMT(M_SETSECONDZONE, M_TESTBRUSHLESS, M_SETFIRSTZONE, M_SETFIRSTZONE));
+}
+
+const void menuSetSecondZone() // extra zone 2 settings
+{
+ lcdPrintf(0, 0, ZONE_NUM_ACTIVE, 2, RobotMeuh.SecondZone.enabled);
+ lcdPrintf(1, 0, ZONE_DIST_PERCENT, RobotMeuh.SecondZone.distance * ZONEDISTFACTOR, RobotMeuh.SecondZone.percent);
+
+ if (menuVar.editMode)
+  {
+   SerialLcdSend(); // send buffer
+   menuVar.maxField = 3; // set max field
+   _delay_ms(1); // time to send and free some buffers
+   switch (menuVar.field)
+    {
+    case 1:
+     RobotMeuh.SecondZone.enabled = setMenuValue((u8)RobotMeuh.SecondZone.enabled, 1, 0, 1);
+     lcdLocate(0,15);
+     break;
+    case 2:
+     RobotMeuh.SecondZone.distance = setMenuValue(RobotMeuh.SecondZone.distance, 120, -120, 1);
+     lcdLocate(1,8);
+     break;
+    case 3:
+     RobotMeuh.SecondZone.percent = setMenuValue(RobotMeuh.SecondZone.percent, 100, 0, 1);
+     lcdLocate(1,14);
+     break;
+    }
+  }
+ else if (menuVar.wasEdited)
+  {
+   eepromWritedAll(); // write to eeprom
+  }
+ menuNavigation(PMT(M_STATUS, M_SETFIRSTZONE, M_SETSECONDZONE, M_SETSECONDZONE));
 }

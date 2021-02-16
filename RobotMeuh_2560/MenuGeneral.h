@@ -39,6 +39,8 @@ const void menuSetFirstAlarm(); // Set firt alarm
 const void menuSetSecondAlarm(); // Set firt alarm
 const void menuTestSteppers(); // Test wheels motors and controlers
 const void menuTestBrushless(); // Test blade motor and controler
+const void menuSetFirstZone(); // extra zone 1 settings
+const void menuSetSecondZone(); // extra zone 2 settings
 
 
 const char EMPTYCHAR = '_';
@@ -47,5 +49,7 @@ const char HOURMINUTE_MASK[] PROGMEM = "%02u:%02u";
 const char IMU_YZ_MASK[] PROGMEM = "Y % 5i Z % 5i";
 const char PID_ID_MASK[] PROGMEM = "I:%01u.%03u  D:%01u.%03u";
 const char WEEK_ALM[] PROGMEM = "-DLMMJVS-";
+const char ZONE_NUM_ACTIVE[] PROGMEM = "Zone-%01u- Active:%01u";
+const char ZONE_DIST_PERCENT[] PROGMEM = "Dist:%+04iM  %03u%%";
 
 #endif

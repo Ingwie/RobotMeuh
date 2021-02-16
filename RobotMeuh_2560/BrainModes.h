@@ -24,6 +24,7 @@
 extern const void brainWakeUp(); // first brain
 extern const void brainCharging(); // manage battery voltage
 extern const void brainExitChargingStation(); // Move 1 meter backward
+extern const void brainStartMowing(); // cut grass !
 
 /////////////////////////////////////////
 
@@ -32,6 +33,7 @@ const p_Function brainFunctions[] PROGMEM = // Brain function array
  brainWakeUp,
  brainCharging,
  brainExitChargingStation,
+ brainStartMowing,
 
 };
 
@@ -40,6 +42,7 @@ enum brainArray // Image of brain function array
  B_WAKEUP,
  B_CHARGING,
  B_EXITCHARGINGSTATION,
+ B_STARTMOWING,
 
  B_NUMBER
 };
@@ -48,7 +51,8 @@ PACK(typedef struct
 {
  brainArray prevBrainToken; // to remember last state
  u8  init:1; // used to init brain values (is reseted in brainCompute())
- u8 unused:3;
+ u8  unused:2;
+ u8  bladeDir; // Cw CCw
  s16 angle; // angle :12
  u16 deltaDist; // distance
  s16 speed; // speed
