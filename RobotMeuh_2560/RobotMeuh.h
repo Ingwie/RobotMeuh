@@ -55,6 +55,7 @@ typedef const void (*p_Function)(void);
 #include "rtc.h"
 //#include "spi.h"
 #include "i2c.h"
+#include "Pid.h"
 #include "AlarmClock.h"
 #include "SerialCli.h"
 #include "SerialLcd.h"
@@ -96,7 +97,7 @@ typedef const void (*p_Function)(void);
 #define ERR(x) {lcdPrintString_P(0, 0, PSTR(x));sendLcdDispOn();_delay_ms(1000);}
 
 // PID
-#define PID_SCALING_FACTOR  1024
+#define PID_SCALING_FACTOR  1000
 #define PID_K(x)            (x * PID_SCALING_FACTOR)
 #define Kp_Default          PID_K(0.200)
 #define Ki_Default          PID_K(0.080)
@@ -118,6 +119,12 @@ PACK(typedef struct
  u8 toggle500mS:1; // 0.5S toggle
  u8 unused:5;
 }) SystemBools_t;
+
+PACK(typedef struct
+{
+ s16 deltaDir:12;
+ s8 unused:4;
+}) DynamicData_t;
 
 PACK(typedef struct
 {
@@ -159,7 +166,7 @@ PACK(typedef struct
  s16  Blade_D_Factor;
 // SteppersWheels
  u16  WheelsSpeed:9; // M/Minute 50.0 max
- u8  WheelsRotationSpeedRate:7; // 0 - 100 %
+ u16  WheelsRotationSpeedRate:7; // 0 - 100 %
  s16  SW_P_Factor;
  s16  SW_I_Factor;
  s16  SW_D_Factor;

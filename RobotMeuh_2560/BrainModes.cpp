@@ -65,7 +65,7 @@ const void brainWakeUp() // first at boot
        // wait 2 secondes to stabilise imus
        if (++BrainData.counter > 63)
         {
-         forceBrain(B_EXITCHARGINGSTATION);
+         forceBrain(B_EXITCHARGINGSTATION); // todo check zone to mow ?
         }
       }
      else // not wirred : whait for play key to mow
@@ -93,9 +93,9 @@ const void brainExitChargingStation() // Move ~1 meter backward straight + ~1 me
  if (++BrainData.counter < 220)
   {
    BrainData.speed = decimeterPerMinuteToPulses(-200);
-   Motion_FollowAngle(BrainData.speed, BrainData.angle); // move away from charging station
    if (BrainData.counter == 100) BrainData.angle += 450; // change direction (inner)
    if (BrainData.counter == 199) forceStepperWheelPulses(0,0); // stop todo remove ?
+   Motion_FollowAngle(BrainData.speed, BrainData.angle); // move away from charging station
   }
  else
   {
@@ -109,8 +109,10 @@ const void brainStartMowing() // cut grass !
   {
    BrainData.init = 0;
    //BrainData.counter = 0;
-   BrainData.angle = ImuValues.yaw += 450; // todo random direction
-   BrushlessBladeCutAt((BrainData.bladeDir)? RobotMeuh.BladeSpeed : -RobotMeuh.BladeSpeed); // every day change direction
+   BrainData.angle = findRelativeAngle(00); // todo random direction
+   BrushlessBladeCutAt((BrainData.bladeDir)? RobotMeuh.BladeSpeed : -RobotMeuh.BladeSpeed); // every run change direction
   }
+ //if (++BrainData.counter == 20) {BrainData.angle -= 100; BrainData.counter = 0;}// test
  Motion_FollowAngle(decimeterPerMinuteToPulses(RobotMeuh.WheelsSpeed), BrainData.angle); // start mowing
+ //if (++BrainData.counter >= 1000) forceStepperWheelPulses(-decimeterPerMinuteToPulses(RobotMeuh.WheelsSpeed), -decimeterPerMinuteToPulses(RobotMeuh.WheelsSpeed));
 }

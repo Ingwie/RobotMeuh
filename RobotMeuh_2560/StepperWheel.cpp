@@ -35,129 +35,14 @@ volatile u8 L_Prescaler = 0;
 volatile u8 R_Prescaler = 0;
 
 // PID
-// Last process value, used to find derivative of process value.
-s16 L_lastMeasuredValue;
-s16 R_lastMeasuredValue;
-// Summation of errors, used for integrate calculations
-s32 L_sumError;
-s32 R_sumError;
-// Maximum allowed error, avoid overflow
-s16 SW_maxError;
-// Maximum allowed sumerror, avoid overflow
-s32 SW_maxSumError;
+c_PID L_Pid, R_Pid;
 
 void initStepperPid()
 {
- L_lastMeasuredValue = 0;
- L_sumError = 0;
- R_lastMeasuredValue = 0;
- R_sumError = 0;
- SW_maxError = INT16_MAX / (RobotMeuh.SW_P_Factor + 1);
- SW_maxSumError = (INT32_MAX / 2) / (RobotMeuh.SW_I_Factor + 1);
-}
-
-s16 L_Pid(s16 espectedValue, s16 measuredValue)
-{
- s16 error, p_term, d_term;
- s32 i_term, ret;
-#define LPIDTMP ret // re use ret as temp value
-
- error = espectedValue - measuredValue;
-
-// Calculate Pterm and limit error overflow
- if (error > SW_maxError)
-  {
-   p_term = INT16_MAX;
-  }
- else if (error < -SW_maxError)
-  {
-   p_term = -INT16_MAX;
-  }
- else
-  {
-   p_term = RobotMeuh.SW_P_Factor * error;
-  }
-
-// Calculate Iterm and limit integral runaway
- LPIDTMP = L_sumError + error;
-
- if(LPIDTMP > SW_maxSumError)
-  {
-   i_term = (INT32_MAX / 2);
-   L_sumError = SW_maxSumError;
-  }
- else if(LPIDTMP < -SW_maxSumError)
-  {
-   i_term = -(INT32_MAX / 2);
-   L_sumError = -SW_maxSumError;
-  }
- else
-  {
-   L_sumError = LPIDTMP;
-   i_term = RobotMeuh.SW_I_Factor * L_sumError;
-  }
-
-// Calculate Dterm
- d_term = RobotMeuh.SW_D_Factor * (L_lastMeasuredValue - measuredValue);
-
- L_lastMeasuredValue = measuredValue;
-
- ret = (p_term + i_term + d_term) / PID_SCALING_FACTOR;
- ret = limit<s32>(-MAXSTEPPERSPEED, ret, MAXSTEPPERSPEED);
-
- return((s16)ret);
-}
-
-s16 R_Pid(s16 espectedValue, s16 measuredValue)
-{
- s16 error, p_term, d_term;
- s32 i_term, ret;
-#define RPIDTMP ret // re use ret as temp value
-
- error = espectedValue - measuredValue;
-
-// Calculate Pterm and limit error overflow
- if (error > SW_maxError)
-  {
-   p_term = INT16_MAX;
-  }
- else if (error < -SW_maxError)
-  {
-   p_term = -INT16_MAX;
-  }
- else
-  {
-   p_term = RobotMeuh.SW_P_Factor * error;
-  }
-
-// Calculate Iterm and limit integral runaway
- RPIDTMP = R_sumError + error;
-
- if(RPIDTMP > SW_maxSumError)
-  {
-   i_term = (INT32_MAX / 2);
-   R_sumError = SW_maxSumError;
-  }
- else if(RPIDTMP < -SW_maxSumError)
-  {
-   i_term = -(INT32_MAX / 2);
-   R_sumError = -SW_maxSumError;
-  }
- else
-  {
-   R_sumError = RPIDTMP;
-   i_term = RobotMeuh.SW_I_Factor * R_sumError;
-  }
-
-// Calculate Dterm
- d_term = RobotMeuh.SW_D_Factor * (R_lastMeasuredValue - measuredValue);
-
- R_lastMeasuredValue = measuredValue;
-
- ret = (p_term + i_term + d_term) / PID_SCALING_FACTOR;
- ret = limit<s32>(-MAXSTEPPERSPEED, ret, MAXSTEPPERSPEED);
-
- return((s16)ret);
+#define RM RobotMeuh
+ L_Pid.init(RM.SW_P_Factor, RM.SW_I_Factor, RM.SW_D_Factor, PID_SCALING_FACTOR, MAXSTEPPERSPEED);
+ R_Pid.init(RM.SW_P_Factor, RM.SW_I_Factor, RM.SW_D_Factor, PID_SCALING_FACTOR, MAXSTEPPERSPEED);
+#undef RM
 }
 
 static void linearizePulses(u16 freq, u8 * prescaler, u16 * pulses)
@@ -197,13 +82,13 @@ u8 computeStepperWheelSpeed() // Must be called at little interval, return 0 if 
  if (L_RequestSpeed != L_ActualSpeed)
   {
    ++skip;
-   L_ActualSpeed = L_Pid(L_RequestSpeed, L_ActualSpeed);
+   L_ActualSpeed = L_Pid.compute(L_RequestSpeed, L_ActualSpeed);
   }
 // Right Wheel
  if (R_RequestSpeed != R_ActualSpeed)
   {
    ++skip;
-   R_ActualSpeed = R_Pid(R_RequestSpeed, R_ActualSpeed);
+   R_ActualSpeed = R_Pid.compute(R_RequestSpeed, R_ActualSpeed);
   }
 
  if (skip)
@@ -235,22 +120,6 @@ u8 computeStepperWheelSpeed() // Must be called at little interval, return 0 if 
    RobotStatus.RunForward = (wheelActualSpeed < 0)? 0 : 1;
   }
  return skip;
-}
-
-u8 computeStepperWheelPulses(s16 speed, s16 turn)
-{
-// limit speed
- speed = limit<s16>((-MAXROBOTSPEED), speed, MAXROBOTSPEED);
-// espected values
- s32 turnLimit = abs(speed);
- turnLimit *= RobotMeuh.WheelsRotationSpeedRate;
- turnLimit /= 100;
-// limit turn
- turn = limit<s16>((s16)(-turnLimit), turn, (s16)turnLimit);
-// update values
- L_RequestSpeed = speed - turn;
- R_RequestSpeed = speed + turn;
- return computeStepperWheelSpeed();
 }
 
 u8 forceStepperWheelPulses(s16 lSpeed, s16 rSpeed)

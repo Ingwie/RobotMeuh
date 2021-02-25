@@ -47,7 +47,7 @@ void initFusionImu()
 // Initialise gyroscope bias correction algorithm
  FusionBiasInitialise(&fusionBias, 0.5f, FUSIONPERIOD); // stationary threshold = 0.5 degrees per second
 // Initialise AHRS algorithm
- FusionAhrsInitialise(&fusionAhrs, 0.5f); // set gain low gain use less Acc and Mag and then can drift
+ FusionAhrsInitialise(&fusionAhrs, 0.7f); // set gain low gain use less Acc and Mag and then can drift
 // Set optional magnetic field limits
  FusionAhrsSetMagneticField(&fusionAhrs, 20.0f, 70.0f); // valid magnetic field range = 20 uT to 70 uT
 }

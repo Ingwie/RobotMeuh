@@ -16,18 +16,28 @@
 /*    Setup_OAVRCBuilder3.exe/file (Pswd : OpenAVRc)   */
 
 
-#ifndef MOTION_H_INCLUDED
-#define MOTION_H_INCLUDED
+#ifndef PID_H_INCLUDED
+#define PID_H_INCLUDED
 
 #include "RobotMeuh.h"
 
-#define MAXANGLE 1800l // 180° X 10
-#define MINANGLE (-MAXANGLE+1)
+class c_PID
+{
+public:
+ c_PID();
+ void init(s16 K_P, s16 K_I, s16 K_D, u16 K_factor, s16 output_limit);
+ void changeLimit(s16 output_limit);
+ s16 compute(s16 espectedValue, s16 measuredValue);
 
-void initDirPid();
-u8 Motion_FollowAngle(s16 speed, s16 angle); // angle in degres X 10
-u8 Motion_Turn(s16 rate, s16 radius); // radius in cM
-s16 findShortestAngle(s16 from, s16 to); // angles in degres X 10 (-1800 to 1800)
-s16 findRelativeAngle(s16 offset); // offset in degres X 10 (-1800 to 1800)
 
-#endif // MOTION_H_INCLUDED
+private:
+ float KP;
+ float KI;
+ float KD;
+ s16 Output_limit;
+ s32 PrevError;
+ s32 SumError;
+ s16 Output;
+};
+
+#endif // PID_H_INCLUDED

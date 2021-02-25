@@ -39,8 +39,8 @@ const void menuSetFirstAlarm(); // Set firt alarm
 const void menuSetSecondAlarm(); // Set firt alarm
 const void menuTestSteppers(); // Test wheels motors and controlers
 const void menuTestBrushless(); // Test blade motor and controler
-const void menuSetFirstZone(); // extra zone 1 settings
-const void menuSetSecondZone(); // extra zone 2 settings
+const void menuSetFirstZone(); // Extra zone 1 settings
+const void menuSetSecondZone(); // Extra zone 2 settings
 
 
 const char EMPTYCHAR = '_';

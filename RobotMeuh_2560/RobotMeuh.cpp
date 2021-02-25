@@ -21,6 +21,7 @@
 //ROBOTMEUH
 RobotMeuh_t RobotMeuh;
 Status_t RobotStatus = {0};
+DynamicData_t DynData;
 DataLcdToMain_t lcdReport = {0};
 SystemBools_t SystemBools = {0};
 ImuValues_t ImuValues = {0};
@@ -196,6 +197,7 @@ void Task1S() // ISR mode
 #include "rtc.cpp"
 //#include "spi.cpp"
 #include "i2c.cpp"
+#include "Pid.cpp"
 #include "AlarmClock.cpp"
 #include "SerialCli.cpp"
 #include "SerialLcd.cpp"

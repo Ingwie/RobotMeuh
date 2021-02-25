@@ -65,7 +65,6 @@ extern u32 L_StepCourse;
 extern u32 R_StepCourse;
 
 
-u8 computeStepperWheelPulses(s16 speed, s16 turn);
 u8 forceStepperWheelPulses(s16 lSpeed, s16 rSpeed);
 u8 computeStepperWheelSpeed();
 void initStepperWeel();

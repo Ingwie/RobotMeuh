@@ -98,6 +98,11 @@
 			<Option link="0" />
 		</Unit>
 		<Unit filename="Motion.h" />
+		<Unit filename="Pid.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
+		<Unit filename="Pid.h" />
 		<Unit filename="PowerManagement.cpp">
 			<Option compile="0" />
 			<Option link="0" />

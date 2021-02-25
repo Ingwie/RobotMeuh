@@ -43,8 +43,8 @@ extern const void menuSetFirstAlarm(); // Set firt alarm
 extern const void menuSetSecondAlarm(); // Set firt alarm
 extern const void menuTestSteppers(); // Test wheels motors and controlers
 extern const void menuTestBrushless(); // Test blade motor and controler
-extern const void menuSetFirstZone(); // extra zone 1 settings
-extern const void menuSetSecondZone(); // extra zone 2 settings
+extern const void menuSetFirstZone(); // Extra zone 1 settings
+extern const void menuSetSecondZone(); // Extra zone 2 settings
 
 /////////////////////////////////////////
 

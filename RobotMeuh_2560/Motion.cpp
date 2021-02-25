@@ -17,86 +17,13 @@
 
 #include "Motion.h"
 
-// Last process value, used to find derivative of process value.
-s16 Dir_lastMeasuredValue;
-// Summation of errors, used for integrate calculations
-s32 Dir_sumError;
-// Maximum allowed error, avoid overflow
-s16 Dir_maxError;
-// Maximum allowed sumerror, avoid overflow
-s32 Dir_maxSumError;
+c_PID DirPid;
 
 void initDirPid()
 {
- Dir_lastMeasuredValue = 0;
- Dir_sumError = 0;
- Dir_maxError = INT16_MAX / (RobotMeuh.Dir_P_Factor + 1);
- Dir_maxSumError = (INT32_MAX / 2) / (RobotMeuh.Dir_I_Factor + 1);
-}
-
-s16 DirPid(s16 espectedValue, s16 measuredValue)
-{
- s16 error, p_term, d_term;
- s32 i_term, ret;
-#define DIRPIDTMP ret // re use ret as temp value
-
- error = espectedValue - measuredValue;
-
-// Calculate Pterm and limit error overflow
- if (error > Dir_maxError)
-  {
-   p_term = INT16_MAX;
-  }
- else if (error < -Dir_maxError)
-  {
-   p_term = -INT16_MAX;
-  }
- else
-  {
-   p_term = RobotMeuh.Dir_P_Factor * error;
-  }
-
-// Calculate Iterm and limit integral runaway
- DIRPIDTMP = Dir_sumError + error;
- if(DIRPIDTMP > Dir_maxSumError)
-  {
-   i_term = (INT32_MAX / 2);
-   Dir_sumError = Dir_maxSumError;
-  }
- else if(DIRPIDTMP < -Dir_maxSumError)
-  {
-   i_term = -(INT32_MAX / 2);
-   Dir_sumError = -Dir_maxSumError;
-  }
- else
-  {
-   Dir_sumError = DIRPIDTMP;
-   i_term = RobotMeuh.Dir_I_Factor * Dir_sumError;
-  }
-
-// Calculate Dterm
- d_term = RobotMeuh.Dir_D_Factor * (Dir_lastMeasuredValue - measuredValue);
-
- Dir_lastMeasuredValue = measuredValue;
-
- ret = (p_term + i_term + d_term) / PID_SCALING_FACTOR;
- ret = limit<s32>(INT16_MIN, ret, INT16_MAX);
-
- return((s16)ret);
-}
-
-s16 findShortestAngle(s16 from, s16 to) // angles in degres X 10 (-1800 to 1800)
-{
- s16 ret = to - from;
- if (ret < MINANGLE)
-  {
-   ret = ret + 2 * MAXANGLE;
-  }
- else if (ret > MAXANGLE)
-  {
-   ret = ret - 2 * MAXANGLE;
-  }
- return ret;
+#define RM RobotMeuh
+ DirPid.init(RM.Dir_P_Factor, RM.Dir_I_Factor, RM.Dir_D_Factor, PID_SCALING_FACTOR, MAXROBOTSPEED);
+#undef RM
 }
 
 /*
@@ -122,17 +49,44 @@ s16 findSpeedFactorForRadius(s16 radius) // factor * 1024
 }
 */
 
+s16 constrainAngle(s16 angle) // keep value in range : degres X 10 (-1799 to 1800)
+{
+ s16 ret = angle;
+ ret += (ret > MAXANGLE) ? (-2 * MAXANGLE) : (ret < MINANGLE) ? (2 * MAXANGLE) : 0;
+ return ret;
+}
+
+s16 findShortestAngle(s16 from, s16 to) // angles in degres X 10 (-1799 to 1800)
+{
+ return constrainAngle(to - from);
+}
+
+s16 findRelativeAngle(s16 offset) // offset in degres X 10 (-1800 to 1800)
+{
+ return constrainAngle(ImuValues.yaw + offset);
+}
+
 /////// MOTION
 
 u8 Motion_FollowAngle(s16 speed, s16 angle)
 {
- s16 diffAngle = findShortestAngle(ImuValues.yaw, angle);
- return computeStepperWheelPulses(speed, DirPid(diffAngle, 0));
+// update regulator's turn limit
+ s32 turnLimit = ((s32)speed * RobotMeuh.WheelsRotationSpeedRate) / 100;
+ DirPid.changeLimit((s16)abs(turnLimit));
+// compute wheels speed dif.
+ s16 diffAngle = findShortestAngle(ImuValues.yaw, constrainAngle(angle));
+ DynData.deltaDir = diffAngle;
+ s16 turn = DirPid.compute(diffAngle, 0);
+// update values
+ s16 lSpeed = speed - turn;
+ s16 rSpeed = speed + turn;
+ return forceStepperWheelPulses(lSpeed, rSpeed);
 }
 
-u8 Motion_Turn(s16 rate, s16 radius) // radius in cM clockwise
+u8 Motion_Turn(s16 rate, s16 radius) // radius in cM conterclockwise (Direction +)
 {
- s16 lSpeed = rate * (radius + (WHELLBASE / 2));
- s16 rSpeed = rate * (radius - (WHELLBASE / 2));
+ DynData.deltaDir = 450 * sgn(radius);
+ s16 lSpeed = rate * (radius - (WHELLBASE / 2));
+ s16 rSpeed = rate * (radius + (WHELLBASE / 2));
  return forceStepperWheelPulses(lSpeed, rSpeed);
 }

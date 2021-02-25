@@ -20,71 +20,13 @@
 BrushlessBlade_t BrushlessBlade;
 volatile u16 bladeTick;  // hall sensor tick
 
-// Last process value, used to find derivative of process value.
-s16 Blade_lastMeasuredValue;
-// Summation of errors, used for integrate calculations
-s32 Blade_sumError;
-// Maximum allowed error, avoid overflow
-s16 Blade_maxError;
-// Maximum allowed sumerror, avoid overflow
-s32 Blade_maxSumError;
+c_PID BladePid;
 
 void initBladePid()
 {
- Blade_lastMeasuredValue = 0;
- Blade_sumError = 0;
- Blade_maxError = INT16_MAX / (RobotMeuh.Blade_P_Factor + 1);
- Blade_maxSumError = (INT32_MAX / 2) / (RobotMeuh.Blade_I_Factor + 1);
-}
-
-void BladePid(s16 espectedValue, s16 measuredValue)
-{
- s16 error, p_term, d_term;
- s32 i_term, ret, temp;
-
- error = espectedValue - measuredValue;
-
-// Calculate Pterm and limit error overflow
- if (error > Blade_maxError)
-  {
-   p_term = INT16_MAX;
-  }
- else if (error < -Blade_maxError)
-  {
-   p_term = -INT16_MAX;
-  }
- else
-  {
-   p_term = RobotMeuh.Blade_P_Factor * error;
-  }
-
-// Calculate Iterm and limit integral runaway
- temp = Blade_sumError + error;
- if(temp > Blade_maxSumError)
-  {
-   i_term = (INT32_MAX / 2);
-   Blade_sumError = Blade_maxSumError;
-  }
- else if(temp < -Blade_maxSumError)
-  {
-   i_term = -(INT32_MAX / 2);
-   Blade_sumError = -Blade_maxSumError;
-  }
- else
-  {
-   Blade_sumError = temp;
-   i_term = RobotMeuh.Blade_I_Factor * Blade_sumError;
-  }
-
-// Calculate Dterm
- d_term = RobotMeuh.Blade_D_Factor * (Blade_lastMeasuredValue - measuredValue);
-
- Blade_lastMeasuredValue = measuredValue;
-
- ret = (p_term + i_term + d_term) / PID_SCALING_FACTOR;
- ret = limit<s32>(0, ret, 9999);
-
- OCR5C =(u16)ret; // should work, OCR5C is double buffered
+#define RM RobotMeuh
+ BladePid.init(RM.Blade_P_Factor, RM.Blade_I_Factor, RM.Blade_D_Factor, PID_SCALING_FACTOR, 9999);
+#undef RM
 }
 
 void initBrushlessBlade()
@@ -154,7 +96,7 @@ void BrushlessBladeUpdate() // called every 1 seconde (ISR mode)
 {
  BrushlessBladeReadRPM();
  sei(); // reset ISR mode
- BladePid(BrushlessBlade.PWMValue, BrushlessBlade.RPM);
+ BladePid.compute(BrushlessBlade.PWMValue, BrushlessBlade.RPM);
 }
 
 ISR(TIMER5_CAPT_vect, ISR_NOBLOCK) // Hall sensor detected (3 per turn on 42BLS03 with JY01 controler ?)

@@ -25,10 +25,11 @@ const void menuFirst() // First at boot
 
 const void menuStatus() // show status
 {
- if (!SystemBools.toggle500mS)
-  lcdPrintString_P(0, 0, PSTR("***          ***"));
- else
-  lcdPrintString_P(0, 0, PSTR("+++          +++"));
+ char blc = SystemBools.toggle500mS? '+' : '*';
+ div_t D = div(DynData.deltaDir, 10);
+ lcdPrintf(0, 0, PSTR("%c    %+04i.%01i    %c"), blc, D.quot, abs(D.rem), blc);
+
+
  div_t L = div(pulsesToDecimeterPerMinute(L_ActualSpeed), 10);
  div_t R = div(pulsesToDecimeterPerMinute(R_ActualSpeed), 10);
 //lcdPrintf(1, 0, PSTR("%06i    %06i"), L_ActualSpeed, R_ActualSpeed);
@@ -256,6 +257,7 @@ const void menuPidWheels() // PID wheels settings
   {
    eepromWritedAll(); // write to eeprom
    initStepperPid(); // init on changes
+   initDirPid(); // init on changes
   }
  menuNavigation(PMT(M_PIDDIR, M_WHEELSROTRATE, M_PIDWHEELS, M_PIDWHEELS));
 }
