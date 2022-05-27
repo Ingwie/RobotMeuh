@@ -9,7 +9,7 @@
 |  |  \    /   '. \_/``".'  |  (_,_)  /  '. \_/``".'    (_I_)   |  |      |  |  \       /  \ /  . \ /(_{;}_)|   |
 ''-'   `'-'      '-----'    /_______.'     '-----'      '---'   '--'      '--'   `'-..-'    ``-'`-'' '(_,_) '---'
 */
-/*         Copyright 2020 by Ingwie (Bracame)          */
+/*       Copyright 2020-2022 by Ingwie (Bracame)       */
 /*   Licence: GPLV3 see <http://www.gnu.org/licenses   */
 /*        Compile with AVR GCC + Code::Blocks          */
 /*    https://www.mediafire.com/file/cahqfrm90h7c7fy/  */
@@ -95,71 +95,27 @@ int main(void)
  initTaskScheduler(); // timer 0
 
 
- u8 onetime = 0;
+ _delay_ms(300);
+ sendLcdDispOffClear();
+
+ u8 tictac = SystemBools.toggle500mS;
+ u32 waitCounter = 0;
+
  do
   {
-   _delay_ms(300);
-   sendLcdDispOffClear();
+   //do ++waitCounter;
+   //while (SystemBools.toggle500mS == tictac);
+   _delay_ms(100);
+   tictac = SystemBools.toggle500mS;
+   menuCompute();
+   waitCounter = 0;
 
-// TEST //
-#define TESTMENU
 
-   if (!onetime)
-    {
-
-     //ADCSRA |= _BV(ADSC); // Start the AD conversion
-     onetime = 1;
-    }
-
-#if defined (TESTMENU)
-   // Show menus
-   do
-    {
-     for (u16 i = 0; i < 50; ++i)
-      {
-       SerialCliPrint("totototototo");
-       SerialCliSend();
-       if (!SystemBools.lcdISOk) ERR("PB ecran"); // todo remove
-       if (0)//(isTimeToWork())
-        {
-         if (SystemBools.toggle500mS)
-          {
-           sendLcdLedOn();
-          }
-         else
-          {
-           sendLcdLedOff();
-          }
-        }
-       menuCompute();
-
-       //forceMenu((menuArray)onetime);
-       _delay_ms(200);
-      }
-     if (++onetime == M_MENUNUMBER) onetime = M_FIRST;
-    }
-   while (1);
-#endif
-#if defined (EULER)
-   forceMenu(M_IMUFUSION);
-#endif
-#if defined (GYRO)
-   forceMenu(M_IMUGYRO);
-#endif
-#if defined (ACC)
-   forceMenu(M_IMUACC);
-#endif
-#if defined (MAG)
-   forceMenu(M_IMUMAG);
-#endif
-#if defined (SW)
-   forceMenu(M_WHEELSPULSES);
-#endif
-   lcdDispOn();
+   SerialCliPrint("totototototo");
+   SerialCliSend();
+   if (!SystemBools.lcdISOk) ERR("PB ecran"); // todo remove
   }
- while(1);
-
-
+ while (1);
  return 0;
 }
 

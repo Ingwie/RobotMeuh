@@ -9,7 +9,7 @@
 |  |  \    /   '. \_/``".'  |  (_,_)  /  '. \_/``".'    (_I_)   |  |      |  |  \       /  \ /  . \ /(_{;}_)|   |
 ''-'   `'-'      '-----'    /_______.'     '-----'      '---'   '--'      '--'   `'-..-'    ``-'`-'' '(_,_) '---'
 */
-/*         Copyright 2020 by Ingwie (Bracame)          */
+/*       Copyright 2020-2022 by Ingwie (Bracame)       */
 /*   Licence: GPLV3 see <http://www.gnu.org/licenses   */
 /*        Compile with AVR GCC + Code::Blocks          */
 /*    https://www.mediafire.com/file/cahqfrm90h7c7fy/  */
@@ -55,9 +55,9 @@ void initSerialLcd()
 // enable RX
  UCSRB_N(USART_LCD_ID) |= (1 << RXEN_N(USART_LCD_ID));  // enable RX
  UCSRB_N(USART_LCD_ID) |= (1 << RXCIE_N(USART_LCD_ID)); // enable Interrupt
- while (UCSRA_N(USART_LCD_ID) & (1 << RXC_N(USART_LCD_ID))) UDR_N(USART_LCD_ID); // Flush RX buffer.
 // enable TX
  UCSRB_N(USART_LCD_ID) |= (1 << TXEN_N(USART_LCD_ID)); // enable TX
+ while (UCSRA_N(USART_LCD_ID) & (1 << RXC_N(USART_LCD_ID))) UDR_N(USART_LCD_ID); // Flush RX buffer.
 }
 
 void computeSerialRXBuf(u8 buffNum)
@@ -108,7 +108,7 @@ ISR(USART_RX_vect_N(USART_LCD_ID))
  static u8 SerialLcdRXBufCount = 0;
 
  u8 stat = UCSRA_N(USART_LCD_ID); // USART control and Status Register 0/1 A
-
+ u8 data = UDR_N(USART_LCD_ID); // read USART data
  if (stat & ((1 << FE_N(USART_LCD_ID)) | (1 << DOR_N(USART_LCD_ID)) | (1 << UPE_N(USART_LCD_ID))))
   {
    // discard buffer and start fresh on any comms error
@@ -116,8 +116,6 @@ ISR(USART_RX_vect_N(USART_LCD_ID))
   }
  else
   {
-   u8 data = UDR_N(USART_LCD_ID); // USART data register 0
-
    sei(); // Enable interrupt
 
    if (data != SERIAL_LCD_EOL)

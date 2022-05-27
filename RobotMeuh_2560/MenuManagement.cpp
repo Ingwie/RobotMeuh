@@ -9,7 +9,7 @@
 |  |  \    /   '. \_/``".'  |  (_,_)  /  '. \_/``".'    (_I_)   |  |      |  |  \       /  \ /  . \ /(_{;}_)|   |
 ''-'   `'-'      '-----'    /_______.'     '-----'      '---'   '--'      '--'   `'-..-'    ``-'`-'' '(_,_) '---'
 */
-/*         Copyright 2020 by Ingwie (Bracame)          */
+/*       Copyright 2020-2022 by Ingwie (Bracame)       */
 /*   Licence: GPLV3 see <http://www.gnu.org/licenses   */
 /*        Compile with AVR GCC + Code::Blocks          */
 /*    https://www.mediafire.com/file/cahqfrm90h7c7fy/  */
@@ -98,7 +98,7 @@ void menuCompute()
  lcdDispOffClear();
  menuPointer = (p_Function)pgm_read_ptr_near(&menuFunctions[menuToken]); // find menufunction[menuToken] in flash
  if (menuPointer) menuPointer(); // call it
- else ERR("pointeur nul");
+ else ERR("pointeur M nul");
 
  (menuVar.editMode)? lcdBlinkOn() : lcdDispOn(); // blink on edit mode
 

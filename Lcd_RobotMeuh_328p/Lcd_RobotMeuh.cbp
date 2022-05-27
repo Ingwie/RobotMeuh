@@ -47,17 +47,32 @@
 		</ExtraCommands>
 		<Unit filename="../RobotMeuh_2560/Protocol.h" />
 		<Unit filename="../RobotMeuh_2560/utils.h" />
-		<Unit filename="AnalogSensor.cpp" />
+		<Unit filename="AnalogSensor.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
 		<Unit filename="AnalogSensor.h" />
-		<Unit filename="HD44780.cpp" />
+		<Unit filename="HD44780.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
 		<Unit filename="HD44780.h" />
-		<Unit filename="Keypad.cpp" />
+		<Unit filename="Keypad.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
 		<Unit filename="Keypad.h" />
 		<Unit filename="Lcd_RobotMeuh.cpp" />
 		<Unit filename="Lcd_RobotMeuh.h" />
-		<Unit filename="SerialLcd.cpp" />
+		<Unit filename="SerialLcd.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
 		<Unit filename="SerialLcd.h" />
-		<Unit filename="Timer8mS.cpp" />
+		<Unit filename="Timer8mS.cpp">
+			<Option compile="0" />
+			<Option link="0" />
+		</Unit>
 		<Unit filename="Timer8mS.h" />
 		<Unit filename="pin.h" />
 		<Unit filename="pin_helper.h" />

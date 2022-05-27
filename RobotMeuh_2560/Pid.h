@@ -9,7 +9,7 @@
 |  |  \    /   '. \_/``".'  |  (_,_)  /  '. \_/``".'    (_I_)   |  |      |  |  \       /  \ /  . \ /(_{;}_)|   |
 ''-'   `'-'      '-----'    /_______.'     '-----'      '---'   '--'      '--'   `'-..-'    ``-'`-'' '(_,_) '---'
 */
-/*         Copyright 2020 by Ingwie (Bracame)          */
+/*       Copyright 2020-2022 by Ingwie (Bracame)       */
 /*   Licence: GPLV3 see <http://www.gnu.org/licenses   */
 /*        Compile with AVR GCC + Code::Blocks          */
 /*    https://www.mediafire.com/file/cahqfrm90h7c7fy/  */
@@ -28,7 +28,6 @@ public:
  void init(s16 K_P, s16 K_I, s16 K_D, u16 K_factor, s16 output_limit);
  void changeLimit(s16 output_limit);
  s16 compute(s16 espectedValue, s16 measuredValue);
-
 
 private:
  float KP;

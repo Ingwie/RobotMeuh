@@ -9,7 +9,7 @@
 |  |  \    /   '. \_/``".'  |  (_,_)  /  '. \_/``".'    (_I_)   |  |      |  |  \       /  \ /  . \ /(_{;}_)|   |
 ''-'   `'-'      '-----'    /_______.'     '-----'      '---'   '--'      '--'   `'-..-'    ``-'`-'' '(_,_) '---'
 */
-/*         Copyright 2020 by Ingwie (Bracame)          */
+/*       Copyright 2020-2022 by Ingwie (Bracame)       */
 /*   Licence: GPLV3 see <http://www.gnu.org/licenses   */
 /*        Compile with AVR GCC + Code::Blocks          */
 /*    https://www.mediafire.com/file/cahqfrm90h7c7fy/  */
@@ -29,7 +29,7 @@ int main()
  initKey();
  updateKeys(); //Update Report for keys
  initSerialLcd();
- memcpy((u8*)&serialRet, &Report, 1); // Update Spiret
+ memcpy((u8*)&serialRet, &Report, 1); // Update Serialret
  serialRet[NUM_BYTE_RET - 1] = 0; // end of string
  adcInit();
  initTimer8mS();
@@ -51,3 +51,11 @@ int main()
 
  return 0;
 }
+
+/////////////////// INCLUDE ALL CPP AND C FILES HERE //////////////////////// -> Faster compilation
+
+#include "HD44780.cpp"
+#include "SerialLcd.cpp"
+#include "Keypad.cpp"
+#include "AnalogSensor.cpp"
+#include "Timer8mS.cpp"

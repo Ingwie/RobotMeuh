@@ -9,7 +9,7 @@
 |  |  \    /   '. \_/``".'  |  (_,_)  /  '. \_/``".'    (_I_)   |  |      |  |  \       /  \ /  . \ /(_{;}_)|   |
 ''-'   `'-'      '-----'    /_______.'     '-----'      '---'   '--'      '--'   `'-..-'    ``-'`-'' '(_,_) '---'
 */
-/*         Copyright 2020 by Ingwie (Bracame)          */
+/*       Copyright 2020-2022 by Ingwie (Bracame)       */
 /*   Licence: GPLV3 see <http://www.gnu.org/licenses   */
 /*        Compile with AVR GCC + Code::Blocks          */
 /*    https://www.mediafire.com/file/cahqfrm90h7c7fy/  */
@@ -35,8 +35,8 @@
 #define LcdSerialTxPin     D,16
 
 //-----> LCDCli Pin
-#define CliSerialRxPin     D,19
-#define CliSerialTxPin     D,18
+#define CliSerialRxPin     J,00
+#define CliSerialTxPin     J,01
 
 //-----> I2C Pin
 #define I2cSclPin          D,0
@@ -50,6 +50,8 @@
 #define L_WheelDirPin      A,3
 #define R_WheelPulsePin    E,4
 #define L_WheelPulsePin    H,4
+#define R_WheelPulseInPin  D,2
+#define L_WheelPulseInPin  D,3
 //-----
 
 //-----> Blade (brushless) Pin

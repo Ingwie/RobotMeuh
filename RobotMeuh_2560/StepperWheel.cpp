@@ -9,7 +9,7 @@
 |  |  \    /   '. \_/``".'  |  (_,_)  /  '. \_/``".'    (_I_)   |  |      |  |  \       /  \ /  . \ /(_{;}_)|   |
 ''-'   `'-'      '-----'    /_______.'     '-----'      '---'   '--'      '--'   `'-..-'    ``-'`-'' '(_,_) '---'
 */
-/*         Copyright 2020 by Ingwie (Bracame)          */
+/*       Copyright 2020-2022 by Ingwie (Bracame)       */
 /*   Licence: GPLV3 see <http://www.gnu.org/licenses   */
 /*        Compile with AVR GCC + Code::Blocks          */
 /*    https://www.mediafire.com/file/cahqfrm90h7c7fy/  */
@@ -33,6 +33,9 @@ volatile u16 R_WheelPulses = 0;
 
 volatile u8 L_Prescaler = 0;
 volatile u8 R_Prescaler = 0;
+
+volatile u8 L_PulsesIn = 0;
+volatile u8 R_PulsesIn = 0;
 
 // PID
 c_PID L_Pid, R_Pid;
@@ -138,6 +141,14 @@ void initStepperWeel()
  set_output_on(R_WheelDirPin);
  set_output_off(L_WheelPulsePin);
  set_output_off(R_WheelPulsePin);
+ set_input(R_WheelPulseInPin); // INT3
+ set_input(L_WheelPulseInPin); // INT2
+
+ // Setup INT 3 & 2 to receive pulsesin (rotation control)
+ EIMSK = 0; // disable ALL external interrupts.
+ EICRA = _BV(ISC30) | _BV(ISC20); // 01 = interrupt on any edge
+ EIFR = _BV(INTF3) | _BV(INTF2); // clear the int. flag
+ EIMSK |= _BV(INT3) | _BV(INT2); // enable interrupt for INT3 & 2
 
 // Setup Timer 3 & 4 Mode 15 fast PWM, OCnA set TOP value, OCnB output.
 
@@ -221,6 +232,16 @@ ISR(TIMER3_OVF_vect) // right motor
  ++R_StepCourse;
  OCR3A = R_WheelPulses;
  TCCR3B = R_Prescaler;
+}
+
+ISR(INT3_vect) // L wheel pulse in
+{
+ ++L_PulsesIn;
+}
+
+ISR(INT2_vect) // R wheel pulse in
+{
+ ++R_PulsesIn;
 }
 
 s16 pulsesToDecimeterPerMinute(s16 pulses)

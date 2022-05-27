@@ -9,7 +9,7 @@
 |  |  \    /   '. \_/``".'  |  (_,_)  /  '. \_/``".'    (_I_)   |  |      |  |  \       /  \ /  . \ /(_{;}_)|   |
 ''-'   `'-'      '-----'    /_______.'     '-----'      '---'   '--'      '--'   `'-..-'    ``-'`-'' '(_,_) '---'
 */
-/*         Copyright 2020 by Ingwie (Bracame)          */
+/*       Copyright 2020-2022 by Ingwie (Bracame)       */
 /*   Licence: GPLV3 see <http://www.gnu.org/licenses   */
 /*        Compile with AVR GCC + Code::Blocks          */
 /*    https://www.mediafire.com/file/cahqfrm90h7c7fy/  */
@@ -17,7 +17,7 @@
 
 #include "SerialCli.h"
 
-#define USART_CLI_ID                0
+#define USART_CLI_ID                3
 #define SERIAL_CLI_EOL              0x0D // CR
 #define SERIAL_CLI_RX_BUFFER_NUM    2
 #define SERIAL_CLI_RX_BUFFER_LENGHT 8
